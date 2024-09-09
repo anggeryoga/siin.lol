@@ -6,15 +6,18 @@ body {
   display: grid;
   place-content: center;
   font-family: system-ui, sans-serif;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 2em;
-  overflow-x: clip;
+  overflow-x: hidden;
+  padding: 1em;
 }
+
 h2 {
   font-weight: 100;
   font-size: 2rem;
   text-align: center;
 }
+
 .choices, .computer {
   display: grid;
   justify-content: center;
@@ -27,8 +30,8 @@ h2 {
   border: 1px solid #1f202050;
   width: 10em;
   aspect-ratio: 1;
-  
 }
+
 .choices button {
   position: absolute;
   offset-path: border-box;
@@ -43,15 +46,19 @@ h2 {
   border-radius: 100vmax;
   offset-rotate: 0deg;
 }
+
 #rock {
   offset-distance: 0%;
 }
+
 #paper {
   offset-distance: calc(60 / 180 * 100%);
 }
+
 #scissors {
   offset-distance: calc(120 / 180 * 100%);
 }
+
 .choices button:hover {
   transform: scale(1.2);
 }
@@ -61,57 +68,90 @@ h2 {
   margin-top: 2em;
   min-height: 3em;
   text-align: center;
-  grid-column: span 2;
 }
 
 #animation {
-  
   font-size: 4rem;
-
   border: 1px solid #1f202030;
   border-radius: 100vmax;
   aspect-ratio: 1;
   display: grid;
   place-content: center;
-  background-image:
-    repeating-conic-gradient(
-      #E1F8DC 0deg 10deg,
-      #0000 10deg 20deg
-    );
+  background-image: repeating-conic-gradient(
+    #E1F8DC 0deg 10deg,
+    #0000 10deg 20deg
+  );
   transition: background-color 0.5s ease;
 }
 
-
 @keyframes fireworks {
-    0% {
-        opacity: 1;
-        transform: scale(0);
-    }
-    80% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1.2);
-    }
+  0% {
+    opacity: 1;
+    transform: scale(0);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
 }
 
 .firework {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,0,0,1) 40%, rgba(255,255,0,1) 60%, rgba(255,255,255,0) 100%);
-    animation: fireworks 1s ease-out forwards;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,0,0,1) 40%, rgba(255,255,0,1) 60%, rgba(255,255,255,0) 100%);
+  animation: fireworks 1s ease-out forwards;
 }
 
 #fireworks-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 10;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Media Queries for Responsiveness */
+
+@media (min-width: 600px) {
+  body {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btns {
+    width: 12em;
+  }
+
+  .choices button {
+    font-size: 5rem;
+  }
+
+  #animation {
+    font-size: 5rem;
+  }
+}
+
+@media (min-width: 900px) {
+  body {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btns {
+    width: 15em;
+  }
+
+  .choices button {
+    font-size: 6rem;
+  }
+
+  #animation {
+    font-size: 6rem;
+  }
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #pdf-container {
+            width: 90%;
+            max-width: 900px;
+            height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pdf-container">
+        <canvas id="pdf-render"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+        const url = 'porto.pdf';  // Ganti dengan path file PDF kamu
+
+        let pdfDoc = null,
+            pageNum = 1,
+            canvas = document.getElementById('pdf-render'),
+            ctx = canvas.getContext('2d');
+
+        // Load the PDF
+        pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            renderPage(pageNum);
+        });
+
+        // Render the page
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(function(page) {
+                let viewport = page.getViewport({ scale: 1.5 });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                let renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+
+                page.render(renderContext);
+            });
+        }
+    </script>
+
+</body>
+</html>

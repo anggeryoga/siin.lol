@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Food Picker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+  <div class="bg-white rounded-lg shadow-md p-8 text-center max-w-md w-full">
+    <h1 class="text-2xl font-bold mb-4">Hallo Jihan, mau makan apa hari ini?</h1>
+    <div class="text-lg mb-4">Jangan pedas-pedas ya!</div>
+    <div id="food" class="text-3xl font-bold text-blue-600 my-6 h-12 flex justify-center items-center">Press the button!</div>
+    <button id="pickButton" onclick="startShuffle()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+      Pick Random Food
+    </button>
+  </div>
+
+  <script>
+    const foods = ["Baso", "Mie Ayam", "Nasi Goreng", "Kwetiau", "Ayam Geprek", "Ayam Bakar", "Lele Bakar", "Kebab", "Seblak"];
+    let isShuffling = false;
+    let shuffleInterval;
+
+    function startShuffle() {
+      if (isShuffling) return;
+      isShuffling = true;
+      const foodElement = document.getElementById('food');
+      const pickButton = document.getElementById('pickButton');
+      
+      foodElement.classList.add('animate-pulse');
+      
+      shuffleInterval = setInterval(() => {
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        foodElement.textContent = foods[randomIndex];
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(shuffleInterval);
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        const selectedFood = foods[randomIndex];
+        foodElement.textContent = selectedFood;
+        foodElement.classList.remove('animate-pulse');
+        isShuffling = false;
+        
+        pickButton.innerHTML = "Pesan via WhatsApp";
+        pickButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        pickButton.classList.add('bg-green-500', 'hover:bg-green-600');
+        pickButton.setAttribute('onclick', `sendWhatsApp('${selectedFood}')`);
+      }, 2000);
+    }
+
+    function sendWhatsApp(selectedFood) {
+      const message = `Hari ini aku mau makan ${selectedFood}`;
+      const url = `https://wa.me/6285155145788?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>

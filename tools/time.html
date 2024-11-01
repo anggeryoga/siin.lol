@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Time Zone Display with Prayer Times</title>
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/smX64pY-15n2VbEZIY4voTxcy7sY3EpxlU9G88.png" type="image/png">
+    <style>
+        /* Styling sederhana dengan tema kuning dan hitam */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff176;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+            overflow: hidden; /* Menghindari scroll pada viewport */
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background-color: #fffde7;
+            border: 4px solid #000;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 7px 7px 0 #333;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .time-display {
+            font-size: 18px;
+            background-color: #ffd600;
+            padding: 15px;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #333;
+            display: inline-block;
+            margin-top: 10px;
+            animation: tick 1s ease-in-out infinite;
+            border-radius: 5px;
+        }
+        .prayer-times {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #fff9c4;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 0 #333;
+        }
+        .prayer-times h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .prayer-times ul {
+            list-style: none;
+            padding: 0;
+        }
+        .prayer-times ul li {
+            margin-bottom: 5px;
+        }
+        .adzan-alert {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .play-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ffd600;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        /* Animasi detak */
+        @keyframes tick {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Local Time Zone Display</h1>
+    <p>Zona waktu lokal Anda dan waktu saat ini adalah:</p>
+    <div class="time-display" id="timeDisplay">
+        <!-- Waktu lokal akan ditampilkan di sini -->
+    </div>
+    <div class="prayer-times" id="prayerTimes">
+        <h2>Waktu Sholat:</h2>
+        <ul>
+            <!-- Waktu sholat akan ditampilkan di sini -->
+        </ul>
+        <div class="adzan-alert" id="adzanAlert"></div>
+    </div>
+    <button class="play-button" id="playButton">Izinkan Suara Adzan</button>
+</div>
+
+<audio id="adhanAudio" src="https://islamdownload.net/wp-content/uploads-by-id/123801/mecca_56_22.mp3" preload="auto"></audio>
+
+<script>
+    let adzanAudio = document.getElementById('adhanAudio');
+    let isAudioAllowed = false;
+
+    document.getElementById('playButton').addEventListener('click', function() {
+        isAudioAllowed = true;
+        this.style.display = 'none'; // Sembunyikan tombol setelah di klik
+        alert('Audio Adzan sekarang diizinkan untuk diputar.');
+    });
+
+    function displayLocalTime() {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            timeZoneName: 'long'
+        };
+        const localTime = now.toLocaleString(navigator.language, options);
+        document.getElementById('timeDisplay').textContent = localTime;
+    }
+
+    function fetchPrayerTimes(lat, lon) {
+        const today = new Date();
+        const date = today.toISOString().split('T')[0];
+
+        fetch(`https://api.aladhan.com/v1/timings/${date}?latitude=${lat}&longitude=${lon}&method=2`)
+            .then(response => response.json())
+            .then(data => {
+                const timings = data.data.timings;
+                const prayerList = document.getElementById('prayerTimes').querySelector('ul');
+                prayerList.innerHTML = `
+                    <li>Subuh: ${timings.Fajr}</li>
+                    <li>Dzuhur: ${timings.Dhuhr}</li>
+                    <li>Ashar: ${timings.Asr}</li>
+                    <li>Maghrib: ${timings.Maghrib}</li>
+                    <li>Isya: ${timings.Isha}</li>
+                `;
+
+                checkAdzan(timings);
+            })
+            .catch(error => {
+                console.error('Error fetching prayer times:', error);
+            });
+    }
+
+    function checkAdzan(timings) {
+        const now = new Date();
+        const currentTime = now.toLocaleTimeString(navigator.language, { hour12: false });
+
+        Object.keys(timings).forEach(prayer => {
+            if (timings[prayer] === currentTime) {
+                document.getElementById('adzanAlert').textContent = `Adzan ${prayer} telah tiba!`;
+                if (isAudioAllowed) {
+                    adzanAudio.play().catch(error => {
+                        console.error('Audio playback failed:', error);
+                    });
+                }
+            }
+        });
+    }
+
+    function getLocationAndFetchPrayerTimes() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                fetchPrayerTimes(lat, lon);
+            }, () => {
+                alert('Unable to retrieve location for prayer times.');
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+
+    // Panggil fungsi untuk menampilkan waktu lokal
+    displayLocalTime();
+    setInterval(displayLocalTime, 1000);
+
+    // Panggil fungsi untuk mengambil lokasi dan waktu sholat
+    getLocationAndFetchPrayerTimes();
+</script>
+
+</body>
+</html>

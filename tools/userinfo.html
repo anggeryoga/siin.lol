@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Agent & Network Info</title>
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/trla7zb-DiOaEH3A5UwHBhcwXq48AdwHg4DZmw.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111;
+            padding: 20px;
+            color: #fff;
+        }
+        h1 {
+            color: #ff9800;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #222;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+            transition: transform 0.3s;
+        }
+        .info:hover {
+            transform: scale(1.05);
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            .info {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>User Agent and Network Information</h1>
+<div id="userAgentInfo" class="info"></div>
+<div id="networkInfo" class="info"></div>
+<div id="screenInfo" class="info"></div>
+<div id="geolocationInfo" class="info"></div>
+<div id="batteryInfo" class="info"></div>
+<div id="otherInfo" class="info"></div>
+
+<script>
+    // Function to fetch the user's public IP address
+    async function fetchIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+            return 'Unavailable';
+        }
+    }
+
+    // Function to get network information
+    function getNetworkInfo() {
+        if (navigator.connection) {
+            return {
+                effectiveType: navigator.connection.effectiveType || 'Unknown',
+                downlink: navigator.connection.downlink || 'Unknown',
+                rtt: navigator.connection.rtt || 'Unknown',
+                saveData: navigator.connection.saveData ? 'Yes' : 'No',
+                type: navigator.connection.type || 'Unknown',
+            };
+        }
+        return {
+            effectiveType: 'Unknown',
+            downlink: 'Unknown',
+            rtt: 'Unknown',
+            saveData: 'No',
+            type: 'Unknown',
+        };
+    }
+
+    // Display User Agent Info
+    const parser = new UAParser();
+    const result = parser.getResult();
+
+    const userAgentInfo = `
+        <strong>User Agent:</strong> ${navigator.userAgent}<br>
+        <strong>Browser:</strong> ${result.browser.name} ${result.browser.version}<br>
+        <strong>Browser (Major/Minor):</strong> ${result.browser.major} / ${result.browser.minor}<br>
+        <strong>Engine:</strong> ${result.engine.name} ${result.engine.version}<br>
+        <strong>Operating System:</strong> ${result.os.name} ${result.os.version}<br>
+        <strong>Device:</strong> ${result.device.vendor || 'Unknown'} ${result.device.model || 'Unknown'} (${result.device.type || 'Unknown'})<br>
+        <strong>CPU:</strong> ${result.cpu.architecture || 'Unknown'}<br>
+        <strong>Language:</strong> ${navigator.language || navigator.userLanguage}<br>
+        <strong>Timezone:</strong> ${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
+        <strong>Device Memory:</strong> ${navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Unknown'}<br>
+        <strong>Hardware Concurrency:</strong> ${navigator.hardwareConcurrency || 'Unknown'}<br>
+        <strong>Cookies Enabled:</strong> ${navigator.cookieEnabled ? 'Yes' : 'No'}<br>
+        <strong>Java Enabled:</strong> ${navigator.javaEnabled() ? 'Yes' : 'No'}<br>
+        <strong>Connection Type:</strong> ${navigator.connection ? navigator.connection.type || 'Unknown' : 'Unknown'}
+    `;
+
+    document.getElementById('userAgentInfo').innerHTML = userAgentInfo;
+
+    // Fetch and display Network Info
+    async function displayNetworkInfo() {
+        const ipAddress = await fetchIP();
+        const network = getNetworkInfo();
+
+        const networkInfo = `
+            <strong>IP Address:</strong> ${ipAddress}<br>
+            <strong>Connection Type:</strong> ${network.type}<br>
+            <strong>Effective Connection Type:</strong> ${network.effectiveType}<br>
+            <strong>Downlink Speed:</strong> ${network.downlink} Mbps<br>
+            <strong>Round Trip Time (RTT):</strong> ${network.rtt} ms<br>
+            <strong>Save Data Mode:</strong> ${network.saveData}<br>
+            <strong>Network Information:</strong> ${navigator.connection ? navigator.connection.toJSON() : 'Unavailable'}
+        `;
+
+        document.getElementById('networkInfo').innerHTML = networkInfo;
+    }
+
+    // Fetch and display Screen Info
+    function displayScreenInfo() {
+        const screenInfo = `
+            <strong>Screen Width:</strong> ${screen.width}px<br>
+            <strong>Screen Height:</strong> ${screen.height}px<br>
+            <strong>Available Width:</strong> ${screen.availWidth}px<br>
+            <strong>Available Height:</strong> ${screen.availHeight}px<br>
+            <strong>Color Depth:</strong> ${screen.colorDepth} bits<br>
+            <strong>Pixel Ratio:</strong> ${window.devicePixelRatio || 'Unknown'}<br>
+            <strong>Orientation:</strong> ${screen.orientation ? screen.orientation.type : 'Unknown'}<br>
+            <strong>Window Size:</strong> ${window.innerWidth} x ${window.innerHeight}px
+        `;
+        document.getElementById('screenInfo').innerHTML = screenInfo;
+    }
+
+    // Fetch and display Geolocation Info
+    function displayGeolocationInfo() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const geoInfo = `
+                    <strong>Latitude:</strong> ${position.coords.latitude}<br>
+                    <strong>Longitude:</strong> ${position.coords.longitude}<br>
+                    <strong>Accuracy:</strong> ${position.coords.accuracy} meters
+                `;
+                document.getElementById('geolocationInfo').innerHTML = geoInfo;
+            }, () => {
+                document.getElementById('geolocationInfo').innerHTML = '<strong>Geolocation permission denied.</strong>';
+            });
+        } else {
+            document.getElementById('geolocationInfo').innerHTML = '<strong>Geolocation is not supported by this browser.</strong>';
+        }
+    }
+
+    // Fetch and display Battery Info
+    function displayBatteryInfo() {
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                const batteryInfo = `
+                    <strong>Battery Level:</strong> ${(battery.level * 100).toFixed(0)}%<br>
+                    <strong>Battery Charging:</strong> ${battery.charging ? 'Yes' : 'No'}<br>
+                    <strong>Charging Time:</strong> ${battery.chargingTime === Infinity ? 'Fully Charged' : battery.chargingTime + ' seconds'}<br>
+                    <strong>Discharging Time:</strong> ${battery.dischargingTime === Infinity ? 'Plugged In' : battery.dischargingTime + ' seconds'}
+                `;
+                document.getElementById('batteryInfo').innerHTML = batteryInfo;
+            });
+        } else {
+            document.getElementById('batteryInfo').innerHTML = '<strong>Battery status is not supported.</strong>';
+        }
+    }
+
+    // Display other info
+    function displayOtherInfo() {
+        const otherInfo = `
+            <strong>Color Scheme:</strong> ${window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light'}<br>
+            <strong>Browser Online:</strong> ${navigator.onLine ? 'Yes' : 'No'}<br>
+            <strong>Platform:</strong> ${navigator.platform}<br>
+            <strong>User Agent Data:</strong> ${JSON.stringify(navigator.userAgentData) || 'Unavailable'}
+        `;
+        document.getElementById('otherInfo').innerHTML = otherInfo;
+    }
+
+    // Call the functions to display information
+    displayNetworkInfo();
+    displayScreenInfo();
+    displayGeolocationInfo();
+    displayBatteryInfo();
+    displayOtherInfo();
+
+</script>
+
+</body>
+</html>

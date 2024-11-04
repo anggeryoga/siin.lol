@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/rYQW2rO-rFWsMcxhQD3ddIEsMe0SOM0QeTwCBf.png" type="image/png">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #FFD700;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            transform: rotate(-1deg);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            transform: rotate(1deg);
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 3px solid #000;
+            background-color: #fff;
+            margin-bottom: 15px;
+            transform: rotate(0.5deg);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            transform: rotate(-0.5deg);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        button {
+            background-color: #000;
+            color: #FFD700;
+            border: 3px solid #000;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transform: rotate(-1deg);
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #FFD700;
+            color: #000;
+            transform: rotate(1deg);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #fff;
+            border: 3px solid #000;
+            transform: rotate(1deg);
+        }
+
+        .result strong {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #FFE44D;
+            border: 2px solid #000;
+            font-size: 0.9rem;
+            transform: rotate(-0.5deg);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            input, select, button {
+                font-size: 1rem;
+                padding: 10px;
+            }
+
+            .result strong {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CC ⚡ KM/JAM</h2>
+        <div class="input-group">
+            <label for="cc">💨 CC MOTOR/MOBIL:</label>
+            <input type="number" id="cc" placeholder="Contoh: 150" min="0">
+            
+            <label for="vehicle">🚗 JENIS KENDARAAN:</label>
+            <select id="vehicle">
+                <option value="motorcycle">MOTOR 🏍️</option>
+                <option value="car">MOBIL 🚗</option>
+            </select>
+            
+            <button onclick="calculate()">HITUNG KECEPATAN! 🏁</button>
+        </div>
+        <div class="result" id="result">
+            HASIL AKAN MUNCUL DI SINI... 🚥
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const cc = parseFloat(document.getElementById('cc').value);
+            const vehicleType = document.getElementById('vehicle').value;
+            
+            if (isNaN(cc) || cc <= 0) {
+                document.getElementById('result').innerHTML = '⚠️ MOHON MASUKKAN NILAI CC YANG VALID!';
+                return;
+            }
+
+            let estimatedSpeed;
+            let explanation = '';
+
+            if (vehicleType === 'motorcycle') {
+                if (cc <= 125) {
+                    estimatedSpeed = 90 + (cc/125 * 10);
+                    explanation = '🏍️ Motor dengan CC kecil (dibawah 125cc) umumnya memiliki kecepatan maksimal sekitar 90-100 km/jam';
+                } else if (cc <= 250) {
+                    estimatedSpeed = 100 + ((cc-125)/125 * 30);
+                    explanation = '🏍️ Motor sport 150-250cc biasanya bisa mencapai kecepatan 100-130 km/jam';
+                } else if (cc <= 600) {
+                    estimatedSpeed = 130 + ((cc-250)/350 * 50);
+                    explanation = '🏍️ Motor besar 250-600cc dapat mencapai kecepatan 130-180 km/jam';
+                } else {
+                    estimatedSpeed = 180 + ((cc-600)/400 * 40);
+                    explanation = '🏍️ Motor dengan CC di atas 600cc bisa mencapai kecepatan di atas 180 km/jam';
+                }
+            } else {
+                if (cc <= 1000) {
+                    estimatedSpeed = 140 + (cc/1000 * 20);
+                    explanation = '🚗 Mobil dengan mesin kecil (dibawah 1000cc) umumnya memiliki kecepatan maksimal sekitar 140-160 km/jam';
+                } else if (cc <= 2000) {
+                    estimatedSpeed = 160 + ((cc-1000)/1000 * 30);
+                    explanation = '🚗 Mobil 1000-2000cc biasanya bisa mencapai kecepatan 160-190 km/jam';
+                } else if (cc <= 3000) {
+                    estimatedSpeed = 190 + ((cc-2000)/1000 * 30);
+                    explanation = '🚗 Mobil dengan mesin 2000-3000cc dapat mencapai kecepatan 190-220 km/jam';
+                } else {
+                    estimatedSpeed = 220 + ((cc-3000)/1000 * 20);
+                    explanation = '🚗 Mobil dengan CC di atas 3000cc bisa mencapai kecepatan di atas 220 km/jam';
+                }
+            }
+
+            estimatedSpeed = Math.round(estimatedSpeed * 10) / 10;
+
+            document.getElementById('result').innerHTML = `
+                <strong>🏁 KECEPATAN MAKSIMAL: ${estimatedSpeed} KM/JAM</strong>
+                <div class="note">
+                    <p>${explanation}</p>
+                    <p><strong>⚠️ CATATAN PENTING:</strong></p>
+                    <p>Ini hanya estimasi kasar. Kecepatan sebenarnya tergantung pada:
+                    <br>⚡ Berat kendaraan
+                    <br>⚡ Aerodinamika
+                    <br>⚡ Rasio gearing
+                    <br>⚡ Kondisi mesin
+                    <br>⚡ Kondisi jalan
+                    </p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

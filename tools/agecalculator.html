@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yellow Neobrutalist Age Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #FFD93D;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            padding: 40px;
+            border: 4px solid #000;
+            box-shadow: 12px 12px 0 #000;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #000;
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 4px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .date-picker-container {
+            margin: 20px 0;
+            border: 3px solid #000;
+            padding: 20px;
+            background: #FFE5A9;
+        }
+
+        .date-picker-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .date-select {
+            position: relative;
+        }
+
+        .date-select select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 3px solid #000;
+            background: #fff;
+            appearance: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .date-select::after {
+            content: '▼';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        button {
+            background: #000;
+            color: #fff;
+            border: 3px solid #000;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #FFD93D;
+            color: #000;
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 1.3em;
+            border: 3px solid #000;
+            background: #FFE5A9;
+            color: #000;
+            font-weight: 500;
+            display: none;
+        }
+
+        .result.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .error {
+            background: #FF9B9B;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .age-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .age-item {
+            background: #fff;
+            padding: 15px;
+            border: 3px solid #000;
+            text-align: center;
+        }
+
+        .age-number {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .age-label {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: #000;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 1.8em;
+            }
+            
+            .date-picker-group {
+                grid-template-columns: 1fr;
+            }
+
+            .age-breakdown {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Age Calculator</h2>
+    <div class="date-picker-container">
+        <div class="date-picker-group">
+            <div class="date-select">
+                <label for="day">Hari</label>
+                <select id="day"></select>
+            </div>
+            <div class="date-select">
+                <label for="month">Bulan</label>
+                <select id="month"></select>
+            </div>
+            <div class="date-select">
+                <label for="year">Tahun</label>
+                <select id="year"></select>
+            </div>
+        </div>
+        <button onclick="calculateAge()">Hitung Usia</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="age-breakdown" id="ageBreakdown"></div>
+</div>
+
+<script>
+// Populate date dropdowns
+function populateDateDropdowns() {
+    const daySelect = document.getElementById('day');
+    const monthSelect = document.getElementById('month');
+    const yearSelect = document.getElementById('year');
+
+    // Populate days
+    for(let i = 1; i <= 31; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        daySelect.appendChild(option);
+    }
+
+    // Populate months
+    const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index + 1;
+        option.text = month;
+        monthSelect.appendChild(option);
+    });
+
+    // Populate years
+    const currentYear = new Date().getFullYear();
+    for(let i = currentYear; i >= 1900; i--) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+    }
+}
+
+function calculateAge() {
+    const day = document.getElementById('day').value;
+    const month = document.getElementById('month').value;
+    const year = document.getElementById('year').value;
+    
+    const birthdate = new Date(year, month - 1, day);
+    const today = new Date();
+    
+    const resultDiv = document.getElementById("result");
+    const ageBreakdown = document.getElementById("ageBreakdown");
+    
+    if (birthdate > today || !isValidDate(day, month - 1, year)) {
+        resultDiv.innerHTML = "Tanggal lahir tidak valid!";
+        resultDiv.classList.add("active", "error");
+        ageBreakdown.style.display = "none";
+        return;
+    }
+
+    let years = today.getFullYear() - birthdate.getFullYear();
+    let months = today.getMonth() - birthdate.getMonth();
+    let days = today.getDate() - birthdate.getDate();
+
+    if (days < 0) {
+        months -= 1;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += lastMonth.getDate();
+    }
+    
+    if (months < 0) {
+        years -= 1;
+        months += 12;
+    }
+
+    // Calculate additional statistics
+    const totalDays = Math.floor((today - birthdate) / (1000 * 60 * 60 * 24));
+    const totalMonths = years * 12 + months;
+    const weeks = Math.floor(totalDays / 7);
+
+    resultDiv.innerHTML = `Usia Anda saat ini:`;
+    resultDiv.classList.remove("error");
+    resultDiv.classList.add("active");
+
+    ageBreakdown.innerHTML = `
+        <div class="age-item">
+            <div class="age-number">${years}</div>
+            <div class="age-label">Tahun</div>
+        </div>
+        <div class="age-item">
+            <div class="age-number">${months}</div>
+            <div class="age-label">Bulan</div>
+        </div>
+        <div class="age-item">
+            <div class="age-number">${days}</div>
+            <div class="age-label">Hari</div>
+        </div>
+        <div class="age-item">
+            <div class="age-number">${weeks}</div>
+            <div class="age-label">Minggu</div>
+        </div>
+        <div class="age-item">
+            <div class="age-number">${totalDays.toLocaleString()}</div>
+            <div class="age-label">Total Hari</div>
+        </div>
+        <div class="age-item">
+            <div class="age-number">${totalMonths}</div>
+            <div class="age-label">Total Bulan</div>
+        </div>
+    `;
+    ageBreakdown.style.display = "grid";
+}
+
+function isValidDate(day, month, year) {
+    const date = new Date(year, month, day);
+    return date.getMonth() === month && date.getDate() === parseInt(day);
+}
+
+// Initialize date dropdowns when page loads
+window.onload = populateDateDropdowns;
+</script>
+</body>
+</html>

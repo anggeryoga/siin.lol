@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Text Generator</title>
+    <link rel="icon" type="image/x-icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/JdWZpuI-bC0n3ZcvWEzqIVeVgNCSgtCGHiV6JO.png"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #ffeb3b;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background-color: #fff;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .main-content {
+            background-color: #fff;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0 #000;
+            padding: 30px;
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 4px solid #000;
+            padding-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 15px;
+            font-size: 1.1em;
+            background: #fff;
+            border: 4px solid #000;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .tab.active {
+            background: #ffeb3b;
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 #000;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #fffde7;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        input {
+            padding: 15px;
+            font-size: 1.1em;
+            border: 3px solid #000;
+            background: #fff;
+            width: 100%;
+        }
+        
+        button {
+            padding: 15px;
+            font-size: 1.1em;
+            background: #000;
+            color: #ffeb3b;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 #666;
+        }
+        
+        button:active {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+        
+        .output-container {
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .output {
+            border: 3px solid #000;
+            padding: 20px;
+            background: #fffde7;
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .output p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .copy-button {
+            flex: 1;
+        }
+        
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            background: #000;
+            color: #ffeb3b;
+            border: 3px solid #ffeb3b;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .tabs {
+                flex-direction: row;
+            }
+            
+            .tab {
+                flex: 1;
+            }
+            
+            .controls {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            button {
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+        
+        /* Scrollbar styling */
+        .output::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        .output::-webkit-scrollbar-track {
+            background: #fffde7;
+            border-left: 3px solid #000;
+        }
+        
+        .output::-webkit-scrollbar-thumb {
+            background: #000;
+            border: 3px solid #fffde7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="tabs">
+            <div class="tab active" data-tab="words">WORDS</div>
+            <div class="tab" data-tab="paragraphs">PARAGRAPHS</div>
+        </div>
+        
+        <div id="words-content">
+            <div class="controls">
+                <input type="number" id="word-count" min="1" max="1000" placeholder="Number of words" value="10">
+                <button onclick="generateWords()">GENERATE</button>
+            </div>
+        </div>
+        
+        <div id="paragraphs-content" style="display: none;">
+            <div class="controls">
+                <input type="number" id="paragraph-count" min="1" max="10" placeholder="Number of paragraphs" value="1">
+                <button onclick="generateParagraphs()">GENERATE</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <h1>BRUTAL TEXT GENERATOR</h1>
+        <div class="output-container">
+            <div class="output" id="output"></div>
+            <div class="action-buttons">
+                <button class="copy-button" onclick="copyText()">COPY TEXT</button>
+                <button class="copy-button" onclick="clearText()">CLEAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="copy-notification" id="copy-notification">
+    Text copied to clipboard!
+</div>
+
+<script>
+  const words = [
+    "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", 
+    "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", 
+    "aliqua", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", 
+    "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", 
+    "duis", "aute", "irure", "dolor", "in", "reprehenderit", "voluptate", "velit", "esse", 
+    "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", 
+    "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", 
+    "deserunt", "mollit", "anim", "id", "est", "laborum"
+];
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Hide all content
+            document.getElementById('words-content').style.display = 'none';
+            document.getElementById('paragraphs-content').style.display = 'none';
+            
+            // Show selected content
+            document.getElementById(`${tab.dataset.tab}-content`).style.display = 'block';
+        });
+    });
+
+    function generateWords() {
+        const count = parseInt(document.getElementById('word-count').value) || 10;
+        const outputDiv = document.getElementById('output');
+        
+        const generatedWords = Array.from({length: count}, () => 
+            words[Math.floor(Math.random() * words.length)]
+        );
+        
+        outputDiv.innerHTML = `<p>${generatedWords.join(' ')}</p>`;
+    }
+
+    function generateSentence() {
+        const randomWords = Array.from({length: Math.floor(Math.random() * 8) + 5}, () => 
+            words[Math.floor(Math.random() * words.length)]
+        );
+        return randomWords.join(' ') + '.';
+    }
+
+    function generateParagraph() {
+        const numSentences = Math.floor(Math.random() * 4) + 3;
+        const sentences = Array.from({length: numSentences}, generateSentence);
+        return sentences.join(' ');
+    }
+
+    function generateParagraphs() {
+        const count = parseInt(document.getElementById('paragraph-count').value) || 1;
+        const outputDiv = document.getElementById('output');
+        
+        outputDiv.innerHTML = Array.from({length: count}, () => 
+            `<p>${generateParagraph()}</p>`
+        ).join('');
+    }
+
+    function copyText() {
+        const outputText = document.getElementById('output').innerText;
+        navigator.clipboard.writeText(outputText).then(() => {
+            const notification = document.getElementById('copy-notification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        });
+    }
+
+    function clearText() {
+        document.getElementById('output').innerHTML = '';
+    }
+
+    // Generate initial content
+    generateWords();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Weton & Kecocokan Jawa</title>
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/smX64pY-15n2VbEZIY4voTxcy7sY3EpxlU9G88.png" type="image/png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffde59;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border: 3px solid #000;
+            border-radius: 0;
+            box-shadow: 8px 8px 0 #000;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 3px solid #000;
+            background: #ff69b4;
+            font-size: 16px;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s ease;
+        }
+        .tab:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+        .tab.active {
+            background: #00ff00;
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        h1 {
+            color: #000;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+            text-transform: uppercase;
+            text-decoration: underline;
+            text-decoration-thickness: 3px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            padding: 15px;
+            border: 3px solid #000;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .date-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border: 3px solid #000;
+            background: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+        }
+        select:focus {
+            outline: none;
+            background: #00ff00;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #ff69b4;
+            color: #000;
+            border: 3px solid #000;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #000;
+        }
+        .hasil {
+            margin-top: 20px;
+            padding: 20px;
+            border: 3px solid #000;
+            background-color: #00ff00;
+        }
+        .nilai-weton {
+            font-size: 20px;
+            color: #000;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .detail-weton {
+            font-size: 16px;
+            color: #000;
+            line-height: 1.5;
+        }
+        .percentage-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #fff;
+            border: 3px solid #000;
+            margin-top: 15px;
+            position: relative;
+        }
+        .percentage-fill {
+            height: 100%;
+            background-color: #ff69b4;
+            transition: width 0.5s ease-in-out;
+        }
+        .percentage-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('hitung')">Hitung Weton</button>
+            <button class="tab" onclick="showTab('kecocokan')">Kecocokan</button>
+        </div>
+
+        <div id="hitungTab" class="tab-content active">
+            <h1>Kalkulator Weton</h1>
+            <div class="input-group">
+                <label>Tanggal Lahir:</label>
+                <div class="date-select">
+                    <select id="tanggal"></select>
+                    <select id="bulan"></select>
+                    <select id="tahun"></select>
+                </div>
+            </div>
+            <button onclick="hitungWeton()">Hitung Weton</button>
+            <div id="hasil" class="hasil" style="display: none;"></div>
+        </div>
+
+        <div id="kecocokanTab" class="tab-content">
+            <h1>Kecocokan Weton</h1>
+            <div class="input-group">
+                <label>Tanggal Lahir Anda:</label>
+                <div class="date-select">
+                    <select id="tanggal1"></select>
+                    <select id="bulan1"></select>
+                    <select id="tahun1"></select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Tanggal Lahir Pasangan:</label>
+                <div class="date-select">
+                    <select id="tanggal2"></select>
+                    <select id="bulan2"></select>
+                    <select id="tahun2"></select>
+                </div>
+            </div>
+            <button onclick="hitungKecocokan()">Hitung Kecocokan</button>
+            <div id="hasilKecocokan" class="hasil" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+        const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const namaBulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+        
+        const neptuHari = {
+            "Minggu": 5, "Senin": 4, "Selasa": 3, "Rabu": 7,
+            "Kamis": 8, "Jumat": 6, "Sabtu": 9
+        };
+        const neptuPasaran = {
+            "Legi": 5, "Pahing": 9, "Pon": 7, "Wage": 4, "Kliwon": 8
+        };
+
+        // Inisialisasi dropdown tanggal
+        function initDateDropdowns(tanggalId, bulanId, tahunId) {
+            const tanggalSelect = document.getElementById(tanggalId);
+            const bulanSelect = document.getElementById(bulanId);
+            const tahunSelect = document.getElementById(tahunId);
+
+            // Tambah opsi tanggal
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = i;
+                tanggalSelect.appendChild(option);
+            }
+
+            // Tambah opsi bulan
+            namaBulan.forEach((bulan, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.text = bulan;
+                bulanSelect.appendChild(option);
+            });
+
+            // Tambah opsi tahun (1950-2024)
+            for (let i = 2024; i >= 1950; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = i;
+                tahunSelect.appendChild(option);
+            }
+        }
+
+        // Inisialisasi semua dropdown saat halaman dimuat
+        window.onload = function() {
+            initDateDropdowns('tanggal', 'bulan', 'tahun');
+            initDateDropdowns('tanggal1', 'bulan1', 'tahun1');
+            initDateDropdowns('tanggal2', 'bulan2', 'tahun2');
+        };
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function getWeton(tanggal, bulan, tahun) {
+            const date = new Date(tahun, bulan - 1, tanggal);
+            const hariIndex = date.getDay();
+            const pasaranIndex = Math.floor((date.getTime() / (1000 * 60 * 60 * 24) + 1) % 5);
+            
+            return {
+                hari: hari[hariIndex],
+                pasaran: pasaran[pasaranIndex],
+                neptu: neptuHari[hari[hariIndex]] + neptuPasaran[pasaran[pasaranIndex]]
+            };
+        }
+
+        function hitungWeton() {
+            const tanggal = document.getElementById("tanggal").value;
+            const bulan = document.getElementById("bulan").value;
+            const tahun = document.getElementById("tahun").value;
+
+            const weton = getWeton(tanggal, bulan, tahun);
+            const hasil = document.getElementById("hasil");
+            
+            hasil.style.display = "block";
+            hasil.innerHTML = `
+                <div class="nilai-weton">🎯 ${weton.hari} ${weton.pasaran}</div>
+                <div class="detail-weton">
+                    ⭐ Neptu Hari (${weton.hari}): ${neptuHari[weton.hari]}<br>
+                    ⭐ Neptu Pasaran (${weton.pasaran}): ${neptuPasaran[weton.pasaran]}<br>
+                    ⭐ Total Neptu: ${weton.neptu}
+                </div>
+            `;
+        }
+
+        function hitungKecocokan() {
+            const tanggal1 = document.getElementById("tanggal1").value;
+            const bulan1 = document.getElementById("bulan1").value;
+            const tahun1 = document.getElementById("tahun1").value;
+            
+            const tanggal2 = document.getElementById("tanggal2").value;
+            const bulan2 = document.getElementById("bulan2").value;
+            const tahun2 = document.getElementById("tahun2").value;
+
+            const weton1 = getWeton(tanggal1, bulan1, tahun1);
+            const weton2 = getWeton(tanggal2, bulan2, tahun2);
+            
+            const totalNeptu = weton1.neptu + weton2.neptu;
+            const percentage = Math.min(100, Math.round((totalNeptu / 80) * 100));
+            
+            let interpretasi;
+            if (percentage >= 80) {
+                interpretasi = "💖 Sangat Cocok";
+            } else if (percentage >= 60) {
+                interpretasi = "💫 Cocok";
+            } else if (percentage >= 40) {
+                interpretasi = "⭐ Cukup Cocok";
+            } else {
+                interpretasi = "💫 Kurang Cocok";
+            }
+
+            const hasilKecocokan = document.getElementById("hasilKecocokan");
+            hasilKecocokan.style.display = "block";
+            hasilKecocokan.innerHTML = `
+                <div class="nilai-weton">
+                    🎯 Weton 1: ${weton1.hari} ${weton1.pasaran}<br>
+                    🎯 Weton 2: ${weton2.hari} ${weton2.pasaran}
+                </div>
+                <div class="detail-weton">
+                    ⭐ Total Neptu: ${totalNeptu}<br>
+                    ⭐ Kecocokan: ${interpretasi}
+                </div>
+                <div class="percentage-bar">
+                    <div class="percentage-fill" style="width: ${percentage}%"></div>
+                    <div class="percentage-text">${percentage}%</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

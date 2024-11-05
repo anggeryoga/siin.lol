@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Pinjaman</title>
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/ymYhLy4-5GMIBc8zcfLlYrwUKSIxDTvSa849qo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2ECC71;
+            --primary-dark: #27AE60;
+            --black: #2C3E50;
+            --white: #FFFFFF;
+            --grey-light: #F5F6FA;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #F0F2F5;
+            color: var(--black);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: var(--white);
+            padding: 2.5rem;
+            border: 3px solid var(--black);
+            border-radius: 16px;
+            box-shadow: 8px 8px 0 var(--black);
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--black);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--black);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 3px solid var(--black);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--white);
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0 var(--black);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 4px 4px 0 var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0 var(--black);
+            margin-bottom: 1rem;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--black);
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--black);
+        }
+
+        .info-box {
+            background: var(--grey-light);
+            border: 3px solid var(--black);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 var(--black);
+            font-size: 0.9rem;
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--grey-light);
+            border: 3px solid var(--black);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 var(--black);
+        }
+
+        .result-item {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--white);
+            border: 2px solid var(--black);
+            border-radius: 6px;
+            box-shadow: 3px 3px 0 var(--black);
+        }
+
+        .result-item strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .error {
+            background: #FFE0E0;
+            color: #D63031;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 3px solid #D63031;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 #D63031;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Kalkulator Pinjaman</h2>
+    <div class="error" id="error"></div>
+    
+    <div class="input-group">
+        <label for="loanAmount">Jumlah Pinjaman:</label>
+        <input type="text" id="loanAmount" placeholder="Masukkan jumlah pinjaman" onkeyup="formatCurrency(this)">
+    </div>
+    
+    <div class="input-group">
+        <label for="interestType">Jenis Suku Bunga:</label>
+        <select id="interestType" onchange="showInterestInfo()">
+            <option value="flat">Bunga Flat</option>
+            <option value="effective">Bunga Efektif</option>
+            <option value="annuity">Bunga Anuitas</option>
+            <option value="sliding">Bunga Sliding</option>
+        </select>
+    </div>
+
+    <div class="info-box" id="interestInfo"></div>
+    
+    <div class="input-group">
+        <label for="interestRate">Suku Bunga per Tahun (%):</label>
+        <input type="number" id="interestRate" placeholder="Masukkan suku bunga" step="0.01">
+    </div>
+    
+    <div class="input-group">
+        <label for="loanTerm">Jangka Waktu (Tahun):</label>
+        <input type="number" id="loanTerm" placeholder="Masukkan jangka waktu" step="0.5">
+    </div>
+    
+    <button onclick="calculateLoan()">Hitung Pinjaman</button>
+    
+    <div class="results" id="results">
+        <div class="result-item">
+            <strong>Pembayaran Bulanan:</strong> <span id="monthlyPayment">-</span>
+        </div>
+        <div class="result-item">
+            <strong>Total Pembayaran:</strong> <span id="totalPayment">-</span>
+        </div>
+        <div class="result-item">
+            <strong>Total Bunga:</strong> <span id="totalInterest">-</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function formatCurrency(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value !== '') {
+        value = parseInt(value).toLocaleString('id-ID');
+        input.value = `Rp ${value}`;
+    }
+}
+
+function parseCurrency(value) {
+    return parseInt(value.replace(/\D/g, ''));
+}
+
+function formatIDR(number) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(number);
+}
+
+function showInterestInfo() {
+    const interestType = document.getElementById("interestType").value;
+    const infoBox = document.getElementById("interestInfo");
+    
+    const infoTexts = {
+        flat: "Bunga Flat: Perhitungan bunga berdasarkan pokok pinjaman awal yang tetap. Angsuran tetap setiap bulan. Cocok untuk kredit konsumtif jangka pendek.",
+        effective: "Bunga Efektif: Perhitungan bunga berdasarkan sisa pokok pinjaman. Angsuran menurun setiap bulan. Biasa digunakan untuk KPR atau kredit investasi.",
+        annuity: "Bunga Anuitas: Perhitungan dengan total angsuran tetap, namun komposisi bunga dan pokok berubah. Umum digunakan untuk KPR.",
+        sliding: "Bunga Sliding: Perhitungan dengan pokok angsuran tetap, bunga menurun. Total angsuran menurun setiap bulan."
+    };
+    
+    infoBox.textContent = infoTexts[interestType];
+}
+
+function calculateLoan() {
+    const errorElement = document.getElementById("error");
+    errorElement.style.display = "none";
+    
+    const loanAmount = parseCurrency(document.getElementById("loanAmount").value);
+    const interestType = document.getElementById("interestType").value;
+    const interestRate = parseFloat(document.getElementById("interestRate").value);
+    const loanTerm = parseFloat(document.getElementById("loanTerm").value);
+    
+    if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm)) {
+        errorElement.textContent = "Mohon isi semua field dengan benar";
+        errorElement.style.display = "block";
+        return;
+    }
+    
+    const monthlyRate = interestRate / 100 / 12;
+    const totalMonths = Math.floor(loanTerm * 12);
+    let monthlyPayment, totalPayment, totalInterest;
+    
+    switch(interestType) {
+        case 'flat':
+            monthlyPayment = (loanAmount + (loanAmount * interestRate/100 * loanTerm)) / totalMonths;
+            totalPayment = monthlyPayment * totalMonths;
+            totalInterest = totalPayment - loanAmount;
+            break;
+            
+        case 'effective':
+            monthlyPayment = loanAmount / totalMonths;
+            totalPayment = 0;
+            let remainingBalance = loanAmount;
+            for(let i = 0; i < totalMonths; i++) {
+                const interestPayment = remainingBalance * monthlyRate;
+                totalPayment += (monthlyPayment + interestPayment);
+                remainingBalance -= monthlyPayment;
+            }
+            totalInterest = totalPayment - loanAmount;
+            monthlyPayment = totalPayment / totalMonths;
+            break;
+            
+        case 'annuity':
+            monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
+                            (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            totalPayment = monthlyPayment * totalMonths;
+            totalInterest = totalPayment - loanAmount;
+            break;
+            
+        case 'sliding':
+            const principalPayment = loanAmount / totalMonths;
+            let totalSliding = 0;
+            remainingBalance = loanAmount;
+            for(let i = 0; i < totalMonths; i++) {
+                const interestPayment = remainingBalance * monthlyRate;
+                totalSliding += (principalPayment + interestPayment);
+                remainingBalance -= principalPayment;
+            }
+            monthlyPayment = totalSliding / totalMonths;
+            totalPayment = totalSliding;
+            totalInterest = totalPayment - loanAmount;
+            break;
+    }
+    
+    document.getElementById("monthlyPayment").textContent = formatIDR(monthlyPayment);
+    document.getElementById("totalPayment").textContent = formatIDR(totalPayment);
+    document.getElementById("totalInterest").textContent = formatIDR(totalInterest);
+}
+
+window.onload = showInterestInfo;
+</script>
+</body>
+</html>

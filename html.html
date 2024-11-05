@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Code Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-['Inter']">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 space-y-4 md:space-y-0">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Code Editor</h1>
+                <p class="text-slate-500 mt-1">Edit dan preview kode secara langsung</p>
+            </div>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Live Preview</span>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+            <!-- Editor Section -->
+            <div class="space-y-6">
+                <!-- Tab Buttons -->
+                <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+                    <button onclick="switchTab('html')" id="htmlTab" 
+                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm bg-blue-500 text-white transition-all">
+                        HTML
+                    </button>
+                    <button onclick="switchTab('css')" id="cssTab" 
+                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 transition-all">
+                        CSS
+                    </button>
+                    <button onclick="switchTab('js')" id="jsTab" 
+                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 transition-all">
+                        JavaScript
+                    </button>
+                </div>
+
+                <!-- Editor Areas -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div id="htmlEditor" class="block">
+                        <textarea id="htmlCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false"><!-- Tulis kode HTML disini -->
+<div class="max-w-md mx-auto p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-gray-900">
+        Hello Tailwind! 👋
+    </h1>
+    
+    <p class="text-gray-600 leading-relaxed">
+        Ini adalah contoh halaman menggunakan Tailwind CSS.
+        Edit kode dan lihat perubahannya secara langsung!
+    </p>
+    
+    <button id="myButton" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg shadow-sm transition-all">
+        Klik Saya
+    </button>
+</div></textarea>
+                    </div>
+
+                    <div id="cssEditor" class="hidden">
+                        <textarea id="cssCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false">/* Tulis kode CSS tambahan disini */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-bounce-custom {
+    animation: bounce 0.5s;
+}</textarea>
+                    </div>
+
+                    <div id="jsEditor" class="hidden">
+                        <textarea id="jsCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false">// Tulis kode JavaScript disini
+const button = document.getElementById('myButton');
+
+button.addEventListener('click', function() {
+    this.classList.add('animate-bounce-custom');
+    this.textContent = 'Wow! 🎉';
+    
+    setTimeout(() => {
+        this.classList.remove('animate-bounce-custom');
+        this.textContent = 'Klik Saya';
+    }, 1000);
+});</textarea>
+                    </div>
+                </div>
+
+                <!-- Run Button -->
+                <button onclick="updatePreview()" 
+                        class="w-full px-6 py-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2">
+                    <span>Jalankan Kode</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-[600px]">
+                <div class="px-4 py-3 border-b border-slate-200 flex items-center space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span class="ml-2 text-sm font-medium text-slate-600">Preview</span>
+                </div>
+                <iframe id="preview" class="w-full h-[550px] bg-white"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const tabs = {
+                html: document.getElementById('htmlTab'),
+                css: document.getElementById('cssTab'),
+                js: document.getElementById('jsTab')
+            };
+            
+            // Hide all editors
+            document.getElementById('htmlEditor').classList.add('hidden');
+            document.getElementById('cssEditor').classList.add('hidden');
+            document.getElementById('jsEditor').classList.add('hidden');
+            
+            // Reset all tab styles
+            Object.values(tabs).forEach(t => {
+                t.classList.remove('bg-blue-500', 'text-white');
+                t.classList.add('text-slate-600');
+            });
+            
+            // Activate selected tab
+            tabs[tab].classList.remove('text-slate-600');
+            tabs[tab].classList.add('bg-blue-500', 'text-white');
+            
+            // Show selected editor
+            document.getElementById(`${tab}Editor`).classList.remove('hidden');
+        }
+
+        function updatePreview() {
+            const html = document.getElementById('htmlCode').value;
+            const css = document.getElementById('cssCode').value;
+            const js = document.getElementById('jsCode').value;
+
+            const preview = document.getElementById('preview');
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                        <style>
+                            body { font-family: 'Inter', sans-serif; }
+                            ${css}
+                        </style>
+                    </head>
+                    <body>
+                        ${html}
+                        <script>${js}<\/script>
+                    </body>
+                </html>
+            `;
+
+            preview.srcdoc = content;
+        }
+
+        // Initial preview
+        updatePreview();
+    </script>
+</body>
+</html>

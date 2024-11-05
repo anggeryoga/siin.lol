@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandwidth & File Size Calculator</title>
+    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/q6soqmd-swiaSkEmslVQTj8wrVc4ViDegP4wWZ.png" type="image/png">
+    <style>
+        /* Reset dan variabel */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Mono', monospace;
+        }
+
+        :root {
+            --primary: #ff2e2e;
+            --secondary: #2ecc71;
+            --accent: #f1c40f;
+            --dark: #222;
+            --light: #ffffff;
+            --shadow-offset: 4px;
+        }
+
+        /* Font */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+        body {
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                #f0f0f0,
+                #f0f0f0 10px,
+                #e6e6e6 10px,
+                #e6e6e6 20px
+            );
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--light);
+            border: 3px solid var(--dark);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+            padding: 20px;
+            transform: rotate(-1deg);
+        }
+
+        .header {
+            background: var(--primary);
+            color: var(--light);
+            padding: 20px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 3px solid var(--dark);
+            transform: rotate(1deg);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 var(--dark);
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            background: var(--light);
+            border: 3px solid var(--dark);
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            min-width: 200px;
+            text-transform: uppercase;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+        }
+
+        .tab:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--dark);
+        }
+
+        .tab.active {
+            background: var(--secondary);
+            color: var(--light);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--dark);
+        }
+
+        .calculator-section {
+            background: var(--light);
+            border: 3px solid var(--dark);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+        }
+
+        .calculator-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--dark);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border: 3px solid var(--dark);
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+        }
+
+        select {
+            padding: 15px;
+            border: 3px solid var(--dark);
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: var(--light);
+            min-width: 150px;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+        }
+
+        button {
+            padding: 15px 30px;
+            background: var(--accent);
+            border: 3px solid var(--dark);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--dark);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border: 3px solid var(--dark);
+            background: #f8f9fa;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+            transform: rotate(1deg);
+        }
+
+        .result-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-bottom: 3px solid var(--dark);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .download-time {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            padding: 20px;
+            border: 3px solid var(--dark);
+            background: var(--light);
+            margin-top: 20px;
+            transform: rotate(-1deg);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input[type="number"],
+            select,
+            button {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .tab {
+                min-width: unset;
+                width: calc(50% - 5px);
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .tab {
+                width: 100%;
+            }
+
+            .calculator-section h2 {
+                font-size: 1.4rem;
+            }
+
+            .result-item {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Digital Calculator</h1>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showCalculator('size')">Size</button>
+        <button class="tab" onclick="showCalculator('bandwidth')">Bandwidth</button>
+        <button class="tab" onclick="showCalculator('transfer')">Transfer Time</button>
+    </div>
+
+    <div id="sizeCalculator" class="calculator-section">
+        <h2>File Size Calculator</h2>
+        <div class="input-group">
+            <input type="number" id="sizeInput" placeholder="Enter value">
+            <select id="sizeUnit">
+                <option value="B">Bytes (B)</option>
+                <option value="KB">Kilobytes (KB)</option>
+                <option value="MB">Megabytes (MB)</option>
+                <option value="GB">Gigabytes (GB)</option>
+                <option value="TB">Terabytes (TB)</option>
+            </select>
+            <button onclick="convertSize()">Convert</button>
+        </div>
+        <div class="result" id="sizeResult"></div>
+    </div>
+
+    <div id="bandwidthCalculator" class="calculator-section" style="display: none;">
+        <h2>Bandwidth Calculator</h2>
+        <div class="input-group">
+            <input type="number" id="bandwidthInput" placeholder="Enter value">
+            <select id="bandwidthUnit">
+                <option value="bps">bits per second (bps)</option>
+                <option value="Kbps">Kilobits per second (Kbps)</option>
+                <option value="Mbps">Megabits per second (Mbps)</option>
+                <option value="Gbps">Gigabits per second (Gbps)</option>
+                <option value="Tbps">Terabits per second (Tbps)</option>
+            </select>
+            <button onclick="convertBandwidth()">Convert</button>
+        </div>
+        <div class="result" id="bandwidthResult"></div>
+    </div>
+
+    <div id="transferCalculator" class="calculator-section" style="display: none;">
+        <h2>Transfer Time Calculator</h2>
+        <div class="input-group">
+            <input type="number" id="fileSize" placeholder="File size">
+            <select id="fileSizeUnit">
+                <option value="MB">MB</option>
+                <option value="GB">GB</option>
+                <option value="TB">TB</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <input type="number" id="speed" placeholder="Speed">
+            <select id="speedUnit">
+                <option value="Mbps">Mbps</option>
+                <option value="Gbps">Gbps</option>
+            </select>
+            <button onclick="calculateTransferTime()">Calculate</button>
+        </div>
+        <div class="result" id="transferResult"></div>
+    </div>
+</div>
+
+<script>
+function showCalculator(type) {
+    document.querySelectorAll('.calculator-section').forEach(calc => calc.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    
+    const activeCalc = type + 'Calculator';
+    document.getElementById(activeCalc).style.display = 'block';
+    event.target.classList.add('active');
+}
+
+function convertSize() {
+    const input = parseFloat(document.getElementById("sizeInput").value);
+    const unit = document.getElementById("sizeUnit").value;
+    if (isNaN(input) || input < 0) {
+        document.getElementById("sizeResult").innerHTML = "Please enter a valid value.";
+        return;
+    }
+
+    let bytes;
+    switch(unit) {
+        case 'B': bytes = input; break;
+        case 'KB': bytes = input * 1024; break;
+        case 'MB': bytes = input * 1024 ** 2; break;
+        case 'GB': bytes = input * 1024 ** 3; break;
+        case 'TB': bytes = input * 1024 ** 4; break;
+    }
+
+    const results = {
+        'B': bytes,
+        'KB': bytes / 1024,
+        'MB': bytes / (1024 ** 2),
+        'GB': bytes / (1024 ** 3),
+        'TB': bytes / (1024 ** 4)
+    };
+
+    let html = '';
+    for (const [unit, value] of Object.entries(results)) {
+        html += `<div class="result-item">${value.toFixed(2)} ${unit}</div>`;
+    }
+    document.getElementById("sizeResult").innerHTML = html;
+}
+
+function convertBandwidth() {
+    const input = parseFloat(document.getElementById("bandwidthInput").value);
+    const unit = document.getElementById("bandwidthUnit").value;
+    if (isNaN(input) || input < 0) {
+        document.getElementById("bandwidthResult").innerHTML = "Please enter a valid value.";
+        return;
+    }
+
+    let bps;
+    switch(unit) {
+        case 'bps': bps = input; break;
+        case 'Kbps': bps = input * 1000; break;
+        case 'Mbps': bps = input * 1000 ** 2; break;
+        case 'Gbps': bps = input * 1000 ** 3; break;
+        case 'Tbps': bps = input * 1000 ** 4; break;
+    }
+
+    const results = {
+        'bps': bps,
+        'Kbps': bps / 1000,
+        'Mbps': bps / (1000 ** 2),
+        'Gbps': bps / (1000 ** 3),
+        'Tbps': bps / (1000 ** 4)
+    };
+
+    let html = '';
+    for (const [unit, value] of Object.entries(results)) {
+        html += `<div class="result-item">${value.toFixed(2)} ${unit}</div>`;
+    }
+    document.getElementById("bandwidthResult").innerHTML = html;
+}
+
+function calculateTransferTime() {
+    const fileSize = parseFloat(document.getElementById("fileSize").value);
+    const fileSizeUnit = document.getElementById("fileSizeUnit").value;
+    const speed = parseFloat(document.getElementById("speed").value);
+    const speedUnit = document.getElementById("speedUnit").value;
+
+    if (isNaN(fileSize) || isNaN(speed) || fileSize < 0 || speed <= 0) {
+        document.getElementById("transferResult").innerHTML = "Please enter valid values.";
+        return;
+    }
+
+    let fileSizeBits;
+    switch(fileSizeUnit) {
+        case 'MB': fileSizeBits = fileSize * 8 * (1000 ** 2); break;
+        case 'GB': fileSizeBits = fileSize * 8 * (1000 ** 3); break;
+        case 'TB': fileSizeBits = fileSize * 8 * (1000 ** 4); break;
+    }
+
+    let speedBps;
+    switch(speedUnit) {
+        case 'Mbps': speedBps = speed * (1000 ** 2); break;
+        case 'Gbps': speedBps = speed * (1000 ** 3); break;
+    }
+
+    const seconds = fileSizeBits / speedBps;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.round(seconds % 60);
+
+  let timeString = '';
+    if (hours > 0) timeString += `${hours} hours `;
+    if (minutes > 0) timeString += `${minutes} minutes `;
+    if (remainingSeconds > 0 || timeString === '') timeString += `${remainingSeconds} seconds`;
+
+    document.getElementById("transferResult").innerHTML = `
+        <div class="download-time">
+            <div>Estimated Transfer Time:</div>
+            <div>${timeString}</div>
+            <div class="details">
+                <div class="result-item">File Size: ${fileSize} ${fileSizeUnit}</div>
+                <div class="result-item">Speed: ${speed} ${speedUnit}</div>
+            </div>
+        </div>
+    `;
+}
+
+// Tambahan fungsi untuk animasi dan interaksi
+document.addEventListener('DOMContentLoaded', function() {
+    // Animasi untuk input fields
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.transform = 'translate(-2px, -2px)';
+            this.style.boxShadow = '6px 6px 0 var(--dark)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.transform = 'none';
+            this.style.boxShadow = 'var(--shadow-offset) var(--shadow-offset) 0 var(--dark)';
+        });
+    });
+
+    // Animasi untuk select fields
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.addEventListener('focus', function() {
+            this.style.transform = 'translate(-2px, -2px)';
+            this.style.boxShadow = '6px 6px 0 var(--dark)';
+        });
+        
+        select.addEventListener('blur', function() {
+            this.style.transform = 'none';
+            this.style.boxShadow = 'var(--shadow-offset) var(--shadow-offset) 0 var(--dark)';
+        });
+    });
+
+    // Tambahan validasi input
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+                this.style.borderColor = 'var(--primary)';
+                setTimeout(() => {
+                    this.style.borderColor = 'var(--dark)';
+                }, 500);
+            }
+        });
+    });
+
+    // Efek hover untuk hasil
+    const results = document.querySelectorAll('.result');
+    results.forEach(result => {
+        result.addEventListener('mouseover', function() {
+            this.style.transform = 'rotate(-1deg)';
+        });
+        
+        result.addEventListener('mouseout', function() {
+            this.style.transform = 'rotate(1deg)';
+        });
+    });
+});
+
+// Fungsi untuk copy hasil ke clipboard
+function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    // Tampilkan notifikasi
+    const notification = document.createElement('div');
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.background = 'var(--secondary)';
+    notification.style.color = 'white';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '5px';
+    notification.style.border = '3px solid var(--dark)';
+    notification.style.boxShadow = 'var(--shadow-offset) var(--shadow-offset) 0 var(--dark)';
+    notification.textContent = 'Copied to clipboard!';
+    
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 2000);
+}
+
+// Tambahan fungsi untuk reset form
+function resetCalculator(type) {
+    const calculator = document.getElementById(type + 'Calculator');
+    const inputs = calculator.querySelectorAll('input');
+    const selects = calculator.querySelectorAll('select');
+    const result = calculator.querySelector('.result');
+
+    inputs.forEach(input => input.value = '');
+    selects.forEach(select => select.selectedIndex = 0);
+    if (result) result.innerHTML = '';
+}
+
+// Tambahan event listener untuk keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Enter key untuk calculate
+    if (e.key === 'Enter') {
+        const activeCalculator = document.querySelector('.calculator-section:not([style*="display: none"])');
+        if (activeCalculator) {
+            const calculateButton = activeCalculator.querySelector('button');
+            if (calculateButton) calculateButton.click();
+        }
+    }
+
+    // Escape key untuk reset
+    if (e.key === 'Escape') {
+        const activeCalculator = document.querySelector('.calculator-section:not([style*="display: none"])');
+        if (activeCalculator) {
+            const id = activeCalculator.id;
+            resetCalculator(id.replace('Calculator', ''));
+        }
+    }
+});
+</script>
+</body>
+</html>

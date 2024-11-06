@@ -395,7 +395,7 @@ body {
                     }).addTo(map);
 
                     const distance = (data.routes[0].distance / 1000).toFixed(2);
-                    const price = Math.ceil(distance * 4000);
+                    const price = Math.ceil(distance * 1500);
 
                     document.getElementById('distance').textContent = distance;
                     document.getElementById('price').textContent = price.toLocaleString('id-ID');
@@ -410,15 +410,16 @@ body {
         }
 
         // Fungsi untuk menghubungi admin
-        function hubungiAdmin() {
-            const price = document.getElementById('price').textContent;
-            const pickupCoords = document.getElementById('pickup-coords').textContent;
-            const destinationName = document.getElementById('destination-coords').textContent;
+function hubungiAdmin() {
+    const price = document.getElementById('price').textContent;
+    const pickupCoords = document.getElementById('pickup-coords').textContent.replace(/\s+/g, '');
+    const destinationName = document.getElementById('destination-coords').textContent;
 
-            const message = `kak saya mau anjemm dari ${pickupCoords} ke ${destinationName} dengan harga Rp ${price}`;
+    // Format pesan dengan link Google Maps di pickupCoords tanpa spasi setelah koma
+    const message = `kak saya mau anjem (antar jemput) dari https://maps.google.com/?q=${pickupCoords} ke ${destinationName} dengan harga Rp ${price}`;
 
-            window.open(`https://wa.me/6285155145788?text=${encodeURIComponent(message)}`);
-        }
+    window.open(`https://wa.me/6285155145788?text=${encodeURIComponent(message)}`);
+}
     </script>
 </body>
 </html>

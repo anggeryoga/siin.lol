@@ -3,118 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailwind Code Editor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Neo-brutal Code Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4C3AFF;
+            --shadow-offset: 4px;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #FAFAFA;
+        }
+
+        .neo-card {
+            background: white;
+            border: 2px solid #000;
+            border-radius: 8px;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+            transition: all 0.2s ease;
+        }
+
+        .neo-btn {
+            background: var(--primary-color);
+            border: 2px solid #000;
+            border-radius: 8px;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+            color: white;
+            transition: all 0.2s ease;
+            position: relative;
+            top: 0;
+            left: 0;
+        }
+
+        .neo-btn:hover {
+            top: -2px;
+            left: -2px;
+            box-shadow: 6px 6px 0 #000;
+            color: white;
+        }
+
+        .neo-btn:active {
+            top: var(--shadow-offset);
+            left: var(--shadow-offset);
+            box-shadow: 0 0 0 #000;
+        }
+
+        .neo-btn-light {
+            background: white;
+            color: #000;
+        }
+
+        .neo-btn-light:hover {
+            color: #000;
+        }
+
+        .editor-tabs button {
+            border: 2px solid #000;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+        .preview-dots {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+
+        .editor-area {
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+            height: 400px;
+            border: none;
+        }
+
+        .device-selector {
+            border: 2px solid #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .device-selector button {
+            border: none;
+            border-right: 2px solid #000;
+            background: white;
+            padding: 8px 16px;
+            transition: all 0.2s;
+        }
+
+        .device-selector button:last-child {
+            border-right: none;
+        }
+
+        .device-selector button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .preview-frame {
+            transition: all 0.3s ease;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 992px) {
+            .editor-area {
+                height: 460px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-['Inter']">
-    <div class="max-w-7xl mx-auto">
+<body class="py-4">
+    <div class="container">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 space-y-4 md:space-y-0">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Code Editor</h1>
-                <p class="text-slate-500 mt-1">Edit dan preview kode secara langsung</p>
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold text-dark mb-2">Neo-brutal Code Editor</h1>
+                <p class="text-muted mb-0">Edit, preview, and test responsiveness in real-time</p>
             </div>
-            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Live Preview</span>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="neo-btn px-3 py-2 d-inline-block">Live Preview</span>
+            </div>
         </div>
 
         <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        <div class="row g-4">
             <!-- Editor Section -->
-            <div class="space-y-6">
+            <div class="col-lg-6">
                 <!-- Tab Buttons -->
-                <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
-                    <button onclick="switchTab('html')" id="htmlTab" 
-                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm bg-blue-500 text-white transition-all">
-                        HTML
-                    </button>
-                    <button onclick="switchTab('css')" id="cssTab" 
-                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 transition-all">
-                        CSS
-                    </button>
-                    <button onclick="switchTab('js')" id="jsTab" 
-                            class="flex-1 px-4 py-2.5 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 transition-all">
-                        JavaScript
-                    </button>
+                <div class="neo-card mb-3">
+                    <div class="card-body p-2">
+                        <div class="d-flex editor-tabs">
+                            <button onclick="switchTab('html')" id="htmlTab" 
+                                    class="neo-btn flex-grow-1 me-2">HTML</button>
+                            <button onclick="switchTab('css')" id="cssTab" 
+                                    class="neo-btn neo-btn-light flex-grow-1 me-2">CSS</button>
+                            <button onclick="switchTab('js')" id="jsTab" 
+                                    class="neo-btn neo-btn-light flex-grow-1">JavaScript</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Editor Areas -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div id="htmlEditor" class="block">
-                        <textarea id="htmlCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false"><!-- Tulis kode HTML disini -->
-<div class="max-w-md mx-auto p-8 space-y-6">
-    <h1 class="text-3xl font-bold text-gray-900">
-        Hello Tailwind! 👋
-    </h1>
-    
-    <p class="text-gray-600 leading-relaxed">
-        Ini adalah contoh halaman menggunakan Tailwind CSS.
-        Edit kode dan lihat perubahannya secara langsung!
-    </p>
-    
-    <button id="myButton" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg shadow-sm transition-all">
-        Klik Saya
-    </button>
-</div></textarea>
-                    </div>
+                <div class="neo-card mb-3">
+                    <div class="card-body p-0">
+                        <div id="htmlEditor" class="show">
+                            <textarea id="htmlCode" class="form-control editor-area p-3"><!-- Write HTML code here -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                Neo-brutal Design! 👋
+            </h1>
+            
+            <p class="lead mb-4">
+                This is a responsive page using Bootstrap.
+                Try different viewport sizes to test responsiveness!
+            </p>
+            
+            <button id="myButton" class="btn btn-primary btn-lg px-4 neo-btn">
+                Click Me
+            </button>
 
-                    <div id="cssEditor" class="hidden">
-                        <textarea id="cssCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false">/* Tulis kode CSS tambahan disini */
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+            <div class="row mt-5">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="neo-card p-4">
+                        <h3>Card 1</h3>
+                        <p>Responsive test</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="neo-card p-4">
+                        <h3>Card 2</h3>
+                        <p>Responsive test</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="neo-card p-4">
+                        <h3>Card 3</h3>
+                        <p>Responsive test</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></textarea>
+                        </div>
+
+                        <div id="cssEditor" class="d-none">
+                            <textarea id="cssCode" class="form-control editor-area p-3">/* Write additional CSS here */
+:root {
+    --primary-color: #4C3AFF;
+    --shadow-offset: 4px;
 }
 
-.animate-bounce-custom {
+.neo-card {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 8px;
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+    transition: all 0.2s ease;
+}
+
+.neo-btn {
+    background: var(--primary-color);
+    border: 2px solid #000;
+    border-radius: 8px;
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
+    color: white;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.neo-btn:hover {
+    top: -2px;
+    left: -2px;
+    box-shadow: 6px 6px 0 #000;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.animate-bounce {
     animation: bounce 0.5s;
 }</textarea>
-                    </div>
+                        </div>
 
-                    <div id="jsEditor" class="hidden">
-                        <textarea id="jsCode" class="w-full h-[460px] p-4 text-sm font-mono focus:outline-none" spellcheck="false">// Tulis kode JavaScript disini
+                        <div id="jsEditor" class="d-none">
+                            <textarea id="jsCode" class="form-control editor-area p-3">// Write JavaScript code here
 const button = document.getElementById('myButton');
 
 button.addEventListener('click', function() {
-    this.classList.add('animate-bounce-custom');
-    this.textContent = 'Wow! 🎉';
+    this.classList.add('animate-bounce');
+    this.textContent = 'Awesome! 🎉';
     
     setTimeout(() => {
-        this.classList.remove('animate-bounce-custom');
-        this.textContent = 'Klik Saya';
+        this.classList.remove('animate-bounce');
+        this.textContent = 'Click Me';
     }, 1000);
 });</textarea>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Run Button -->
                 <button onclick="updatePreview()" 
-                        class="w-full px-6 py-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2">
-                    <span>Jalankan Kode</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        class="neo-btn w-100 py-3 fw-semibold">
+                    <span>Run Code</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle ms-2" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
                     </svg>
                 </button>
             </div>
 
             <!-- Preview Section -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden h-[600px]">
-                <div class="px-4 py-3 border-b border-slate-200 flex items-center space-x-2">
-                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                    <span class="ml-2 text-sm font-medium text-slate-600">Preview</span>
+            <div class="col-lg-6">
+                <div class="neo-card h-100">
+                    <div class="card-header bg-white border-bottom p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="preview-dots bg-danger me-2"></div>
+                                <div class="preview-dots bg-warning me-2"></div>
+                                <div class="preview-dots bg-success me-2"></div>
+                                <span class="ms-2 fw-medium">Preview</span>
+                            </div>
+                            <div class="device-selector d-flex">
+                                <button onclick="setPreviewWidth('360px')" class="active">
+                                    📱 Mobile
+                                </button>
+                                <button onclick="setPreviewWidth('768px')">
+                                    📱 Tablet
+                                </button>
+                                <button onclick="setPreviewWidth('100%')">
+                                    💻 Desktop
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <iframe id="preview" class="preview-frame border-0 w-100" style="height: 550px;"></iframe>
+                    </div>
                 </div>
-                <iframe id="preview" class="w-full h-[550px] bg-white"></iframe>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
         function switchTab(tab) {
+            const editors = {
+                html: document.getElementById('htmlEditor'),
+                css: document.getElementById('cssEditor'),
+                js: document.getElementById('jsEditor')
+            };
+            
             const tabs = {
                 html: document.getElementById('htmlTab'),
                 css: document.getElementById('cssTab'),
@@ -122,22 +311,32 @@ button.addEventListener('click', function() {
             };
             
             // Hide all editors
-            document.getElementById('htmlEditor').classList.add('hidden');
-            document.getElementById('cssEditor').classList.add('hidden');
-            document.getElementById('jsEditor').classList.add('hidden');
+            Object.values(editors).forEach(editor => {
+                editor.classList.add('d-none');
+                editor.classList.remove('show');
+            });
             
             // Reset all tab styles
             Object.values(tabs).forEach(t => {
-                t.classList.remove('bg-blue-500', 'text-white');
-                t.classList.add('text-slate-600');
+                t.classList.remove('neo-btn');
+                t.classList.add('neo-btn-light');
             });
             
-            // Activate selected tab
-            tabs[tab].classList.remove('text-slate-600');
-            tabs[tab].classList.add('bg-blue-500', 'text-white');
+            // Show selected editor and activate tab
+            editors[tab].classList.remove('d-none');
+            editors[tab].classList.add('show');
+            tabs[tab].classList.remove('neo-btn-light');
+            tabs[tab].classList.add('neo-btn');
+        }
+
+        function setPreviewWidth(width) {
+            const preview = document.getElementById('preview');
+            const buttons = document.querySelectorAll('.device-selector button');
             
-            // Show selected editor
-            document.getElementById(`${tab}Editor`).classList.remove('hidden');
+            preview.style.width = width;
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
         function updatePreview() {
@@ -152,15 +351,19 @@ button.addEventListener('click', function() {
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <script src="https://cdn.tailwindcss.com"><\/script>
-                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+                        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
                         <style>
-                            body { font-family: 'Inter', sans-serif; }
+                            body { 
+                                font-family: 'Space Grotesk', sans-serif;
+                                background-color: #FAFAFA;
+                            }
                             ${css}
                         </style>
                     </head>
                     <body>
                         ${html}
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"><\/script>
                         <script>${js}<\/script>
                     </body>
                 </html>

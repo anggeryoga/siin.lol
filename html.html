@@ -103,6 +103,26 @@
             color: white;
         }
 
+        .preview-container {
+            width: 100%;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .preview-mobile {
+            width: 360px !important;
+            margin: 0 auto;
+        }
+
+        .preview-tablet {
+            width: 768px !important;
+            margin: 0 auto;
+        }
+
+        .preview-desktop {
+            width: 100% !important;
+        }
+
         .preview-frame {
             transition: all 0.3s ease;
             margin: 0 auto;
@@ -124,7 +144,7 @@
                 <p class="text-muted mb-0">Edit, preview, and test responsiveness in real-time</p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <span class="neo-btn px-3 py-2 d-inline-block">Live Preview</span>
+                <button onclick="openLivePreview()" class="neo-btn px-3 py-2">Live Preview</button>
             </div>
         </div>
 
@@ -275,20 +295,22 @@ button.addEventListener('click', function() {
                                 <span class="ms-2 fw-medium">Preview</span>
                             </div>
                             <div class="device-selector d-flex">
-                                <button onclick="setPreviewWidth('360px')" class="active">
+                                <button onclick="setPreviewWidth('mobile')" class="active">
                                     📱 Mobile
                                 </button>
-                                <button onclick="setPreviewWidth('768px')">
+                                <button onclick="setPreviewWidth('tablet')">
                                     📱 Tablet
                                 </button>
-                                <button onclick="setPreviewWidth('100%')">
+                                <button onclick="setPreviewWidth('desktop')">
                                     💻 Desktop
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="card-body p-3">
-                        <iframe id="preview" class="preview-frame border-0 w-100" style="height: 550px;"></iframe>
+                        <div class="preview-container">
+                            <iframe id="preview" class="preview-frame border-0 w-100" style="height: 550px;"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -329,23 +351,27 @@ button.addEventListener('click', function() {
             tabs[tab].classList.add('neo-btn');
         }
 
-        function setPreviewWidth(width) {
-            const preview = document.getElementById('preview');
+        function setPreviewWidth(device) {
+            const previewContainer = document.querySelector('.preview-container');
             const buttons = document.querySelectorAll('.device-selector button');
             
-            preview.style.width = width;
+            // Remove all previous preview classes
+            previewContainer.classList.remove('preview-mobile', 'preview-tablet', 'preview-desktop');
             
+            // Add class according to device
+            previewContainer.classList.add(`preview-${device}`);
+            
+            // Update active button status
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
         }
 
-        function updatePreview() {
+        function getPreviewContent() {
             const html = document.getElementById('htmlCode').value;
             const css = document.getElementById('cssCode').value;
             const js = document.getElementById('jsCode').value;
 
-            const preview = document.getElementById('preview');
-            const content = `
+            return `
                 <!DOCTYPE html>
                 <html>
                     <head>
@@ -368,11 +394,20 @@ button.addEventListener('click', function() {
                     </body>
                 </html>
             `;
-
-            preview.srcdoc = content;
         }
 
-        // Initial preview
+        function updatePreview() {
+            const preview = document.getElementById('preview');
+            preview.srcdoc = getPreviewContent();
+        }
+
+        function openLivePreview() {
+            const newWindow = window.open('about:blank', '_blank');
+            newWindow.document.write(getPreviewContent());
+            newWindow.document.close();
+        }
+
+        // Initial preview when page loads
         updatePreview();
     </script>
 </body>

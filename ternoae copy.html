@@ -8,226 +8,185 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/uVc20Vk-BQ4b5AAr5Hd7u1X4B1CYexHjlrzLLF.png" type="image/png">
-    <meta name="title" content="Terno AE - Jasa Layanan Pengiriman Jepara - Kudus">
-    <meta name="google-site-verification" content="BLNWmAOiNZVAHa38OOIJVr0JfYU-bn06btAaMXBmES8" />
-    <meta name="description" content="Layanan antar jemput terpercaya untuk area Jepara - Kudus. Harga terjangkau dengan diskon 20% dan pelayanan cepat.">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
-        body {
-            background: #f0f2f5;
-        }
+body {
+    background: #f0f2f5;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0;
-        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+}
 
-        .app-container {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
+.app-container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
 
-        .header {
-            background: #FFD60A;
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 2px solid #000;
-        }
+.header {
+    background: #FFD60A;
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 2px solid #000;
+}
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
 
-        #map {
-            height: 400px;
-            border-bottom: 2px solid #000;
-        }
+#map {
+    height: 400px;
+    border-bottom: 2px solid #000;
+}
 
-        .controls {
-            padding: 1.5rem;
-        }
+.controls {
+    padding: 1.5rem;
+}
 
-        .location-btn {
-            background: #00f5d4;
-            border: 2px solid #000;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            width: 100%;
-            box-shadow: 4px 4px 0 #000;
-            transition: all 0.2s;
-        }
+.location-btn {
+    background: #00f5d4;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.2s;
+}
 
-        .search-container {
-            margin: 1rem 0;
-        }
+.search-container {
+    margin: 1rem 0;
+}
 
-        .search-input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #000;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
+.search-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #000;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
 
-        .search-results {
-            background: white;
-            border: 2px solid #000;
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
+.search-results {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+}
 
-        .search-result-item {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
+.search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
 
-        .search-result-item:hover {
-            background: #f5f5f5;
-        }
+.search-result-item:hover {
+    background: #f5f5f5;
+}
 
-        .location-btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #000;
-        }
+.location-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
+}
 
-        .location-btn:active {
-            transform: translate(0, 0);
-            box-shadow: 2px 2px 0 #000;
-        }
+.location-btn:active {
+    transform: translate(0, 0);
+    box-shadow: 2px 2px 0 #000;
+}
 
-        .location-display {
-            background: #f8f9fa;
-            border: 2px solid #000;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
+.location-display {
+    background: #f8f9fa;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
 
-        .coordinate-box {
-            background: white;
-            border: 2px solid #000;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.coordinate-box {
+    background: white;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .result-container {
-            background: #ffd60a;
-            border: 2px solid #000;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            text-align: center;
-        }
+.result-container {
+    background: #ffd60a;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    text-align: center;
+}
 
-        .contact-btn {
-            background: #000;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 1rem 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
-        }
+.contact-btn {
+    background: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s;
+}
 
-        .contact-btn:hover {
-            transform: scale(1.02);
-            background: #222;
-        }
+.contact-btn:hover {
+    transform: scale(1.02);
+    background: #222;
+}
 
-        .promo-timer {
-            background: #ff4d4d;
-            color: white;
-            padding: 0.5rem;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            border-radius: 8px;
-            border: 2px solid #000;
-            animation: pulse 1s infinite;
-        }
-
-        .price-display {
-            margin: 1rem 0;
-            font-size: 1.2rem;
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .discount-badge {
-            background: #ff4d4d;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-            font-size: 0.8em;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0;
-                margin: 0;
-            }
-            
-            .app-container {
-                border-radius: 0;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            #map {
-                height: 300px;
-            }
-            
-            .controls {
-                padding: 1rem;
-            }
-        }
+@media (max-width: 768px) {
+    .container {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .app-container {
+        border-radius: 0;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    #map {
+        height: 300px;
+    }
+    
+    .controls {
+        padding: 1rem;
+    }
+}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="app-container">
             <div class="header">
-                <h1>Terno AE</h1>
-                <p>Jasa Layanan Pengiriman Jepara - Kudus</p>
+                <h1>AnterYuk</h1>
+                <p>Tentukan lokasi Anda dengan GPS</p>
             </div>
 
             <div id="map"></div>
@@ -267,13 +226,7 @@
                 <div class="result-container" id="result" style="display: none;">
                     <h3>Detail Perjalanan</h3>
                     <div>Jarak: <strong><span id="distance">0</span> km</strong></div>
-                    <div id="promo-timer" class="promo-timer" style="display: none;">
-                        Promo Berakhir Dalam: <span id="timer">01:00:00</span>
-                    </div>
-                    <div class="price-display">
-                        <div class="original-price">Rp <span id="original-price">0</span></div>
-                        <div>Rp <span id="price">0</span> <span class="discount-badge">Diskon 20%</span></div>
-                    </div>
+                    <div class="price-display">Rp <span id="price">0</span></div>
                     <button class="contact-btn" onclick="hubungiAdmin()">
                         Hubungi Admin via WhatsApp
                     </button>
@@ -288,8 +241,6 @@
         let markers = {};
         let route = null;
         let destinationDetails = null;
-        let promoEndTime;
-        let timerInterval;
 
         // Inisialisasi peta
         function initMap() {
@@ -299,32 +250,7 @@
             }).addTo(map);
         }
 
-        // Inisialisasi waktu promo saat halaman dimuat
-        function initPromoTimer() {
-            promoEndTime = new Date().getTime() + (60 * 60 * 1000); // 1 jam
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
-            document.getElementById('promo-timer').style.display = 'block';
-        }
-
-        // Update timer promo
-        function updateTimer() {
-            const now = new Date().getTime();
-            const distance = promoEndTime - now;
-
-            if (distance <= 0) {
-                clearInterval(timerInterval);
-                document.getElementById('promo-timer').style.display = 'none';
-                return;
-            }
-
-            const hours = Math.floor(distance / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById('timer').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+        initMap();
 
         // Fungsi pencarian lokasi
         async function searchLocation(query) {
@@ -469,13 +395,10 @@
                     }).addTo(map);
 
                     const distance = (data.routes[0].distance / 1000).toFixed(2);
-                    const basePrice = Math.ceil(distance * 1500);
-                    const inflatedPrice = Math.ceil(basePrice * 1.2); // Naik 20%
-                    const finalPrice = Math.ceil(inflatedPrice * 0.8); // Diskon 20%
+                    const price = Math.ceil(distance * 1500);
 
                     document.getElementById('distance').textContent = distance;
-                    document.getElementById('original-price').textContent = inflatedPrice.toLocaleString('id-ID');
-                    document.getElementById('price').textContent = finalPrice.toLocaleString('id-ID');
+                    document.getElementById('price').textContent = price.toLocaleString('id-ID');
                     document.getElementById('result').style.display = 'block';
 
                     map.fitBounds(route.getBounds(), { padding: [50, 50] });
@@ -487,22 +410,16 @@
         }
 
         // Fungsi untuk menghubungi admin
-        function hubungiAdmin() {
-            const price = document.getElementById('price').textContent;
-            const originalPrice = document.getElementById('original-price').textContent;
-            const pickupCoords = document.getElementById('pickup-coords').textContent.replace(/\s+/g, '');
-            const destinationName = document.getElementById('destination-coords').textContent;
+function hubungiAdmin() {
+    const price = document.getElementById('price').textContent;
+    const pickupCoords = document.getElementById('pickup-coords').textContent.replace(/\s+/g, '');
+    const destinationName = document.getElementById('destination-coords').textContent;
 
-            const message = `kak saya mau anjem (antar jemput) dari https://maps.google.com/?q=${pickupCoords} ke ${destinationName}\nHarga awal: Rp ${originalPrice}\nSetelah diskon 20%: Rp ${price}`;
+    // Format pesan dengan link Google Maps di pickupCoords tanpa spasi setelah koma
+    const message = `kak saya mau anjem (antar jemput) dari https://maps.google.com/?q=${pickupCoords} ke ${destinationName} dengan harga Rp ${price}`;
 
-            window.open(`https://wa.me/6285155145788?text=${encodeURIComponent(message)}`);
-        }
-
-        // Inisialisasi saat halaman dimuat
-        window.onload = function() {
-            initMap();
-            initPromoTimer();
-        };
+    window.open(`https://wa.me/6285155145788?text=${encodeURIComponent(message)}`);
+}
     </script>
 </body>
 </html>

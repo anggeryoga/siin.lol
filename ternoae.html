@@ -11,6 +11,7 @@
     <meta name="title" content="Terno AE - Jasa Layanan Pengiriman Jepara - Kudus">
     <meta name="google-site-verification" content="BLNWmAOiNZVAHa38OOIJVr0JfYU-bn06btAaMXBmES8" />
     <meta name="description" content="Layanan antar jemput terpercaya untuk area Jepara - Kudus. Harga terjangkau dengan diskon 20% dan pelayanan cepat.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -219,6 +220,130 @@
             .controls {
                 padding: 1rem;
             }
+            .whatsapp-popup {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .whatsapp-btn {
+        background: #25D366;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+
+    .whatsapp-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .whatsapp-box {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 300px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: scale(0);
+        transform-origin: bottom right;
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+
+    .whatsapp-box.show {
+        transform: scale(1);
+    }
+
+    .whatsapp-header {
+        background: #075E54;
+        color: white;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .whatsapp-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .whatsapp-header-info h3 {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .whatsapp-header-info p {
+        margin: 0;
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .whatsapp-body {
+        padding: 15px;
+    }
+
+    .whatsapp-message {
+        background: #DCF8C6;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .whatsapp-input {
+        display: flex;
+        gap: 10px;
+        padding: 15px;
+        background: #f0f2f5;
+    }
+
+    .whatsapp-input input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        outline: none;
+    }
+
+    .whatsapp-input button {
+        background: #25D366;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 20px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        background: #25D366;
+        border-radius: 50%;
+        margin-right: 5px;
+        display: inline-block;
+    }
+
+    @media (max-width: 768px) {
+        .whatsapp-box {
+            width: calc(100vw - 40px);
+            right: -10px;
+        }
+    }
         }
     </style>
 </head>
@@ -278,6 +403,33 @@
                         Hubungi Admin via WhatsApp
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="whatsapp-popup">
+        <button class="whatsapp-btn" onclick="toggleWhatsAppBox()">
+            <i class="fab fa-whatsapp" style="font-size: 30px;"></i>
+        </button>
+        
+        <div class="whatsapp-box" id="whatsappBox">
+            <div class="whatsapp-header">
+                <img src="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/uVc20Vk-BQ4b5AAr5Hd7u1X4B1CYexHjlrzLLF.png" alt="Admin Profile">
+                <div class="whatsapp-header-info">
+                    <h3>Admin Terno AE</h3>
+                    <p><span class="online-dot"></span>Online | Typically replies instantly</p>
+                </div>
+            </div>
+            
+            <div class="whatsapp-body">
+                <div class="whatsapp-message">
+                    Halo! 👋 Selamat datang di Terno AE.
+                    Silahkan pilih lokasi jemput dan tujuan Anda, atau langsung chat dengan kami untuk informasi lebih lanjut.
+                </div>
+            </div>
+            
+            <div class="whatsapp-input">
+                <input type="text" id="whatsappInput" placeholder="Tulis pesan..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendWhatsAppMessage()">Kirim</button>
             </div>
         </div>
     </div>
@@ -485,6 +637,37 @@
                 alert('Gagal menghitung rute. Silakan coba lagi.');
             }
         }
+        function toggleWhatsAppBox() {
+        const box = document.getElementById('whatsappBox');
+        box.classList.toggle('show');
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendWhatsAppMessage();
+        }
+    }
+
+    function sendWhatsAppMessage() {
+        const input = document.getElementById('whatsappInput');
+        const message = input.value.trim();
+        
+        if (message) {
+            const whatsappNumber = '6285155145788';
+            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+            input.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const welcomeMessage = document.querySelector('.whatsapp-message');
+        welcomeMessage.style.opacity = '0';
+        setTimeout(() => {
+            welcomeMessage.style.opacity = '1';
+            welcomeMessage.style.transition = 'opacity 0.5s ease';
+        }, 500);
+    });
 
         // Fungsi untuk menghubungi admin
         function hubungiAdmin() {

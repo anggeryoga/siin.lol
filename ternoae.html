@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/uVc20Vk-BQ4b5AAr5Hd7u1X4B1CYexHjlrzLLF.png" type="image/png">
+    <link rel="icon"
+        href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/uVc20Vk-BQ4b5AAr5Hd7u1X4B1CYexHjlrzLLF.png"
+        type="image/png">
     <meta name="title" content="Terno AE - Jasa Layanan Pengiriman Jepara - Kudus">
     <meta name="google-site-verification" content="BLNWmAOiNZVAHa38OOIJVr0JfYU-bn06btAaMXBmES8" />
-    <meta name="description" content="Layanan antar jemput terpercaya untuk area Jepara - Kudus. Harga terjangkau dengan diskon 20% dan pelayanan cepat.">
+    <meta name="description"
+        content="Layanan antar jemput terpercaya untuk area Jepara - Kudus. Harga terjangkau dengan diskon 20% dan pelayanan cepat.">
+
+    <!-- Meta Tags untuk Thumbnail -->
+    <meta property="og:title" content="Terno AE - Jasa Layanan Pengiriman Jepara - Kudus">
+    <meta property="og:description"
+        content="Layanan antar jemput terpercaya untuk area Jepara - Kudus. Harga terjangkau dengan diskon 20% dan pelayanan cepat.">
+    <meta property="og:image"
+        content="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/MjrpsNx-BMafSnbB5Dgy2sCxz4npm4D594FtM4.png">
+    <meta property="og:url" content="https://siin.lol/ternoae">
+    <meta name="twitter:card" content="summary_large_image">
+
     <style>
         * {
             margin: 0;
@@ -197,9 +211,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .pickup-options {
@@ -228,132 +250,135 @@
                 padding: 0;
                 margin: 0;
             }
-            
+
             .app-container {
                 border-radius: 0;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             #map {
                 height: 300px;
             }
-            
+
             .controls {
                 padding: 1rem;
             }
-.whatsapp-popup {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25D366;
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            max-width: 300px;
-            animation: slideIn 0.3s ease-out;
-        }
 
-        .whatsapp-popup.show {
-            display: block;
-        }
-
-        .whatsapp-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .whatsapp-header i {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-
-        .whatsapp-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .whatsapp-message {
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .whatsapp-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .whatsapp-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .whatsapp-btn.primary {
-            background: white;
-            color: #25D366;
-        }
-
-        .whatsapp-btn.secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        .whatsapp-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
+            .whatsapp-popup {
+                display: none;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #25D366;
+                color: white;
+                padding: 15px;
+                border-radius: 15px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                max-width: 300px;
+                animation: slideIn 0.3s ease-out;
             }
-            to {
-                transform: translateY(0);
-                opacity: 1;
+
+            .whatsapp-popup.show {
+                display: block;
             }
-        }
 
-        /* Add floating WhatsApp button */
-        .floating-whatsapp {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+            .whatsapp-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
 
-        .floating-whatsapp:hover {
-            transform: scale(1.1);
-        }
+            .whatsapp-header i {
+                font-size: 24px;
+                margin-right: 10px;
+            }
+
+            .whatsapp-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 18px;
+            }
+
+            .whatsapp-message {
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+
+            .whatsapp-buttons {
+                display: flex;
+                gap: 10px;
+            }
+
+            .whatsapp-btn {
+                padding: 8px 15px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .whatsapp-btn.primary {
+                background: white;
+                color: #25D366;
+            }
+
+            .whatsapp-btn.secondary {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+
+            .whatsapp-btn:hover {
+                transform: translateY(-2px);
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(100px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            /* Add floating WhatsApp button */
+            .floating-whatsapp {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #25D366;
+                color: white;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .floating-whatsapp:hover {
+                transform: scale(1.1);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="app-container">
@@ -383,21 +408,15 @@
 
                 <div id="manual-option" style="display: none;">
                     <div class="search-container">
-                        <input type="text" 
-                               id="pickup-search" 
-                               class="search-input" 
-                               placeholder="Cari lokasi jemput (nama desa)"
-                               oninput="searchPickupLocation(this.value)">
+                        <input type="text" id="pickup-search" class="search-input"
+                            placeholder="Cari lokasi jemput (nama desa)" oninput="searchPickupLocation(this.value)">
                         <div id="pickup-search-results" class="search-results"></div>
                     </div>
                 </div>
 
                 <div class="search-container">
-                    <input type="text" 
-                           id="destination-search" 
-                           class="search-input" 
-                           placeholder="Cari lokasi tujuan (nama desa)"
-                           oninput="searchLocation(this.value)">
+                    <input type="text" id="destination-search" class="search-input"
+                        placeholder="Cari lokasi tujuan (nama desa)" oninput="searchLocation(this.value)">
                     <div id="search-results" class="search-results"></div>
                 </div>
 
@@ -435,7 +454,7 @@
             </div>
         </div>
     </div>
-  <div class="whatsapp-popup" id="whatsapp-popup">
+    <div class="whatsapp-popup" id="whatsapp-popup">
         <button class="whatsapp-close" onclick="closeWhatsAppPopup()">×</button>
         <div class="whatsapp-header">
             <i class="fab fa-whatsapp"></i>
@@ -456,7 +475,7 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script>
- function showWhatsAppPopup() {
+        function showWhatsAppPopup() {
             document.getElementById('whatsapp-popup').classList.add('show');
         }
 
@@ -480,232 +499,232 @@
 
             window.open(`https://wa.me/6285155145788?text=${encodeURIComponent(message)}`);
         }
-       let map;
-let markers = {};
-let route = null;
-let destinationDetails = null;
-let promoEndTime;
-let timerInterval;
+        let map;
+        let markers = {};
+        let route = null;
+        let destinationDetails = null;
+        let promoEndTime;
+        let timerInterval;
 
-// Inisialisasi peta
-function initMap() {
-    map = L.map('map').setView([-6.588983449484304, 110.66654121864478], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-}
-
-function showGPSOption() {
-    document.getElementById('gps-option').style.display = 'block';
-    document.getElementById('manual-option').style.display = 'none';
-    document.querySelectorAll('.option-btn')[0].classList.add('active');
-    document.querySelectorAll('.option-btn')[1].classList.remove('active');
-}
-
-function showManualOption() {
-    document.getElementById('gps-option').style.display = 'none';
-    document.getElementById('manual-option').style.display = 'block';
-    document.querySelectorAll('.option-btn')[0].classList.remove('active');
-    document.querySelectorAll('.option-btn')[1].classList.add('active');
-}
-
-// Inisialisasi waktu promo
-function initPromoTimer() {
-    promoEndTime = new Date().getTime() + (60 * 60 * 1000); // 1 jam
-    updateTimer();
-    timerInterval = setInterval(updateTimer, 1000);
-    document.getElementById('promo-timer').style.display = 'block';
-}
-
-function updateTimer() {
-    const now = new Date().getTime();
-    const distance = promoEndTime - now;
-
-    if (distance <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('promo-timer').style.display = 'none';
-        return;
-    }
-
-    const hours = Math.floor(distance / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById('timer').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-async function searchPickupLocation(query) {
-    if (query.length < 3) {
-        document.getElementById('pickup-search-results').style.display = 'none';
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${query}+indonesia&format=json&limit=5`
-        );
-        const data = await response.json();
-
-        const resultsContainer = document.getElementById('pickup-search-results');
-        resultsContainer.innerHTML = '';
-        resultsContainer.style.display = 'block';
-
-        data.forEach(result => {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.textContent = result.display_name;
-            div.onclick = () => selectPickupLocation(result);
-            resultsContainer.appendChild(div);
-        });
-    } catch (error) {
-        console.error('Error searching:', error);
-    }
-}
-
-function selectPickupLocation(location) {
-    const coords = [location.lat, location.lon];
-
-    if (markers['pickup']) {
-        map.removeLayer(markers['pickup']);
-    }
-
-    const icon = L.divIcon({
-        className: 'custom-div-icon',
-        html: '<i class="fas fa-map-marker-alt" style="color: #00f5d4; font-size: 24px;"></i>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 30]
-    });
-
-    markers['pickup'] = L.marker(coords, { icon }).addTo(map);
-    document.getElementById('pickup-coords').textContent = location.display_name;
-    document.getElementById('pickup-search-results').style.display = 'none';
-    document.getElementById('pickup-search').value = location.display_name;
-    map.setView(coords, 16);
-
-
-    if (markers['destination']) {
-        calculateRoute();
-    }
-}
-
-// Fungsi untuk mendapatkan lokasi jemput
-function getPickupLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            positionSuccess,
-            positionError,
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    } else {
-        positionError();
-    }
-}
-
-// Callback sukses GPS
-function positionSuccess(position) {
-    const { latitude, longitude } = position.coords;
-    const location = [latitude, longitude];
-
-    if (markers['pickup']) {
-        map.removeLayer(markers['pickup']);
-    }
-
-    const icon = L.divIcon({
-        className: 'custom-div-icon',
-        html: '<i class="fas fa-map-marker-alt" style="color: #00f5d4; font-size: 24px;"></i>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 30]
-    });
-
-    markers['pickup'] = L.marker(location, {icon}).addTo(map);
-    map.setView(location, 16);
-
-    document.getElementById('pickup-coords').textContent = 
-        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-
-    if (markers['destination']) {
-        calculateRoute();
-    }
-}
-
-// Callback error GPS
-function positionError(error) {
-    if (error && error.code === error.PERMISSION_DENIED) {
-        alert("Izin lokasi ditolak.  Anda akan diarahkan ke pencarian manual.");
-        showManualOption(); // Langsung alihkan ke manual jika izin ditolak.
-    }  else {
-        let errorMessage = "Terjadi kesalahan dalam mengakses lokasi. Coba gunakan pencarian manual.";
-        if (error && error.code === error.TIMEOUT) {
-            errorMessage = "Waktu permintaan lokasi habis. Silakan gunakan pencarian manual.";
+        // Inisialisasi peta
+        function initMap() {
+            map = L.map('map').setView([-6.588983449484304, 110.66654121864478], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
         }
-        alert(errorMessage);
-        showManualOption();
-    }
 
-}
+        function showGPSOption() {
+            document.getElementById('gps-option').style.display = 'block';
+            document.getElementById('manual-option').style.display = 'none';
+            document.querySelectorAll('.option-btn')[0].classList.add('active');
+            document.querySelectorAll('.option-btn')[1].classList.remove('active');
+        }
 
-// Fungsi pencarian lokasi
-async function searchLocation(query) {
-    if (query.length < 3) {
-        document.getElementById('search-results').style.display = 'none';
-        return;
-    }
+        function showManualOption() {
+            document.getElementById('gps-option').style.display = 'none';
+            document.getElementById('manual-option').style.display = 'block';
+            document.querySelectorAll('.option-btn')[0].classList.remove('active');
+            document.querySelectorAll('.option-btn')[1].classList.add('active');
+        }
 
-    try {
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${query}+indonesia&format=json&limit=5`
-        );
-        const data = await response.json();
+        // Inisialisasi waktu promo
+        function initPromoTimer() {
+            promoEndTime = new Date().getTime() + (60 * 60 * 1000); // 1 jam
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            document.getElementById('promo-timer').style.display = 'block';
+        }
 
-        const resultsContainer = document.getElementById('search-results');
-        resultsContainer.innerHTML = '';
-        resultsContainer.style.display = 'block';
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = promoEndTime - now;
 
-        data.forEach(result => {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.textContent = `${result.display_name}`;
-            div.onclick = () => selectDestination(result);
-            resultsContainer.appendChild(div);
-        });
-    } catch (error) {
-        console.error('Error searching:', error);
-    }
-}
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('promo-timer').style.display = 'none';
+                return;
+            }
 
-// Fungsi memilih lokasi tujuan
-function selectDestination(location) {
-    const coords = [location.lat, location.lon];
-    destinationDetails = {
-        name: location.display_name,
-        coords: coords
-    };
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    if (markers['destination']) {
-        map.removeLayer(markers['destination']);
-    }
+            document.getElementById('timer').textContent =
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
 
-    const icon = L.divIcon({
-        className: 'custom-div-icon',
-        html: '<i class="fas fa-flag-checkered" style="color: #FFA9A3; font-size: 24px;"></i>',
-        iconSize: [30, 30],
-        iconAnchor: [15, 30]
-    });
+        async function searchPickupLocation(query) {
+            if (query.length < 3) {
+                document.getElementById('pickup-search-results').style.display = 'none';
+                return;
+            }
 
-    markers['destination'] = L.marker(coords, { icon }).addTo(map);
-    document.getElementById('destination-coords').textContent = 
-        `${location.display_name}`;
-    document.getElementById('search-results').style.display = 'none';
-    document.getElementById('destination-search').value = location.display_name;
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?q=${query}+indonesia&format=json&limit=5`
+                );
+                const data = await response.json();
 
-    if (markers['pickup']) {
-        calculateRoute();
-    }
-}
+                const resultsContainer = document.getElementById('pickup-search-results');
+                resultsContainer.innerHTML = '';
+                resultsContainer.style.display = 'block';
+
+                data.forEach(result => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.textContent = result.display_name;
+                    div.onclick = () => selectPickupLocation(result);
+                    resultsContainer.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error searching:', error);
+            }
+        }
+
+        function selectPickupLocation(location) {
+            const coords = [location.lat, location.lon];
+
+            if (markers['pickup']) {
+                map.removeLayer(markers['pickup']);
+            }
+
+            const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: '<i class="fas fa-map-marker-alt" style="color: #00f5d4; font-size: 24px;"></i>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            markers['pickup'] = L.marker(coords, { icon }).addTo(map);
+            document.getElementById('pickup-coords').textContent = location.display_name;
+            document.getElementById('pickup-search-results').style.display = 'none';
+            document.getElementById('pickup-search').value = location.display_name;
+            map.setView(coords, 16);
 
 
-// Fungsi untuk menghitung rute dan jarak
+            if (markers['destination']) {
+                calculateRoute();
+            }
+        }
+
+        // Fungsi untuk mendapatkan lokasi jemput
+        function getPickupLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    positionSuccess,
+                    positionError,
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                positionError();
+            }
+        }
+
+        // Callback sukses GPS
+        function positionSuccess(position) {
+            const { latitude, longitude } = position.coords;
+            const location = [latitude, longitude];
+
+            if (markers['pickup']) {
+                map.removeLayer(markers['pickup']);
+            }
+
+            const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: '<i class="fas fa-map-marker-alt" style="color: #00f5d4; font-size: 24px;"></i>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            markers['pickup'] = L.marker(location, { icon }).addTo(map);
+            map.setView(location, 16);
+
+            document.getElementById('pickup-coords').textContent =
+                `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+
+            if (markers['destination']) {
+                calculateRoute();
+            }
+        }
+
+        // Callback error GPS
+        function positionError(error) {
+            if (error && error.code === error.PERMISSION_DENIED) {
+                alert("Izin lokasi ditolak.  Anda akan diarahkan ke pencarian manual.");
+                showManualOption(); // Langsung alihkan ke manual jika izin ditolak.
+            } else {
+                let errorMessage = "Terjadi kesalahan dalam mengakses lokasi. Coba gunakan pencarian manual.";
+                if (error && error.code === error.TIMEOUT) {
+                    errorMessage = "Waktu permintaan lokasi habis. Silakan gunakan pencarian manual.";
+                }
+                alert(errorMessage);
+                showManualOption();
+            }
+
+        }
+
+        // Fungsi pencarian lokasi
+        async function searchLocation(query) {
+            if (query.length < 3) {
+                document.getElementById('search-results').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?q=${query}+indonesia&format=json&limit=5`
+                );
+                const data = await response.json();
+
+                const resultsContainer = document.getElementById('search-results');
+                resultsContainer.innerHTML = '';
+                resultsContainer.style.display = 'block';
+
+                data.forEach(result => {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.textContent = `${result.display_name}`;
+                    div.onclick = () => selectDestination(result);
+                    resultsContainer.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error searching:', error);
+            }
+        }
+
+        // Fungsi memilih lokasi tujuan
+        function selectDestination(location) {
+            const coords = [location.lat, location.lon];
+            destinationDetails = {
+                name: location.display_name,
+                coords: coords
+            };
+
+            if (markers['destination']) {
+                map.removeLayer(markers['destination']);
+            }
+
+            const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: '<i class="fas fa-flag-checkered" style="color: #FFA9A3; font-size: 24px;"></i>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            markers['destination'] = L.marker(coords, { icon }).addTo(map);
+            document.getElementById('destination-coords').textContent =
+                `${location.display_name}`;
+            document.getElementById('search-results').style.display = 'none';
+            document.getElementById('destination-search').value = location.display_name;
+
+            if (markers['pickup']) {
+                calculateRoute();
+            }
+        }
+
+
+        // Fungsi untuk menghitung rute dan jarak
         async function calculateRoute() {
             const pickup = markers['pickup'].getLatLng();
             const destination = markers['destination'].getLatLng();
@@ -747,36 +766,36 @@ function selectDestination(location) {
             }
         }
         function toggleWhatsAppBox() {
-        const box = document.getElementById('whatsappBox');
-        box.classList.toggle('show');
-    }
-
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendWhatsAppMessage();
+            const box = document.getElementById('whatsappBox');
+            box.classList.toggle('show');
         }
-    }
 
-    function sendWhatsAppMessage() {
-        const input = document.getElementById('whatsappInput');
-        const message = input.value.trim();
-        
-        if (message) {
-            const whatsappNumber = '6282324159922';
-            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-            input.value = '';
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendWhatsAppMessage();
+            }
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const welcomeMessage = document.querySelector('.whatsapp-message');
-        welcomeMessage.style.opacity = '0';
-        setTimeout(() => {
-            welcomeMessage.style.opacity = '1';
-            welcomeMessage.style.transition = 'opacity 0.5s ease';
-        }, 500);
-    });
+        function sendWhatsAppMessage() {
+            const input = document.getElementById('whatsappInput');
+            const message = input.value.trim();
+
+            if (message) {
+                const whatsappNumber = '6282324159922';
+                const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+                input.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const welcomeMessage = document.querySelector('.whatsapp-message');
+            welcomeMessage.style.opacity = '0';
+            setTimeout(() => {
+                welcomeMessage.style.opacity = '1';
+                welcomeMessage.style.transition = 'opacity 0.5s ease';
+            }, 500);
+        });
 
         // Fungsi untuk menghubungi admin
         function hubungiAdmin() {
@@ -791,10 +810,11 @@ function selectDestination(location) {
         }
 
         // Inisialisasi saat halaman dimuat
-        window.onload = function() {
+        window.onload = function () {
             initMap();
             initPromoTimer();
         };
     </script>
 </body>
+
 </html>

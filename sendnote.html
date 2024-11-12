@@ -166,9 +166,12 @@
         <h1 class="text-center page-title mb-4">💌 SendNote</h1>
         
         <div class="form-container neu-shadow mb-4">
-            <button class="neu-button btn mb-3 w-100" onclick="toggleForm()">
-                ✨ Tulis Note Baru
-            </button>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button class="neu-button btn" onclick="toggleForm()">
+                    ✨ Tulis Note Baru
+                </button>
+                <input type="text" class="form-control neu-input" id="searchInput" placeholder="Cari nota..." oninput="filterNotes()">
+            </div>
             
             <div id="formContainer" style="display: none;">
                 <h2 class="h5 mb-3">❤️ Tulis Pesanmu</h2>
@@ -296,6 +299,25 @@
                     </div>
                 `;
             }
+        }
+
+        function filterNotes() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase();
+            const noteCards = document.querySelectorAll('.note-card');
+
+            noteCards.forEach(card => {
+                const nameElement = card.querySelector('.card-title');
+                const noteElement = card.querySelector('.card-text');
+                const name = nameElement.textContent.toLowerCase();
+                const note = noteElement.textContent.toLowerCase();
+
+                if (name.includes(searchTerm) || note.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
 
         form.addEventListener('submit', async (e) => {

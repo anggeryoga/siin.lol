@@ -6,17 +6,14 @@
     <title>SendNote - Love Notes</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
- <!-- Favicon -->
     <link rel="icon" href="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/Z1nEd6N-FaBfQdZYhqHMOqoDQjjm86V32iOdNb.png" type="image/png">
 
-    <!-- Open Graph Meta Tags for Thumbnail -->
     <meta property="og:title" content="Catatan Manis - Kirim Pesan dan Simpan dalam Ingatan">
     <meta property="og:description" content="Tulis pesan istimewa dan biarkan tetap abadi. Berbagi kenangan bersama yang bisa dilihat oleh siapa saja.">
     <meta property="og:image" content="https://h2rsi9anqnqbkvkf.public.blob.vercel-storage.com/7t79OGP-XC79qrmScZTlYJfHBPsC6v0Nq6xJpU.jpeg">
     <meta property="og:url" content="https://sini.lol/sendnote">
     <meta property="og:type" content="website">
 
-    <!-- Twitter Card Meta Tags for Thumbnail -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Catatan Manis - Kirim Pesan dan Simpan dalam Ingatan">
     <meta name="twitter:description" content="Tulis pesan istimewa dan biarkan tetap abadi. Berbagi kenangan bersama yang bisa dilihat oleh siapa saja.">
@@ -97,7 +94,6 @@
             margin-bottom: 1.5rem;
         }
 
-
         .note-modal {
             display: none;
             position: fixed;
@@ -135,7 +131,12 @@
             margin-bottom: 1rem;
         }
 
-
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
 
         @media (max-width: 768px) {
             .page-title {
@@ -147,8 +148,11 @@
                 max-height: calc(100vh - 2rem);
                 overflow-y: auto;
             }
-        }
 
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
@@ -163,12 +167,9 @@
             z-index: -1;
             opacity: 0.5;
         }
-
-
     </style>
 </head>
 <body>
-
     <div id="hearts"></div>
 
     <div class="note-modal" id="noteModal">
@@ -195,11 +196,11 @@
                 <form id="noteForm">
                     <div class="mb-3">
                         <label for="name" class="form-label fw-bold">Untuk</label>
-                        <input type="text" class="form-control neu-input" id="name" name="name" required>
+                        <input type="text" class="form-control neu-input" id="name" name="name" maxlength="50" required>
                     </div>
                     <div class="mb-3">
                         <label for="note" class="form-label fw-bold">Pesan</label>
-                        <textarea class="form-control neu-input" id="note" name="note" rows="4" required></textarea>
+                        <textarea class="form-control neu-input" id="note" name="note" rows="4" maxlength="1000" required></textarea>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="neu-button btn me-2">💝 Kirim Note</button>
@@ -209,7 +210,7 @@
             </div>
         </div>
 
-        <div id="notes-container">
+        <div id="notes-container" class="notes-grid">
            <div class="text-center">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -218,164 +219,196 @@
         </div>
     </div>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpA7_ZEqKXLCuK43fgD8RMlxutAyJ3fFSdS5hpVZNiIAgP6l4xh96CV_0c_v_WTF6Hdw/exec'; // **Replace with your actual script URL**
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpA7_ZEqKXLCuK43fgD8RMlxutAyJ3fFSdS5hpVZNiIAgP6l4xh96CV_0c_v_WTF6Hdw/exec';
 
-const form = document.getElementById('noteForm');
-const formContainer = document.getElementById('formContainer');
-const notesContainer = document.getElementById('notes-container');
-const modal = document.getElementById('noteModal');
+        const form = document.getElementById('noteForm');
+        const formContainer = document.getElementById('formContainer');
+        const notesContainer = document.getElementById('notes-container');
+        const modal = document.getElementById('noteModal');
 
-function createHearts() {
-    const heartsContainer = document.getElementById('hearts');
-    const heartSymbols = ['❤️', '💖', '💕', '💗', '💓'];
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartSymbols = ['❤️', '💖', '💕', '💗', '💓'];
 
-    for (let i = 0; i < 10; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'floating-heart';
-        heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
-        heart.style.left = `${Math.random() * 100}vw`;
-        heart.style.top = `${Math.random() * 100}vh`;
-        heart.style.animationDelay = `${Math.random() * 3}s`;
-        heartsContainer.appendChild(heart);
-    }
-}
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.top = `${Math.random() * 100}vh`;
+                heart.style.animationDelay = `${Math.random() * 3}s`;
+                heartsContainer.appendChild(heart);
+            }
+        }
 
-createHearts();
+        createHearts();
 
+        function toggleForm() {
+            formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+            if (formContainer.style.display === 'none') {
+                form.reset();
+            }
+        }
 
-function toggleForm() {
-    formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-    if (formContainer.style.display === 'none') {
-        form.reset();
-    }
-}
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
-function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
+        function showNoteModal(note) {
+            const modalContent = document.getElementById('noteModalContent');
+            modalContent.innerHTML = `
+                <div class="mb-3">
+                    <strong>Untuk:</strong> ${escapeHtml(note.name)}
+                </div>
+                <div class="mb-3">
+                    <strong>Pesan:</strong>
+                    <p class="mt-2">${escapeHtml(note.note).replace(/\n/g, '<br>')}</p>
+                </div>
+                <div class="text-muted">
+                    <small>📅 ${formatDate(note.timestamp)}</small>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
 
-function showNoteModal(note) {
-    const modalContent = document.getElementById('noteModalContent');
-    modalContent.innerHTML = `
-        <div class="mb-3">
-            <strong>Untuk:</strong> ${note.name}
-        </div>
-        <div class="mb-3">
-            <strong>Pesan:</strong>
-            <p class="mt-2">${note.note.replace(/\n/g, '<br>')}</p> 
-        </div>
-        <div class="text-muted">
-            <small>📅 ${formatDate(note.timestamp)}</small>
-        </div>
-    `;
-    modal.style.display = 'block';
-}
+        function closeModal() {
+            modal.style.display = 'none';
+        }
 
-function closeModal() {
-    modal.style.display = 'none';
-}
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
 
-window.onclick = function(event) {
-    if (event.target === modal) {
-        closeModal();
-    }
-};
+        async function fetchNotes() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
 
+                data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-
-async function fetchNotes() {
-    try {
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
-
-        data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        notesContainer.innerHTML = data.map(note => `
-            <div class="card neu-shadow note-card mb-3" onclick="showNoteModal(${JSON.stringify(note)})">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <h5 class="card-title h6 mb-2">💝 Untuk: ${note.name}</h5>
-                            <p class="card-text">${note.note.length > 100 ? note.note.substring(0, 100) + '...' : note.note}</p>
+                notesContainer.innerHTML = data.map(note => `
+                    <div class="card neu-shadow note-card" onclick='showNoteModal(${JSON.stringify({
+                        name: escapeHtml(note.name),
+                        note: escapeHtml(note.note),
+                        timestamp: note.timestamp
+                    })})'>
+                        <div class="card-body">
+                            <h5 class="card-title h6 mb-2">💝 Untuk: ${escapeHtml(note.name)}</h5>
+                            <p class="card-text">${escapeHtml(note.note.length > 100 ? note.note.substring(0, 100) + '...' : note.note)}</p>
                             <small class="text-muted">📅 ${formatDate(note.timestamp)}</small>
                         </div>
                     </div>
-                </div>
-            </div>
-        `).join('');
+                `).join('');
 
-    } catch (error) {
-        console.error('Error:', error);
-        notesContainer.innerHTML = `
-            <div class="alert alert-danger neu-shadow text-center" role="alert">
-                ❌ Gagal memuat data
-            </div>
-        `;
-    }
-}
-
-
-function filterNotes() {
-    const searchInput = document.getElementById('searchInput');
-    const searchTerm = searchInput.value.toLowerCase();
-    const noteCards = document.querySelectorAll('.note-card');
-
-    noteCards.forEach(card => {
-        const nameElement = card.querySelector('.card-title');
-        const noteElement = card.querySelector('.card-text');
-        const name = nameElement.textContent.toLowerCase();
-        const note = noteElement.textContent.toLowerCase();
-
-        if (name.includes(searchTerm) || note.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
+            } catch (error) {
+                console.error('Error:', error);
+                notesContainer.innerHTML = `
+                    <div class="alert alert-danger neu-shadow text-center" role="alert">
+                        ❌ Gagal memuat data
+                    </div>
+                `;
+            }
         }
-    });
-}
 
+        function filterNotes() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase();
+            const noteCards = document.querySelectorAll('.note-card');
 
+            noteCards.forEach(card => {
+                const nameElement = card.querySelector('.card-title');
+                const noteElement = card.querySelector('.card-text');
+                const name = nameElement.textContent.toLowerCase();
+                const note = noteElement.textContent.toLowerCase();
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.innerHTML = `
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Mengirim...
-    `;
+                if (name.includes(searchTerm) || note.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
 
-    try {
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: new FormData(form)
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Mengirim...
+            `;
+
+            try {
+                const formData = new FormData(form);
+                
+                // Sanitize input before sending
+                formData.set('name', formData.get('name').trim());
+                formData.set('note', formData.get('note').trim());
+
+                // Additional validation
+                if (formData.get('name').length === 0 || formData.get('note').length === 0) {
+                    throw new Error('Nama dan pesan tidak boleh kosong');
+                }
+
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                alert('Note berhasil dikirim! ❤️');
+                form.reset();
+                toggleForm();
+                fetchNotes();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal mengirim note. Silakan coba lagi. 💔');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '💝 Kirim Note';
+            }
         });
 
-        alert('Note berhasil dikirim! ❤️');
-        form.reset();
-        toggleForm();
-        fetchNotes();
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Gagal mengirim note. Silakan coba lagi. 💔');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.innerHTML = '💝 Kirim Note';
-    }
-});
+        // Input validation
+        const nameInput = document.getElementById('name');
+        const noteInput = document.getElementById('note');
 
-fetchNotes();
-setInterval(fetchNotes, 30000);
+        nameInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // Remove any HTML tags and special characters
+            value = value.replace(/<[^>]*>?/gm, '');
+            value = value.replace(/[<>]/g, '');
+            e.target.value = value;
+        });
+
+        noteInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // Remove any HTML tags and special characters
+            value = value.replace(/<[^>]*>?/gm, '');
+            value = value.replace(/[<>]/g, '');
+            e.target.value = value;
+        });
+
+        fetchNotes();
+        setInterval(fetchNotes, 30000);
     </script>
 </body>
 </html>

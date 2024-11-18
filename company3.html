@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIINMEDIA- Social Media Agency</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #f0f7ff;
+        }
+        
+        .neo-brutal {
+            border: 3px solid #2563eb;
+            box-shadow: 6px 6px 0 #2563eb;
+            transition: all 0.2s ease;
+            border-radius: 12px;
+        }
+        
+        .neo-brutal:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 10px 10px 0 #2563eb;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #bfdbfe 0%, #dbeafe 100%);
+        }
+        
+        .portfolio-card {
+            transition: all 0.3s ease;
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-8px);
+        }
+
+        /* WhatsApp Button and Pop-up Styles */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 999;
+            width: 300px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+        }
+
+        .whatsapp-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .floating-whatsapp {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Loading Animation */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #2563eb;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Cookie Consent */
+        .cookie-consent {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 998;
+            transform: translateY(200%);
+            transition: transform 0.5s ease;
+        }
+
+        .cookie-consent.show {
+            transform: translateY(0);
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            height: 100vh;
+            width: 80%;
+            background: white;
+            transition: right 0.3s ease;
+            z-index: 1001;
+        }
+
+        .mobile-menu.show {
+            right: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-blue-50">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <div class="text-center">
+            <div class="loader mx-auto mb-4"></div>
+            <p class="text-blue-600 text-xl">Loading amazing content...</p>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu p-6">
+        <div class="flex justify-end mb-8">
+            <button id="close-menu" class="text-2xl text-blue-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex flex-col space-y-6">
+            <a href="#" class="text-blue-600 font-bold text-xl">Home</a>
+            <a href="#services" class="text-blue-600 font-bold text-xl">Services</a>
+            <a href="#portfolio" class="text-blue-600 font-bold text-xl">Portfolio</a>
+            <a href="#contact" class="text-blue-600 font-bold text-xl">Contact</a>
+        </div>
+    </div>
+    <div class="overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="bg-white p-4 neo-brutal mb-8 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg rotate-12"></div>
+                <span class="ml-2 font-bold text-2xl text-blue-600">SIINMEDIA</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-blue-600 font-bold hover:text-blue-800">Home</a>
+                <a href="#services" class="text-blue-600 font-bold hover:text-blue-800">Services</a>
+                <a href="#portfolio" class="text-blue-600 font-bold hover:text-blue-800">Portfolio</a>
+                <a href="#contact" class="text-blue-600 font-bold hover:text-blue-800">Contact</a>
+            </div>
+            <button id="menu-button" class="md:hidden text-blue-600 text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="md:w-1/2">
+                <div class="neo-brutal bg-white p-8">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-4 text-blue-600">MAKE YOUR SOCIAL MEDIA SHINE!</h1>
+                    <p class="text-xl text-blue-600 mb-6">We transform ordinary content into extraordinary experiences. Let's make your brand stand out.</p>
+                    <button class="bg-blue-600 text-white px-8 py-4 text-xl font-bold neo-brutal hover:bg-blue-700 rounded-lg">START NOW →</button>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="neo-brutal gradient-bg p-4">
+                        <img src="/api/placeholder/400/400" alt="Social Media Success" class="w-full rounded-lg">
+                    </div>
+                    <div class="neo-brutal gradient-bg p-4">
+                        <img src="/api/placeholder/400/400" alt="Viral Content" class="w-full rounded-lg">
+                    </div>
+                    <div class="neo-brutal gradient-bg p-4">
+                        <img src="/api/placeholder/400/400" alt="Engagement" class="w-full rounded-lg">
+                    </div>
+                    <div class="neo-brutal gradient-bg p-4">
+                        <img src="/api/placeholder/400/400" alt="Analytics" class="w-full rounded-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold mb-12 text-blue-600 text-center">OUR SERVICES</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="neo-brutal bg-white p-8">
+                <i class="fas fa-pencil-alt text-4xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Content Creation</h3>
+                <p class="text-blue-600">We create engaging content that resonates with your audience across all social media platforms.</p>
+            </div>
+            <div class="neo-brutal gradient-bg p-8">
+                <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Community Management</h3>
+                <p class="text-blue-600">Build authentic connections with your audience through meaningful engagement and interaction.</p>
+            </div>
+            <div class="neo-brutal bg-white p-8">
+                <i class="fas fa-chart-line text-4xl text-blue-600 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Social Strategy</h3>
+                <p class="text-blue-600">Data-driven strategies that convert followers into loyal customers and brand advocates.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold mb-12 text-blue-600 text-center">OUR PORTFOLIO</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="portfolio-card neo-brutal bg-white p-6">
+                <img src="/api/placeholder/400/300" alt="Cahjepara Official" class="w-full rounded-lg mb-4">
+                <h3 class="text-2xl font-bold mb-2 text-blue-600">Cahjepara Official</h3>
+                <p class="text-blue-600">Furniture brand social media management with focus on product storytelling and lifestyle content.</p>
+                <div class="mt-4 flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">TikTok</span>
+                </div>
+            </div>
+            
+            <div class="portfolio-card neo-brutal bg-white p-6">
+                <img src="/api/placeholder/400/300" alt="Ternoae Official" class="w-full rounded-lg mb-4">
+                <h3 class="text-2xl font-bold mb-2 text-blue-600">Ternoae Official</h3>
+                <p class="text-blue-600">Fashion brand digital presence enhancement through strategic content and community engagement.</p>
+                <div class="mt-4 flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Facebook</span>
+                </div>
+            </div>
+            
+            <div class="portfolio-card neo-brutal bg-white p-6">
+                <img src="/api/placeholder/400/300" alt="Siinbooth Official" class="w-full rounded-lg mb-4">
+                <h3 class="text-2xl font-bold mb-2 text-blue-600">Siinbooth Official</h3>
+                <p class="text-blue-600">Photography studio social media transformation with creative content strategy.</p>
+                <div class="mt-4 flex gap-2">
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">TikTok</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="neo-brutal gradient-bg p-8 text-center">
+                <h3 class="text-5xl font-bold mb-2 text-blue-600 counter">1M+</h3>
+                <p class="text-xl text-blue-600">Followers Generated</p>
+            </div>
+            <div class="neo-brutal bg-white p-8 text-center">
+                <h3 class="text-5xl font-bold mb-2 text-blue-600 counter">500+</h3>
+                <p class="text-xl text-blue-600">Viral Posts</p>
+            </div>
+            <div class="neo-brutal gradient-bg p-8 text-center">
+                <h3 class="text-5xl font-bold mb-2 text-blue-600 counter">50+</h3>
+                <p class="text-xl text-blue-600">Happy Brands</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="container mx-auto px-4 py-16">
+        <div class="neo-brutal bg-white p-12 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6 text-blue-600">READY TO GROW?</h2>
+            <p class="text-xl text-blue-600 mb-8">Let's create a social media presence that captures hearts and drives results.</p>
+            <button class="bg-blue-600 text-white px-12 py-6 text-xl font-bold neo-brutal hover:bg-blue-700 rounded-lg">
+                START YOUR JOURNEY →
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-blue-600 py-12 neo-brutal mt-16">
+       <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-2xl font-bold mb-4">SOCIALIZE</h4>
+                    <p>Creating digital success stories since 2024</p>
+                    <p class="mt-2">hello@socialize.agency</p>
+                    <div class="mt-4">
+                        <p class="font-bold">Address:</p>
+                        <p>123 Digital Street</p>
+                        <p>Social Valley, SV 12345</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-2xl font-bold mb-4">FOLLOW US</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                            <i class="fab fa-tiktok text-xl"></i>
+                        </a>
+                        <a href="#" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-2xl font-bold mb-4">LET'S TALK</h4>
+                    <button class="neo-brutal bg-white text-blue-600 px-6 py-3 font-bold rounded-lg hover:scale-105 transition-transform">
+                        Book a Call →
+                    </button>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-blue-600 border-opacity-20 text-center">
+                <p>© 2024 SOCIALIZE. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Button and Popup -->
+    <div class="whatsapp-button floating-whatsapp">
+        <button id="whatsapp-toggle" class="neo-brutal bg-green-500 text-white p-4 rounded-full hover:scale-110 transition-transform">
+            <i class="fab fa-whatsapp text-2xl"></i>
+        </button>
+    </div>
+
+    <div class="whatsapp-popup neo-brutal bg-white p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-blue-600">Chat with us!</h3>
+            <button id="close-popup" class="text-blue-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <p class="text-gray-600 mb-4">Hello! 👋 Need help with your social media strategy? Message us on WhatsApp!</p>
+        <a href="https://wa.me/1234567890" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-green-600 transition-colors">
+            <i class="fab fa-whatsapp"></i>
+            Start Chat
+        </a>
+    </div>
+
+    <!-- Cookie Consent -->
+    <div class="cookie-consent neo-brutal bg-white p-6 max-w-md">
+        <h3 class="text-xl font-bold text-blue-600 mb-2">Cookie Notice</h3>
+        <p class="text-gray-600 mb-4">We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.</p>
+        <div class="flex gap-4">
+            <button id="accept-cookies" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Accept</button>
+            <button id="decline-cookies" class="text-blue-600 hover:underline">Decline</button>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-24 right-8 bg-blue-600 text-white p-4 rounded-full opacity-0 invisible transition-all duration-300 hover:scale-110">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+            }, 1000);
+        });
+
+        // Mobile Menu
+        document.getElementById('menu-button').addEventListener('click', function() {
+            document.querySelector('.mobile-menu').classList.add('show');
+            document.querySelector('.overlay').classList.add('show');
+        });
+
+        document.getElementById('close-menu').addEventListener('click', function() {
+            document.querySelector('.mobile-menu').classList.remove('show');
+            document.querySelector('.overlay').classList.remove('show');
+        });
+
+        document.querySelector('.overlay').addEventListener('click', function() {
+            document.querySelector('.mobile-menu').classList.remove('show');
+            document.querySelector('.overlay').classList.remove('show');
+        });
+
+        // WhatsApp Popup
+        document.getElementById('whatsapp-toggle').addEventListener('click', function() {
+            document.querySelector('.whatsapp-popup').classList.toggle('show');
+        });
+
+        document.getElementById('close-popup').addEventListener('click', function() {
+            document.querySelector('.whatsapp-popup').classList.remove('show');
+        });
+
+        // Cookie Consent
+        window.addEventListener('load', function() {
+            if (!localStorage.getItem('cookieConsent')) {
+                setTimeout(() => {
+                    document.querySelector('.cookie-consent').classList.add('show');
+                }, 2000);
+            }
+        });
+
+        document.getElementById('accept-cookies').addEventListener('click', function() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.querySelector('.cookie-consent').classList.remove('show');
+        });
+
+        document.getElementById('decline-cookies').addEventListener('click', function() {
+            localStorage.setItem('cookieConsent', 'declined');
+            document.querySelector('.cookie-consent').classList.remove('show');
+        });
+
+        // Back to Top Button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.remove('opacity-0', 'invisible');
+                backToTop.classList.add('opacity-100', 'visible');
+            } else {
+                backToTop.classList.add('opacity-0', 'invisible');
+                backToTop.classList.remove('opacity-100', 'visible');
+            }
+        });
+
+        document.getElementById('back-to-top').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        const options = {
+            threshold: 1,
+            rootMargin: "0px"
+        };
+
+        const observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const targetNumber = target.innerText.replace(/\D/g, '');
+                    let count = 0;
+                    const updateCount = () => {
+                        const increment = targetNumber / 100;
+                        if (count < targetNumber) {
+                            count += increment;
+                            target.innerText = Math.ceil(count) + '+';
+                            setTimeout(updateCount, 10);
+                        } else {
+                            target.innerText = targetNumber + '+';
+                        }
+                    };
+                    updateCount();
+                    observer.unobserve(target);
+                }
+            });
+        }, options);
+
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+    </script>
+</body>
+</html>

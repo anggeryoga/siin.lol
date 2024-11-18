@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,32 +9,32 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
-        
+
         body {
             font-family: 'Space Grotesk', sans-serif;
             background-color: #f0f7ff;
         }
-        
+
         .neo-brutal {
             border: 3px solid #2563eb;
             box-shadow: 6px 6px 0 #2563eb;
             transition: all 0.2s ease;
             border-radius: 12px;
         }
-        
+
         .neo-brutal:hover {
             transform: translate(-4px, -4px);
             box-shadow: 10px 10px 0 #2563eb;
         }
-        
+
         .gradient-bg {
             background: linear-gradient(135deg, #bfdbfe 0%, #dbeafe 100%);
         }
-        
+
         .portfolio-card {
             transition: all 0.3s ease;
         }
-        
+
         .portfolio-card:hover {
             transform: translateY(-8px);
         }
@@ -70,9 +71,17 @@
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         /* Loading Animation */
@@ -86,8 +95,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Cookie Consent */
@@ -144,6 +158,7 @@
         }
     </style>
 </head>
+
 <body class="bg-blue-50">
     <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
@@ -192,8 +207,11 @@
             <div class="md:w-1/2">
                 <div class="neo-brutal bg-white p-8">
                     <h1 class="text-5xl md:text-7xl font-bold mb-4 text-blue-600">MAKE YOUR SOCIAL MEDIA SHINE!</h1>
-                    <p class="text-xl text-blue-600 mb-6">We transform ordinary content into extraordinary experiences. Let's make your brand stand out.</p>
-                    <button class="bg-blue-600 text-white px-8 py-4 text-xl font-bold neo-brutal hover:bg-blue-700 rounded-lg">START NOW →</button>
+                    <p class="text-xl text-blue-600 mb-6">We transform ordinary content into extraordinary experiences.
+                        Let's make your brand stand out.</p>
+                    <button
+                        class="bg-blue-600 text-white px-8 py-4 text-xl font-bold neo-brutal hover:bg-blue-700 rounded-lg">START
+                        NOW →</button>
                 </div>
             </div>
             <div class="md:w-1/2">
@@ -222,17 +240,20 @@
             <div class="neo-brutal bg-white p-8">
                 <i class="fas fa-pencil-alt text-4xl text-blue-600 mb-4"></i>
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">Content Creation</h3>
-                <p class="text-blue-600">We create engaging content that resonates with your audience across all social media platforms.</p>
+                <p class="text-blue-600">We create engaging content that resonates with your audience across all social
+                    media platforms.</p>
             </div>
             <div class="neo-brutal gradient-bg p-8">
                 <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">Community Management</h3>
-                <p class="text-blue-600">Build authentic connections with your audience through meaningful engagement and interaction.</p>
+                <p class="text-blue-600">Build authentic connections with your audience through meaningful engagement
+                    and interaction.</p>
             </div>
             <div class="neo-brutal bg-white p-8">
                 <i class="fas fa-chart-line text-4xl text-blue-600 mb-4"></i>
                 <h3 class="text-2xl font-bold mb-4 text-blue-600">Social Strategy</h3>
-                <p class="text-blue-600">Data-driven strategies that convert followers into loyal customers and brand advocates.</p>
+                <p class="text-blue-600">Data-driven strategies that convert followers into loyal customers and brand
+                    advocates.</p>
             </div>
         </div>
     </section>
@@ -244,27 +265,30 @@
             <div class="portfolio-card neo-brutal bg-white p-6">
                 <img src="/api/placeholder/400/300" alt="Cahjepara Official" class="w-full rounded-lg mb-4">
                 <h3 class="text-2xl font-bold mb-2 text-blue-600">Cahjepara Official</h3>
-                <p class="text-blue-600">Furniture brand social media management with focus on product storytelling and lifestyle content.</p>
+                <p class="text-blue-600">Furniture brand social media management with focus on product storytelling and
+                    lifestyle content.</p>
                 <div class="mt-4 flex gap-2">
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">TikTok</span>
                 </div>
             </div>
-            
+
             <div class="portfolio-card neo-brutal bg-white p-6">
                 <img src="/api/placeholder/400/300" alt="Ternoae Official" class="w-full rounded-lg mb-4">
                 <h3 class="text-2xl font-bold mb-2 text-blue-600">Ternoae Official</h3>
-                <p class="text-blue-600">Fashion brand digital presence enhancement through strategic content and community engagement.</p>
+                <p class="text-blue-600">Fashion brand digital presence enhancement through strategic content and
+                    community engagement.</p>
                 <div class="mt-4 flex gap-2">
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Facebook</span>
                 </div>
             </div>
-            
+
             <div class="portfolio-card neo-brutal bg-white p-6">
                 <img src="/api/placeholder/400/300" alt="Siinbooth Official" class="w-full rounded-lg mb-4">
                 <h3 class="text-2xl font-bold mb-2 text-blue-600">Siinbooth Official</h3>
-                <p class="text-blue-600">Photography studio social media transformation with creative content strategy.</p>
+                <p class="text-blue-600">Photography studio social media transformation with creative content strategy.
+                </p>
                 <div class="mt-4 flex gap-2">
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">Instagram</span>
                     <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">TikTok</span>
@@ -295,7 +319,8 @@
     <section id="contact" class="container mx-auto px-4 py-16">
         <div class="neo-brutal bg-white p-12 text-center">
             <h2 class="text-4xl md:text-6xl font-bold mb-6 text-blue-600">READY TO GROW?</h2>
-            <p class="text-xl text-blue-600 mb-8">Let's create a social media presence that captures hearts and drives results.</p>
+            <p class="text-xl text-blue-600 mb-8">Let's create a social media presence that captures hearts and drives
+                results.</p>
             <button class="bg-blue-600 text-white px-12 py-6 text-xl font-bold neo-brutal hover:bg-blue-700 rounded-lg">
                 START YOUR JOURNEY →
             </button>
@@ -304,7 +329,7 @@
 
     <!-- Footer -->
     <footer class="gradient-bg text-blue-600 py-12 neo-brutal mt-16">
-       <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-3 gap-8">
                 <div>
                     <h4 class="text-2xl font-bold mb-4">SOCIALIZE</h4>
@@ -319,22 +344,28 @@
                 <div>
                     <h4 class="text-2xl font-bold mb-4">FOLLOW US</h4>
                     <div class="flex space-x-4">
-                        <a href="https://tiktok.com/@siinme" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                        <a href="https://tiktok.com/@siinme"
+                            class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
                             <i class="fab fa-tiktok text-xl"></i>
                         </a>
-                        <a href="https://instagram.com/anggerajipra" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                        <a href="https://instagram.com/anggerajipra"
+                            class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
                             <i class="fab fa-instagram text-xl"></i>
                         </a>
-                        <a href="#" class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
+                        <a href="#"
+                            class="neo-brutal bg-white text-blue-600 p-2 rounded-lg hover:scale-110 transition-transform">
                             <i class="fab fa-facebook text-xl"></i>
                         </a>
                     </div>
                 </div>
                 <div>
                     <h4 class="text-2xl font-bold mb-4">LET'S TALK</h4>
-                    <button class="neo-brutal bg-white text-blue-600 px-6 py-3 font-bold rounded-lg hover:scale-105 transition-transform">
-                        Book a Call →
-                    </button>
+                    <a href="mailto:mail@siin.lol" class="inline-block">
+                        <button
+                            class="neo-brutal bg-white text-blue-600 px-6 py-3 font-bold rounded-lg hover:scale-105 transition-transform">
+                            Book a Call →
+                        </button>
+                    </a>
                 </div>
             </div>
             <div class="mt-12 pt-8 border-t border-blue-600 border-opacity-20 text-center">
@@ -345,7 +376,8 @@
 
     <!-- WhatsApp Button and Popup -->
     <div class="whatsapp-button floating-whatsapp">
-        <button id="whatsapp-toggle" class="neo-brutal bg-green-500 text-white p-4 rounded-full hover:scale-110 transition-transform">
+        <button id="whatsapp-toggle"
+            class="neo-brutal bg-green-500 text-white p-4 rounded-full hover:scale-110 transition-transform">
             <i class="fab fa-whatsapp text-2xl"></i>
         </button>
     </div>
@@ -358,7 +390,8 @@
             </button>
         </div>
         <p class="text-gray-600 mb-4">Hello! 👋 Need help with your social media strategy? Message us on WhatsApp!</p>
-        <a href="https://wa.me/6285155145788" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-green-600 transition-colors">
+        <a href="https://wa.me/6285155145788" target="_blank"
+            class="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-green-600 transition-colors">
             <i class="fab fa-whatsapp"></i>
             Start Chat
         </a>
@@ -367,53 +400,56 @@
     <!-- Cookie Consent -->
     <div class="cookie-consent neo-brutal bg-white p-6 max-w-md">
         <h3 class="text-xl font-bold text-blue-600 mb-2">Cookie Notice</h3>
-        <p class="text-gray-600 mb-4">We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.</p>
+        <p class="text-gray-600 mb-4">We use cookies to enhance your experience. By continuing to visit this site you
+            agree to our use of cookies.</p>
         <div class="flex gap-4">
-            <button id="accept-cookies" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Accept</button>
+            <button id="accept-cookies"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Accept</button>
             <button id="decline-cookies" class="text-blue-600 hover:underline">Decline</button>
         </div>
     </div>
 
     <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-24 right-8 bg-blue-600 text-white p-4 rounded-full opacity-0 invisible transition-all duration-300 hover:scale-110">
+    <button id="back-to-top"
+        class="fixed bottom-24 right-8 bg-blue-600 text-white p-4 rounded-full opacity-0 invisible transition-all duration-300 hover:scale-110">
         <i class="fas fa-arrow-up"></i>
     </button>
 
     <script>
         // Loading Screen
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             setTimeout(() => {
                 document.getElementById('loading-screen').style.display = 'none';
             }, 1000);
         });
 
         // Mobile Menu
-        document.getElementById('menu-button').addEventListener('click', function() {
+        document.getElementById('menu-button').addEventListener('click', function () {
             document.querySelector('.mobile-menu').classList.add('show');
             document.querySelector('.overlay').classList.add('show');
         });
 
-        document.getElementById('close-menu').addEventListener('click', function() {
+        document.getElementById('close-menu').addEventListener('click', function () {
             document.querySelector('.mobile-menu').classList.remove('show');
             document.querySelector('.overlay').classList.remove('show');
         });
 
-        document.querySelector('.overlay').addEventListener('click', function() {
+        document.querySelector('.overlay').addEventListener('click', function () {
             document.querySelector('.mobile-menu').classList.remove('show');
             document.querySelector('.overlay').classList.remove('show');
         });
 
         // WhatsApp Popup
-        document.getElementById('whatsapp-toggle').addEventListener('click', function() {
+        document.getElementById('whatsapp-toggle').addEventListener('click', function () {
             document.querySelector('.whatsapp-popup').classList.toggle('show');
         });
 
-        document.getElementById('close-popup').addEventListener('click', function() {
+        document.getElementById('close-popup').addEventListener('click', function () {
             document.querySelector('.whatsapp-popup').classList.remove('show');
         });
 
         // Cookie Consent
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             if (!localStorage.getItem('cookieConsent')) {
                 setTimeout(() => {
                     document.querySelector('.cookie-consent').classList.add('show');
@@ -421,18 +457,18 @@
             }
         });
 
-        document.getElementById('accept-cookies').addEventListener('click', function() {
+        document.getElementById('accept-cookies').addEventListener('click', function () {
             localStorage.setItem('cookieConsent', 'accepted');
             document.querySelector('.cookie-consent').classList.remove('show');
         });
 
-        document.getElementById('decline-cookies').addEventListener('click', function() {
+        document.getElementById('decline-cookies').addEventListener('click', function () {
             localStorage.setItem('cookieConsent', 'declined');
             document.querySelector('.cookie-consent').classList.remove('show');
         });
 
         // Back to Top Button
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const backToTop = document.getElementById('back-to-top');
             if (window.pageYOffset > 300) {
                 backToTop.classList.remove('opacity-0', 'invisible');
@@ -443,7 +479,7 @@
             }
         });
 
-        document.getElementById('back-to-top').addEventListener('click', function() {
+        document.getElementById('back-to-top').addEventListener('click', function () {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
@@ -454,7 +490,7 @@
             rootMargin: "0px"
         };
 
-        const observer = new IntersectionObserver(function(entries, observer) {
+        const observer = new IntersectionObserver(function (entries, observer) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const target = entry.target;
@@ -481,4 +517,5 @@
         });
     </script>
 </body>
+
 </html>

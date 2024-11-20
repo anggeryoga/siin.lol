@@ -8,217 +8,218 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
   <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
 
-    body {
-      background: linear-gradient(135deg, #1563d8 0%, #005ef5 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      color: #2d3436;
-    }
+  body {
+    background: linear-gradient(135deg, #1563d8 0%, #005ef5 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #2d3436;
+  }
 
+  .container {
+    background: rgba(255, 255, 255, 0.95);
+    max-width: 600px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #2d3436;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #636e72;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    background: #f8f9fa;
+    border: 2px solid #dfe6e9;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #74b9ff;
+    box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.2);
+  }
+
+  .difficulty-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .difficulty-btn {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .difficulty-btn.easy {
+    background: #55efc4;
+    color: #006266;
+  }
+
+  .difficulty-btn.medium {
+    background: #ffeaa7;
+    color: #b7410e;
+  }
+
+  .difficulty-btn.hard {
+    background: #ff7675;
+    color: #d63031;
+  }
+
+  .difficulty-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+
+  .difficulty-btn.selected {
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  button {
+    background: #74b9ff;
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  button:hover {
+    background: #0984e3;
+    transform: translateY(-2px);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 8px;
+    background: #dfe6e9;
+    border-radius: 4px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+
+  .progress {
+    height: 100%;
+    background: #74b9ff;
+    transition: width 0.3s ease;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0984e3;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #636e72;
+    margin-top: 0.3rem;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .timer {
+    background: #74b9ff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  .question-number {
+    font-weight: 500;
+    color: #636e72;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  @media (max-width: 480px) {
     .container {
-      background: rgba(255, 255, 255, 0.95);
-      max-width: 600px;
-      width: 100%;
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      color: #2d3436;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #636e72;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      font-size: 1rem;
-      background: #f8f9fa;
-      border: 2px solid #dfe6e9;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #74b9ff;
-      box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.2);
+      padding: 1.5rem;
     }
 
     .difficulty-selector {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      flex-direction: column;
     }
 
-    .difficulty-btn {
-      flex: 1;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 10px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .difficulty-btn.easy {
-      background: #55efc4;
-      color: #006266;
-    }
-
-    .difficulty-btn.medium {
-      background: #ffeaa7;
-      color: #b7410e;
-    }
-
-    .difficulty-btn.hard {
-      background: #ff7675;
-      color: #d63031;
-    }
-
-    .difficulty-btn:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.1);
-    }
-
-    .difficulty-btn.selected {
-      transform: scale(0.95);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    button {
-      background: #74b9ff;
-      color: #fff;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      font-weight: 500;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      margin-top: 1rem;
-    }
-
-    button:hover {
-      background: #0984e3;
-      transform: translateY(-2px);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .progress-container {
-      width: 100%;
-      height: 8px;
-      background: #dfe6e9;
-      border-radius: 4px;
-      margin: 1rem 0;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background: #74b9ff;
-      transition: width 0.3s ease;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 1rem;
-      margin-top: 1.5rem;
+    h1 {
+      font-size: 1.5rem;
     }
 
     .stat-card {
-      background: #f8f9fa;
-      padding: 1rem;
-      border-radius: 10px;
-      text-align: center;
+      padding: 0.8rem;
     }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #0984e3;
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: #636e72;
-      margin-top: 0.3rem;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .timer {
-      background: #74b9ff;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 10px;
-      font-weight: 500;
-    }
-
-    .question-number {
-      font-weight: 500;
-      color: #636e72;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .fade-in {
-      animation: fadeIn 0.5s ease forwards;
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 1.5rem;
-      }
-
-      .difficulty-selector {
-        flex-direction: column;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .stat-card {
-        padding: 0.8rem;
-      }
-    }
+  }
   </style>
+
 </head>
 <body>
   <div class="container">
@@ -253,28 +254,40 @@
       <input type="text" id="answer" placeholder="Enter your answer">
       <button id="submit-answer">Submit Answer</button>
     </div>
+    <div id="preview-screen" class="preview-screen hidden">
+      <div id="preview-content"></div>
+    </div>
 
     <div id="result-screen" class="hidden fade-in">
-      <h1>Your Results</h1>
       <div id="result-container">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="score-value"></div>
-            <div class="stat-label">Score</div>
+        <div class="result-card">
+          <div class="result-header">
+            <h2>Quiz Results</h2>
           </div>
-          <div class="stat-card">
-            <div class="stat-value" id="accuracy-value"></div>
-            <div class="stat-label">Accuracy</div>
+          <div class="user-info">
+            <h3 id="user-name-display"></h3>
+            <p id="completion-date"></p>
           </div>
-          <div class="stat-card">
-            <div class="stat-value" id="time-taken"></div>
-            <div class="stat-label">Time</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="difficulty-value"></div>
-            <div class="stat-label">Level</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="score-value"></div>
+              <div class="stat-label">Score</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="accuracy-value"></div>
+              <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="time-taken"></div>
+              <div class="stat-label">Time</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="difficulty-value"></div>
+              <div class="stat-label">Level</div>
+            </div>
           </div>
         </div>
+        <div class="answer-review" id="answer-review"></div>
       </div>
       <button id="download-btn">Download Results</button>
       <button id="restart-btn">Try Again</button>
@@ -282,206 +295,90 @@
   </div>
 
   <script>
-    const questions = {
-      easy: [
-        { question: "What is 5 + 3?", answer: "8" },
-        { question: "What is 10 - 4?", answer: "6" },
-        { question: "What is 2 × 6?", answer: "12" },
-        { question: "What is 15 ÷ 3?", answer: "5" },
-        { question: "What is 7 + 8?", answer: "15" },
-        { question: "What is 20 - 7?", answer: "13" },
-        { question: "What is 4 × 3?", answer: "12" },
-        { question: "What is 16 ÷ 4?", answer: "4" },
-        { question: "What is 9 + 6?", answer: "15" },
-        { question: "What is 11 - 5?", answer: "6" }
-      ],
-      medium: [
-        { question: "What is 12 × 8?", answer: "96" },
-        { question: "What is 45 ÷ 5?", answer: "9" },
-        { question: "What is 23 + 59?", answer: "82" },
-        { question: "What is 67 - 28?", answer: "39" },
-        { question: "What is half of 86?", answer: "43" },
-        { question: "What is 15 × 7?", answer: "105" },
-        { question: "What is 72 ÷ 8?", answer: "9" },
-        { question: "What is 34 + 87?", answer: "121" },
-        { question: "What is 95 - 37?", answer: "58" },
-        { question: "What is double 44?", answer: "88" }
-      ],
-      hard: [
-        { question: "What is 25% of 160?", answer: "40" },
-        { question: "What is 13 × 14?", answer: "182" },
-        { question: "What is 225 ÷ 15?", answer: "15" },
-        { question: "What is 156 + 289?", answer: "445" },
-        { question: "What is 75% of 240?", answer: "180" },
-        { question: "What is 17 × 16?", answer: "272" },
-        { question: "What is 196 ÷ 14?", answer: "14" },
-        { question: "What is 245 + 467?", answer: "712" },
-        { question: "What is 30% of 150?", answer: "45" },
-        { question: "What is 23 × 15?", answer: "345" }
-      ]
-    };
+    // Constants and Variables
+const questions = {
+  easy: [
+    { question: "What is 26 + 39?", answer: "65" },
+    { question: "What is 84 - 27?", answer: "57" },
+    { question: "What is 7 × 9?", answer: "63" },
+    { question: "What is 125 ÷ 5?", answer: "25" },
+    { question: "What is double 38?", answer: "76" },
+    { question: "What is 65 - 28?", answer: "37" },
+    { question: "What is 6 × 12?", answer: "72" },
+    { question: "What is 144 ÷ 12?", answer: "12" },
+    { question: "What is 47 + 56?", answer: "103" },
+    { question: "What is half of 94?", answer: "47" }
+  ],
+  medium: [
+    { question: "What is 23 × 16?", answer: "368" },
+    { question: "What is 624 ÷ 13?", answer: "48" },
+    { question: "What is 456 + 289?", answer: "745" },
+    { question: "What is 527 - 168?", answer: "359" },
+    { question: "What is 40% of 350?", answer: "140" },
+    { question: "What is 31 × 24?", answer: "744" },
+    { question: "What is 936 ÷ 24?", answer: "39" },
+    { question: "What is 678 + 459?", answer: "1137" },
+    { question: "What is 842 - 397?", answer: "445" },
+    { question: "What is 85% of 400?", answer: "340" }
+  ],
+  hard: [
+    { question: "If 3x + 7 = 22, what is x?", answer: "5" },
+    { question: "What is 37 × 46?", answer: "1702" },
+    { question: "What is 3825 ÷ 25?", answer: "153" },
+    { question: "What is √625 + 178?", answer: "203" },
+    { question: "What is 62.5% of 1280?", answer: "800" },
+    { question: "If 5y - 18 = 92, what is y?", answer: "22" },
+    { question: "What is 2736 ÷ 36?", answer: "76" },
+    { question: "What is 1458 + 2793?", answer: "4251" },
+    { question: "What is the cube root of 1000?", answer: "10" },
+    { question: "If 4z + 15 = 135, what is z?", answer: "30" }
+  ]
+};
 
-    let currentQuestion = 0;
-    let score = 0;
-    let timeLeft = 180;
-    let timer;
-    let startTime;
-    let selectedDifficulty = null;
-    let currentQuestions = [];
+let currentQuestion = 0;
+let score = 0;
+let timeLeft = 180;
+let timer;
+let startTime;
+let selectedDifficulty = null;
+let currentQuestions = [];
+let userAnswers = [];
 
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    const startScreen = document.getElementById("start-screen");
-    const quizContainer = document.getElementById("quiz-container");
-    const resultScreen = document.getElementById("result-screen");
-    const nameInput = document.getElementById("name");
-    const ageInput = document.getElementById("age");
-    const startBtn = document.getElementById("start-btn");
-    const questionTitle = document.getElementById("question-title");
-    const questionText = document.getElementById("question");
-    const answerInput = document.getElementById("answer");
-    const submitAnswerBtn = document.getElementById("submit-answer");
-    const timerDisplay = document.getElementById("time");
-    const progressBar = document.getElementById("progress");
+// DOM Elements
+const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+const startScreen = document.getElementById("start-screen");
+const quizContainer = document.getElementById("quiz-container");
+const resultScreen = document.getElementById("result-screen");
+const nameInput = document.getElementById("name");
+const ageInput = document.getElementById("age");
+const startBtn = document.getElementById("start-btn");
+const questionTitle = document.getElementById("question-title");
+const questionText = document.getElementById("question");
+const answerInput = document.getElementById("answer");
+const submitAnswerBtn = document.getElementById("submit-answer");
+const timerDisplay = document.getElementById("time");
+const progressBar = document.getElementById("progress");
 
-    difficultyBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        difficultyBtns.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedDifficulty = btn.dataset.difficulty;
-      });
-    });
-
-    startBtn.addEventListener("click", () => {
-      if (nameInput.value.trim() === "" || !ageInput.value || !selectedDifficulty) {
-        alert("Please fill in all fields and select a difficulty level!");
-        return;
-      }
-      currentQuestions = questions[selectedDifficulty];
-      startScreen.classList.add("hidden");
-      quizContainer.classList.remove("hidden");
-      startTime = Date.now();
-      startTimer();
-      showQuestion();
-    });
-
-    function startTimer() {
-      timer = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = timeLeft;
-        if (timeLeft <= 0) {
-          endQuiz();
-        }
-      }, 1000);
-    }
-
-    function showQuestion() {
-      if (currentQuestion >= currentQuestions.length) {
-        endQuiz();
-        return;
-      }
-      questionTitle.textContent = `Question ${currentQuestion + 1}/${currentQuestions.length}`;
-      questionText.textContent = currentQuestions[currentQuestion].question;
-      answerInput.value = "";
-      updateProgress();
-    }
-
-    function updateProgress() {
-      const progress = (currentQuestion / currentQuestions.length) * 100;
-      progressBar.style.width = `${progress}%`;
-    }
-
-    submitAnswerBtn.addEventListener("click", () => {
-      const userAnswer = answerInput.value.trim();
-      if (userAnswer === currentQuestions[currentQuestion].answer) {
-        score++;
-      }
-      currentQuestion++;
-      showQuestion();
-    });
-
-    function endQuiz() {
-      clearInterval(timer);
-      const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-      const accuracy = ((score / currentQuestions.length) * 100).toFixed(1);
-
-      quizContainer.classList.add("hidden");
-      resultScreen.classList.remove("hidden");
-
-      document.getElementById("score-value").textContent = `${score}/${currentQuestions.length}`;
-      document.getElementById("accuracy-value").textContent = `${accuracy}%`;
-      document.getElementById("time-taken").textContent = `${timeTaken}s`;
-      document.getElementById("difficulty-value").textContent = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
-    }
-
-    document.getElementById("download-btn").addEventListener("click", () => {
-      const resultContainer = document.getElementById("result-container");
-    html2canvas(resultContainer).then(canvas => {
-  const link = document.createElement('a');
-  // Convert the canvas to a data URL
-  const imageData = canvas.toDataURL('image/png');
-  link.href = imageData;
-  
-  // Create filename with user name, difficulty and date
-  const userName = nameInput.value.trim();
-  const date = new Date().toLocaleDateString().replace(/\//g, '-');
-  link.download = `math-quiz-${userName}-${selectedDifficulty}-${date}.png`;
-  
-  // Trigger download
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
+// Event Listeners
+difficultyBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    difficultyBtns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedDifficulty = btn.dataset.difficulty;
+  });
 });
 
-document.getElementById("restart-btn").addEventListener("click", () => {
-  // Reset all variables
-  currentQuestion = 0;
-  score = 0;
-  timeLeft = 180;
-  selectedDifficulty = null;
-  currentQuestions = [];
-  
-  // Clear inputs
-  nameInput.value = "";
-  ageInput.value = "";
-  answerInput.value = "";
-  
-  // Remove difficulty selection
-  difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-  
-  // Show start screen
-  resultScreen.classList.add("hidden");
-  startScreen.classList.remove("hidden");
-  
-  // Reset progress bar
-  progressBar.style.width = "0%";
-  
-  // Reset timer display
-  timerDisplay.textContent = "180";
-});
+startBtn.addEventListener("click", startQuiz);
+submitAnswerBtn.addEventListener("click", submitAnswer);
+document.getElementById("restart-btn").addEventListener("click", restartQuiz);
+document.getElementById("download-btn").addEventListener("click", downloadResults);
 
-// Add keyboard support for answer submission
 answerInput.addEventListener("keyup", (event) => {
   if (event.key === "Enter") {
     submitAnswerBtn.click();
   }
 });
 
-// Add auto-focus to answer input when question is shown
-const focusAnswerInput = () => {
-  setTimeout(() => {
-    answerInput.focus();
-  }, 100);
-};
-
-// Modify showQuestion to include auto-focus
-const originalShowQuestion = showQuestion;
-showQuestion = () => {
-  originalShowQuestion();
-  focusAnswerInput();
-};
-
-// Prevent form submission on enter key in name and age inputs
 nameInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -495,6 +392,213 @@ ageInput.addEventListener("keydown", (event) => {
     startBtn.click();
   }
 });
-</script>
-  </body>
+
+// Functions
+function startQuiz() {
+  if (nameInput.value.trim() === "" || !ageInput.value || !selectedDifficulty) {
+    alert("Please fill in all fields and select a difficulty level!");
+    return;
+  }
+  currentQuestions = questions[selectedDifficulty];
+  startScreen.classList.add("hidden");
+  quizContainer.classList.remove("hidden");
+  startTime = Date.now();
+  startTimer();
+  showQuestion();
+}
+
+function startTimer() {
+  timer = setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = timeLeft;
+    if (timeLeft <= 0) {
+      endQuiz();
+    }
+  }, 1000);
+}
+
+function showQuestion() {
+  if (currentQuestion >= currentQuestions.length) {
+    endQuiz();
+    return;
+  }
+  questionTitle.textContent = `Question ${currentQuestion + 1}/${currentQuestions.length}`;
+  questionText.textContent = currentQuestions[currentQuestion].question;
+  answerInput.value = "";
+  updateProgress();
+  focusAnswerInput();
+}
+
+function updateProgress() {
+  const progress = (currentQuestion / currentQuestions.length) * 100;
+  progressBar.style.width = `${progress}%`;
+}
+
+function submitAnswer() {
+  const userAnswer = answerInput.value.trim();
+  const correctAnswer = currentQuestions[currentQuestion].answer;
+  
+  userAnswers.push({
+    question: currentQuestions[currentQuestion].question,
+    userAnswer: userAnswer,
+    correctAnswer: correctAnswer,
+    isCorrect: userAnswer === correctAnswer
+  });
+
+  if (userAnswer === correctAnswer) {
+    score++;
+  }
+  currentQuestion++;
+  showQuestion();
+  localStorage.setItem('mathQuizAnswers', JSON.stringify(userAnswers));
+}
+
+function endQuiz() {
+  clearInterval(timer);
+  const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+  const accuracy = ((score / currentQuestions.length) * 100).toFixed(1);
+
+  quizContainer.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  // Update result display
+  document.getElementById("user-name-display").textContent = nameInput.value;
+  document.getElementById("completion-date").textContent = new Date().toLocaleDateString();
+  document.getElementById("score-value").textContent = `${score}/${currentQuestions.length}`;
+  document.getElementById("accuracy-value").textContent = `${accuracy}%`;
+  document.getElementById("time-taken").textContent = `${timeTaken}s`;
+  document.getElementById("difficulty-value").textContent = 
+    selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+
+  displayAnswerReview();
+}
+
+
+function downloadResults() {
+  const downloadContainer = document.createElement('div');
+  downloadContainer.style.padding = '30px';
+  downloadContainer.style.background = 'white';
+  downloadContainer.style.borderRadius = '15px';
+  downloadContainer.style.width = '600px';
+  downloadContainer.style.maxHeight = '800px';
+  downloadContainer.style.overflowY = 'auto';
+
+  let answerReviewHTML = '';
+  userAnswers.forEach((answer, index) => {
+    answerReviewHTML += `
+      <div style="background: ${answer.isCorrect ? '#e8f5e9' : '#ffebee'}; 
+           padding: 10px; 
+           margin: 5px 0; 
+           border-radius: 8px;
+           display: flex;
+           align-items: start;
+           gap: 10px">
+        <div style="color: ${answer.isCorrect ? '#2e7d32' : '#c62828'}; font-weight: bold;">
+          ${answer.isCorrect ? '✓' : '✗'}
+        </div>
+        <div>
+          <strong>Question ${index + 1}:</strong> ${answer.question}<br>
+          <span style="color: #666;">Your answer: ${answer.userAnswer}</span>
+          ${!answer.isCorrect ? `<br><span style="color: #c62828;">Correct answer: ${answer.correctAnswer}</span>` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  downloadContainer.innerHTML = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="margin: 0; color: #333; font-size: 24px;">Math Quiz Results</h2>
+      <p style="margin: 10px 0; color: #666;">
+        Name: ${nameInput.value}<br>
+        Age: ${ageInput.value}<br>
+        Date: ${new Date().toLocaleDateString()}<br>
+        Time: ${new Date().toLocaleTimeString()}
+      </p>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 24px; font-weight: bold; color: #333;">
+          ${document.getElementById("score-value").textContent}
+        </div>
+        <div style="font-size: 14px; color: #666;">Score</div>
+      </div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 24px; font-weight: bold; color: #333;">
+          ${document.getElementById("accuracy-value").textContent}
+        </div>
+        <div style="font-size: 14px; color: #666;">Accuracy</div>
+      </div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 24px; font-weight: bold; color: #333;">
+          ${document.getElementById("time-taken").textContent}
+        </div>
+        <div style="font-size: 14px; color: #666;">Time Taken</div>
+      </div>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center;">
+        <div style="font-size: 24px; font-weight: bold; color: #333;">
+          ${document.getElementById("difficulty-value").textContent}
+        </div>
+        <div style="font-size: 14px; color: #666;">Difficulty Level</div>
+      </div>
+    </div>
+    <div style="margin-top: 20px;">
+      <h3 style="color: #333; margin-bottom: 10px;">Answer Review</h3>
+      ${answerReviewHTML}
+    </div>
+  `;
+
+  document.body.appendChild(downloadContainer);
+
+  html2canvas(downloadContainer).then(canvas => {
+    const link = document.createElement('a');
+    const imageData = canvas.toDataURL('image/png');
+    link.href = imageData;
+    
+    const userName = nameInput.value.trim();
+    const date = new Date().toLocaleDateString().replace(/\//g, '-');
+    link.download = `math-quiz-${userName}-${selectedDifficulty}-${date}.png`;
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    document.body.removeChild(downloadContainer);
+  });
+}
+
+function restartQuiz() {
+  localStorage.removeItem('mathQuizAnswers');
+  currentQuestion = 0;
+  score = 0;
+  timeLeft = 180;
+  selectedDifficulty = null;
+  currentQuestions = [];
+  userAnswers = [];
+  
+  nameInput.value = "";
+  ageInput.value = "";
+  answerInput.value = "";
+  
+  difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+  
+  resultScreen.classList.add("hidden");
+  startScreen.classList.remove("hidden");
+  
+  progressBar.style.width = "0%";
+  timerDisplay.textContent = "180";
+}
+
+function focusAnswerInput() {
+  setTimeout(() => {
+    answerInput.focus();
+  }, 100);
+}
+
+// Initialize
+const savedAnswers = localStorage.getItem('mathQuizAnswers');
+if (savedAnswers) {
+  userAnswers = JSON.parse(savedAnswers);
+}
+  </script>
+</body>
 </html>

@@ -224,606 +224,606 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        const soalPsikotes = [
-            {
-                id: 1,
-                soal: "SEMINAR : SARJANA:::",
-                pilihan: [
-                    "A. Akademi: taruna",
-                    "B. Rumah sakit: pasien",
-                    "C. Ruang pengadilan : saksi",
-                    "D. Konservator: seniman",
-                    "E. Perpustakaan: peneliti"
-                ],
-                jawaban: "E"
-            },
-            {
-                id: 2,
-                soal: "FIKTIF: FAKTA:::",
-                pilihan: [
-                    "A. Dagelan: sandiwara",
-                    "B. Dongeng: peristiwa",
-                    "C. Dugaan: rekaan",
-                    "D. Data: estimasi",
-                    "E. Rencana: projeksi"
-                ],
-                jawaban: "B"
-            },
- {
-      id: 3,
-      soal: "MATA: TELINGA:::",
-      pilihan: [
-        "a. Jari: tangan",
-        "b. Lidah: hidung",
-        "c. Kaki: paha",
-        "d. Lutut: siku",
-        "e. Perut: dada",
-      ],
-      jawaban: "b",
+  const soalPsikotes = [
+    {
+        id: 1,
+        soal: "SEMINAR : SARJANA:::",
+        pilihan: [
+            "A. Akademi: Taruna",
+            "B. Rumah Sakit: Pasien",
+            "C. Ruang Pengadilan : Saksi",
+            "D. Konservator: Seniman",
+            "E. Perpustakaan: Peneliti"
+        ],
+        jawaban: "E"
     },
     {
-      id: 4,
-      soal: "UANG : PUNDI-PUNDI:::",
-      pilihan: [
-        "a. Hubungan : jambangan",
-        "b. Gelas: nampan",
-        "c. Air: tempayan",
-        "d. Buku: percetakan",
-        "e. Rokok: asbak",
-      ],
-      jawaban: "c",
+        id: 2,
+        soal: "FIKTIF: FAKTA:::",
+        pilihan: [
+            "A. Dagelan: Sandiwara",
+            "B. Dongeng: Peristiwa",
+            "C. Dugaan: Rekaan",
+            "D. Data: Estimasi",
+            "E. Rencana: Proyeksi"
+        ],
+        jawaban: "B"
     },
     {
-      id: 5,
-      soal: "POHON : BUAH:::",
-      pilihan: [
-        "a. Domba: daging",
-        "b. Sapi: susu",
-        "c. Telur: ayam",
-        "d. Jentik: nyamuk",
-        "e. Setam: sapit",
-      ],
-      jawaban: "b",
+        id: 3,
+        soal: "MATA: TELINGA:::",
+        pilihan: [
+            "A. Jari: Tangan",
+            "B. Lidah: Hidung",
+            "C. Kaki: Paha",
+            "D. Lutut: Siku",
+            "E. Perut: Dada"
+        ],
+        jawaban: "B"
     },
     {
-      id: 6,
-      soal: "SENAPAN : BERBURU:::",
-      pilihan: [
-        "a. Kapal: berlabuh",
-        "b. Kereta: langsir",
-        "c. Pancing: ikan",
-        "d. Perangkap: menangkap",
-        "e. Parang: mengasah",
-      ],
-      jawaban: "d",
+        id: 4,
+        soal: "UANG : PUNDI-PUNDI:::",
+        pilihan: [
+            "A. Hubungan : Jambangan",
+            "B. Gelas: Nampan",
+            "C. Air: Tempayan",
+            "D. Buku: Percetakan",
+            "E. Rokok: Asbak"
+        ],
+        jawaban: "C"
     },
     {
-      id: 7,
-      soal: "BATA: TANAH LIAT:::",
-      pilihan: [
-        "a. Batu: pasir",
-        "b. Tembikar: keramik",
-        "c. Bunga: buah",
-        "d. Beton: semen",
-        "e. Kertas: buku",
-      ],
-      jawaban: "d",
+        id: 5,
+        soal: "POHON : BUAH:::",
+        pilihan: [
+            "A. Domba: Daging",
+            "B. Sapi: Susu",
+            "C. Telur: Ayam",
+            "D. Jentik: Nyamuk",
+            "E. Setam: Sapit"
+        ],
+        jawaban: "B"
     },
     {
-      id: 8,
-      soal: "PANAS: API:::",
-      pilihan: [
-        "a. Hujan: awan",
-        "b. Abu: arang",
-        "c. Terang: matahari",
-        "d. Hangat: listrik",
-        "e. Dingin: beku",
-      ],
-      jawaban: "c",
+        id: 6,
+        soal: "SENAPAN : BERBURU:::",
+        pilihan: [
+            "A. Kapal: Berlabuh",
+            "B. Kereta: Langsir",
+            "C. Pancing: Ikan",
+            "D. Perangkap: Menangkap",
+            "E. Parang: Mengasah"
+        ],
+        jawaban: "D"
     },
     {
-      id: 9,
-      soal: "KULIT: SISIK:::",
-      pilihan: [
-        "a. Tegel: lantai",
-        "b. Rumah: kamar",
-        "c. Keramik: mozaik",
-        "d. Dinding: cat",
-        "e. Atap: genteng",
-      ],
-      jawaban: "e",
+        id: 7,
+        soal: "BATA: TANAH LIAT:::",
+        pilihan: [
+            "A. Batu: Pasir",
+            "B. Tembikar: Keramik",
+            "C. Bunga: Buah",
+            "D. Beton: Semen",
+            "E. Kertas: Buku"
+        ],
+        jawaban: "D"
     },
     {
-      id: 10,
-      soal: "METEOROLOGI: CUACA:::",
-      pilihan: [
-        "a. Astronomi: fisika",
-        "b. Gerontology: keturunan",
-        "c. Pedagogik: sekolah",
-        "d. Patologi: penyakit",
-        "e. Antropologi: fosil",
-      ],
-      jawaban: "d",
+        id: 8,
+        soal: "PANAS: API:::",
+        pilihan: [
+            "A. Hujan: Awan",
+            "B. Abu: Arang",
+            "C. Terang: Matahari",
+            "D. Hangat: Listrik",
+            "E. Dingin: Beku"
+        ],
+        jawaban: "C"
     },
     {
-      id: 11,
-      soal: "LAPAR : NASI:::",
-      pilihan: [
-        "a. Haus: air",
-        "b. Mual: obat",
-        "c. Mengantuk: melamun",
-        "d. Bosan: tidur",
-        "e. Membaca: gambar",
-      ],
-      jawaban: "a",
+        id: 9,
+        soal: "KULIT: SISIK:::",
+        pilihan: [
+            "A. Tegel: Lantai",
+            "B. Rumah: Kamar",
+            "C. Keramik: Mozaik",
+            "D. Dinding: Cat",
+            "E. Atap: Genteng"
+        ],
+        jawaban: "E"
     },
     {
-      id: 12,
-      soal: "KEPALA: HELM:::",
-      pilihan: [
-        "a. Sabut: kelapa",
-        "b. Rumah: atap",
-        "c. Jari: cincin",
-        "d. Album: foto",
-        "e. Kaki: kaus",
-      ],
-      jawaban: "b",
+        id: 10,
+        soal: "METEOROLOGI: CUACA:::",
+        pilihan: [
+            "A. Astronomi: Fisika",
+            "B. Gerontology: Keturunan",
+            "C. Pedagogik: Sekolah",
+            "D. Patologi: Penyakit",
+            "E. Antropologi: Fosil"
+        ],
+        jawaban: "D"
     },
     {
-      id: 13,
-      soal: "TUNTUTAN : SANTUNAN:::",
-      pilihan: [
-        "a. Undian: hadiah",
-        "b. Permintaan: pemberian",
-        "c. Persediaan: penawaran",
-        "d. Rusak: ganti rugi",
-        "e. Tabungan: pembelanjaan",
-      ],
-      jawaban: "b",
+        id: 11,
+        soal: "LAPAR : NASI:::",
+        pilihan: [
+            "A. Haus: Air",
+            "B. Mual: Obat",
+            "C. Mengantuk: Melamun",
+            "D. Bosan: Tidur",
+            "E. Membaca: Gambar"
+        ],
+        jawaban: "A"
     },
     {
-      id: 14,
-      soal: "RAMBUT: GUNDUL:::",
-      pilihan: [
-        "a. Bulu: cabut",
-        "b. Mobil: mogok",
-        "c. Botak: kepala",
-        "d. Pakaian: bugil",
-        "e. Lantai: licin",
-      ],
-      jawaban: "d",
+        id: 12,
+        soal: "KEPALA: HELM:::",
+        pilihan: [
+            "A. Sabut: Kelapa",
+            "B. Rumah: Atap",
+            "C. Jari: Cincin",
+            "D. Album: Foto",
+            "E. Kaki: Kaus"
+        ],
+        jawaban: "B"
     },
     {
-      id: 15,
-      soal: "DIAMETER : LINGKARAN:::",
-      pilihan: [
-        "a. Diagonal: segi empat",
-        "b. Luas: panjang",
-        "c. Tinggi: segi tiga",
-        "d. Sudut: tegak lurus",
-        "e. Radius: busur",
-      ],
-      jawaban: "a",
+        id: 13,
+        soal: "TUNTUTAN : SANTUNAN:::",
+        pilihan: [
+            "A. Undian: Hadiah",
+            "B. Permintaan: Pemberian",
+            "C. Persediaan: Penawaran",
+            "D. Rusak: Ganti Rugi",
+            "E. Tabungan: Pembelanjaan"
+        ],
+        jawaban: "B"
+    },
+     {
+        "id": 14,
+        "soal": "RAMBUT: GUNDUL:::",
+        "pilihan": [
+            "A. BULU: CABUT",
+            "B. MOBIL: MOGOK",
+            "C. BOTAK: KEPALA",
+            "D. PAKAIAN: BUGIL",
+            "E. LANTAI: LICIN"
+        ],
+        "jawaban": "D"
     },
     {
-      id: 16,
-      soal: "ES: AIR:::",
-      pilihan: [
-        "a. Mendidih",
-        "b. Membeku",
-        "c. Uap",
-        "d. Cair",
-        "e. Kabut",
-      ],
-      jawaban: "c",
+        "id": 15,
+        "soal": "DIAMETER : LINGKARAN:::",
+        "pilihan": [
+            "A. DIAGONAL: SEGI EMPAT",
+            "B. LUAS: PANJANG",
+            "C. TINGGI: SEGI TIGA",
+            "D. SUDUT: TEGAK LURUS",
+            "E. RADIUS: BUSUR"
+        ],
+        "jawaban": "A"
     },
     {
-      id: 17,
-      soal: "SARUNG TANGAN : PETINJU:::",
-      pilihan: [
-        "a. Apotek: pasien",
-        "b. Bakteriolog: mikroskop",
-        "c. Optamolog: kacamata",
-        "d. Dokter: jarum suntik",
-        "e. Analis: data",
-      ],
-      jawaban: "b",
+        "id": 16,
+        "soal": "ES: AIR:::",
+        "pilihan": [
+            "A. MENDIDIH",
+            "B. MEMBEKU",
+            "C. UAP",
+            "D. CAIR",
+            "E. KABUT"
+        ],
+        "jawaban": "C"
     },
     {
-      id: 18,
-      soal: "JAM : WAKTU:::",
-      pilihan: [
-        "a. Kalender: tanggal",
-        "b. Alarm: suara",
-        "c. Buku: halaman",
-        "d. Kompas: arah",
-        "e. Lampu: terang",
-      ],
-      jawaban: "a",
+        "id": 17,
+        "soal": "SARUNG TANGAN : PETINJU:::",
+        "pilihan": [
+            "A. APOTEK: PASIEN",
+            "B. BAKTERIOLOG: MIKROSKOP",
+            "C. OPTAMOLOG: KACAMATA",
+            "D. DOKTER: JARUM SUNTIK",
+            "E. ANALIS: DATA"
+        ],
+        "jawaban": "B"
     },
     {
-      id: 19,
-      soal: "LUKA : OBAT:::",
-      pilihan: [
-        "a. Dingin: panas",
-        "b. Sakit: sembuh",
-        "c. Api: air",
-        "d. Virus: antibiotik",
-        "e. Batuk: sirup",
-      ],
-      jawaban: "e",
+        "id": 18,
+        "soal": "JAM : WAKTU:::",
+        "pilihan": [
+            "A. KALENDER: TANGGAL",
+            "B. ALARM: SUARA",
+            "C. BUKU: HALAMAN",
+            "D. KOMPAS: ARAH",
+            "E. LAMPU: TERANG"
+        ],
+        "jawaban": "A"
     },
     {
-      id: 20,
-      soal: "PENULIS: KERTAS:::",
-      pilihan: [
-        "a. Pelukis: kanvas",
-        "b. Tukang kayu: pahat",
-        "c. Guru: kelas",
-        "d. Dokter: stetoskop",
-        "e. Aktor: layar",
-      ],
-      jawaban: "a",
+        "id": 19,
+        "soal": "LUKA : OBAT:::",
+        "pilihan": [
+            "A. DINGIN: PANAS",
+            "B. SAKIT: SEMBUH",
+            "C. API: AIR",
+            "D. VIRUS: ANTIBIOTIK",
+            "E. BATUK: SIRUP"
+        ],
+        "jawaban": "E"
+    },
+    {
+        "id": 20,
+        "soal": "PENULIS: KERTAS:::",
+        "pilihan": [
+            "A. PELUKIS: KANVAS",
+            "B. TUKANG KAYU: PAHAT",
+            "C. GURU: KELAS",
+            "D. DOKTER: STETOSKOP",
+            "E. AKTOR: LAYAR"
+        ],
+        "jawaban": "A"
+    },
+    {
+        "id": 21,
+        "soal": "BAHASA: KATA:::",
+        "pilihan": [
+            "A. KALIMAT: PARAGRAF",
+            "B. HURUF: ABJAD",
+            "C. PARAGRAF: CERITA",
+            "D. HURUF: SUARA",
+            "E. KALIMAT: CERITA"
+        ],
+        "jawaban": "B"
+    },
+    {
+        "id": 22,
+        "soal": "DOKTER: PELAYANAN:::",
+        "pilihan": [
+            "A. PENYANYI: KONSER",
+            "B. GURU: KELAS",
+            "C. SAPU: LANTAI",
+            "D. SOPIR: KENDARAAN",
+            "E. PETANI: LADANG"
+        ],
+        "jawaban": "B"
+    },
+    {
+        "id": 23,
+        "soal": "KERTAS: PULP:::",
+        "pilihan": [
+            "A. KAYU: DAUN",
+            "B. LOGAM: PABRIK",
+            "C. BATU: GALIAN",
+            "D. DAUN: POHON",
+            "E. PADI: BERAS"
+        ],
+        "jawaban": "E"
+    },
+    {
+        "id": 24,
+        "soal": "BULAN : TAHUN:::",
+        "pilihan": [
+            "A. HARI: MINGGU",
+            "B. BULAN: BULAN",
+            "C. MINGGU: TAHUN",
+            "D. DETIK: MENIT",
+            "E. TAHUN: ABAD"
+        ],
+        "jawaban": "E"
+    },
+    {
+        "id": 25,
+        "soal": "BERITA : PENULIS:::",
+        "pilihan": [
+            "A. CERITA: PENYAIR",
+            "B. GAMBAR: SENIMAN",
+            "C. FILM: SUTRADARA",
+            "D. MUSIK: PENYANYI",
+            "E. NOVEL: PENULIS"
+        ],
+        "jawaban": "E"
     },
         {
-          id: 21,
-          soal: "BAHASA: KATA:::",
-          pilihan: [
-            "a. Kalimat: paragraf",
-            "b. Huruf: abjad",
-            "c. Paragraf: cerita",
-            "d. Huruf: suara",
-            "e. Kalimat: cerita",
-          ],
-          jawaban: "b",
-        },
+  "id": 26,
+  "soal": "PABRIK: PRODUKSI:::",
+  "pilihan": [
+    "A. Dokter: perawatan",
+    "B. Rumah: perabot",
+    "C. Toko: penjualan",
+    "D. Universitas: kuliah",
+    "E. Kebun: panen"
+  ],
+  "jawaban": "C"
+},
+{
+  "id": 27,
+  "soal": "KUDA: MENCAKUP:::",
+  "pilihan": [
+    "A. Harimau: berburu",
+    "B. Lumba-lumba: berenang",
+    "C. Kucing: tidur",
+    "D. Ikan: renang",
+    "E. Singa: makan"
+  ],
+  "jawaban": "B"
+},
+{
+  "id": 28,
+  "soal": "BUNGA: TUMBUH:::",
+  "pilihan": [
+    "A. Pohon: cabang",
+    "B. Air: berenang",
+    "C. Tanah: petani",
+    "D. Petir: kilat",
+    "E. Rumput: tanah"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 29,
+  "soal": "PEMBELAJARAN : ILMU:::",
+  "pilihan": [
+    "A. Peternakan: hasil",
+    "B. Rumah: api",
+    "C. Pendidikan: buku",
+    "D. Pelatihan: keterampilan",
+    "E. Toko: penjualan"
+  ],
+  "jawaban": "C"
+},
+{
+  "id": 30,
+  "soal": "KUNCI: PINTU:::",
+  "pilihan": [
+    "A. Pakaian: badan",
+    "B. Kacamata: wajah",
+    "C. Lampu: listrik",
+    "D. Sepatu: kaki",
+    "E. Kunci: gembok"
+  ],
+  "jawaban": "E"
+},
+{
+  "id": 31,
+  "soal": "KERTAS : PENULIS :::",
+  "pilihan": [
+    "A. Gambar: pelukis",
+    "B. Kunci: lemari",
+    "C. Kantor: administrasi",
+    "D. Lembar: lemari",
+    "E. Kayu: tukang kayu"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 32,
+  "soal": "DEMIAN: SURYA:::",
+  "pilihan": [
+    "A. Zamrud: gemilang",
+    "B. Bumi: bulan",
+    "C. Laut: ombak",
+    "D. Matahari: bulan",
+    "E. Sungai: air"
+  ],
+  "jawaban": "B"
+},
+{
+  "id": 33,
+  "soal": "PENERBANGAN : BANDARA:::",
+  "pilihan": [
+    "A. Kereta: jalur",
+    "B. Mobil: jalan",
+    "C. Laut: pelabuhan",
+    "D. Udara: pesawat",
+    "E. Sepeda: jalan"
+  ],
+  "jawaban": "C"
+},
+{
+  "id": 34,
+  "soal": "SEPEDA: KENDARAAN:::",
+  "pilihan": [
+    "A. Meja: furnitur",
+    "B. Televisi: teknologi",
+    "C. Buku: literatur",
+    "D. Manusia: hewan",
+    "E. Kucing: peliharaan"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 35,
+  "soal": "BERITA : PEMBACA :::",
+  "pilihan": [
+    "A. Gambar: pemilik",
+    "B. Buku: pembaca",
+    "C. Penulis: pembaca",
+    "D. Berita: laporan",
+    "E. Pekerjaan: manajer"
+  ],
+  "jawaban": "B"
+},
+{
+  "id": 36,
+  "soal": "FLU: PANAS:::",
+  "pilihan": [
+    "A. Mata: buta",
+    "B. Demam: tinggi",
+    "C. Batuk: sakit",
+    "D. Infeksi: ringan",
+    "E. Hidung: bau"
+  ],
+  "jawaban": "B"
+},
+{
+  "id": 37,
+  "soal": "BUNGA : KEBUN:::",
+  "pilihan": [
+    "A. Pohon : hutan",
+    "B. Buku : perpustakaan",
+    "C. Roti : toko",
+    "D. Kucing : rumah",
+    "E. Buku : meja"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 38,
+  "soal": "TANAH: BUMI:::",
+  "pilihan": [
+    "A. Air: laut",
+    "B. Hutan: pohon",
+    "C. Laut: tanah",
+    "D. Udara: atmosfer",
+    "E. Laut: danau"
+  ],
+  "jawaban": "D"
+},
+{
+  "id": 39,
+  "soal": "SEPEDA MOTOR: SOKEBEL :::",
+  "pilihan": [
+    "A. Pengendara: pengemudi",
+    "B. Kunci: gembok",
+    "C. Mesin: bahan bakar",
+    "D. Jalan: asfalt",
+    "E. Roda: ban"
+  ],
+  "jawaban": "E"
+},
+{
+  "id": 40,
+  "soal": "BURUNG: TERBANG:::",
+  "pilihan": [
+    "A. Kucing: tidur",
+    "B. Harimau: berburu",
+    "C. Ikan: berenang",
+    "D. Kuda: berlari",
+    "E. Ayam: berkotek"
+  ],
+  "jawaban": "C"
+},
+{
+  "id": 41,
+  "soal": "KEMBALI: PERGI:::",
+  "pilihan": [
+    "A. Tidur: bangun",
+    "B. Makan: minum",
+    "C. Gembira: sedih",
+    "D. Hujan: cerah",
+    "E. Tertawa: menangis"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 42,
+  "soal": "SEMPURNA: KURANG:::",
+  "pilihan": [
+    "A. Buruk: bagus",
+    "B. Hijau: coklat",
+    "C. Kecil: besar",
+    "D. Sempurna: tidak sempurna",
+    "E. Panas: dingin"
+  ],
+  "jawaban": "D"
+},
+{
+  "id": 43,
+  "soal": "LUMPUH : BERDIRI:::",
+  "pilihan": [
+    "A. Menang: kalah",
+    "B. Jatuh: bangkit",
+    "C. Lari: berjalan",
+    "D. Tidur: bangun",
+    "E. Menangis: tertawa"
+  ],
+  "jawaban": "B"
+},
+{
+  "id": 44,
+  "soal": "UNGU : VIOLETA :::",
+  "pilihan": [
+    "A. Merah : merah muda",
+    "B. Biru : hijau",
+    "C. Kuning : biru",
+    "D. Putih : hitam",
+    "E. Kuning : hitam"
+  ],
+  "jawaban": "A"
+},
+{
+  "id": 45,
+  "soal": "KECEPATAN : GULIR:::",
+  "pilihan": [
+    "A. Laju: berputar",
+    "B. Cerdas: berhenti",
+    "C. Gerak: lambat",
+    "D. Giat: malas",
+    "E. Penuh: kosong"
+  ],
+  "jawaban": "A"
+},
         {
-          id: 22,
-          soal: "DOKTER: PELAYANAN:::",
-          pilihan: [
-            "a. Penyanyi: konser",
-            "b. Guru: kelas",
-            "c. Sapu: lantai",
-            "d. Sopir: kendaraan",
-            "e. Petani: ladang",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 23,
-          soal: "KERTAS: PULP:::",
-          pilihan: [
-            "a. Kayu: daun",
-            "b. Logam: pabrik",
-            "c. Batu: galian",
-            "d. Daun: pohon",
-            "e. Padi: beras",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 24,
-          soal: "BULAN : TAHUN:::",
-          pilihan: [
-            "a. Hari: minggu",
-            "b. Bulan: bulan",
-            "c. Minggu: tahun",
-            "d. Detik: menit",
-            "e. Tahun: abad",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 25,
-          soal: "BERITA : PENULIS:::",
-          pilihan: [
-            "a. Cerita: penyair",
-            "b. Gambar: seniman",
-            "c. Film: sutradara",
-            "d. Musik: penyanyi",
-            "e. Novel: penulis",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 26,
-          soal: "PABRIK: PRODUKSI:::",
-          pilihan: [
-            "a. Dokter: perawatan",
-            "b. Rumah: perabot",
-            "c. Toko: penjualan",
-            "d. Universitas: kuliah",
-            "e. Kebun: panen",
-          ],
-          jawaban: "c",
-        },
-        {
-          id: 27,
-          soal: "KUDA: MENCAKUP:::",
-          pilihan: [
-            "a. Harimau: berburu",
-            "b. Lumba-lumba: berenang",
-            "c. Kucing: tidur",
-            "d. Ikan: renang",
-            "e. Singa: makan",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 28,
-          soal: "BUNGA: TUMBUH:::",
-          pilihan: [
-            "a. Pohon: cabang",
-            "b. Air: berenang",
-            "c. Tanah: petani",
-            "d. Petir: kilat",
-            "e. Rumput: tanah",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 29,
-          soal: "PEMBELAJARAN : ILMU:::",
-          pilihan: [
-            "a. Peternakan: hasil",
-            "b. Rumah: api",
-            "c. Pendidikan: buku",
-            "d. Pelatihan: keterampilan",
-            "e. Toko: penjualan",
-          ],
-          jawaban: "c",
-        },
-        {
-          id: 30,
-          soal: "KUNCI: PINTU:::",
-          pilihan: [
-            "a. Pakaian: badan",
-            "b. Kacamata: wajah",
-            "c. Lampu: listrik",
-            "d. Sepatu: kaki",
-            "e. Kunci: gembok",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 31,
-          soal: "KERTAS : PENULIS :::",
-          pilihan: [
-            "a. Gambar: pelukis",
-            "b. Kunci: lemari",
-            "c. Kantor: administrasi",
-            "d. Lembar: lemari",
-            "e. Kayu: tukang kayu",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 32,
-          soal: "DEMIAN: SURYA:::",
-          pilihan: [
-            "a. Zamrud: gemilang",
-            "b. Bumi: bulan",
-            "c. Laut: ombak",
-            "d. Matahari: bulan",
-            "e. Sungai: air",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 33,
-          soal: "PENERBANGAN : BANDARA:::",
-          pilihan: [
-            "a. Kereta: jalur",
-            "b. Mobil: jalan",
-            "c. Laut: pelabuhan",
-            "d. Udara: pesawat",
-            "e. Sepeda: jalan",
-          ],
-          jawaban: "c",
-        },
-        {
-          id: 34,
-          soal: "SEPEDA: KENDARAAN:::",
-          pilihan: [
-            "a. Meja: furnitur",
-            "b. Televisi: teknologi",
-            "c. Buku: literatur",
-            "d. Manusia: hewan",
-            "e. Kucing: peliharaan",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 35,
-          soal: "BERITA : PEMBACA :::",
-          pilihan: [
-            "a. Gambar: pemilik",
-            "b. Buku: pembaca",
-            "c. Penulis: pembaca",
-            "d. Berita: laporan",
-            "e. Pekerjaan: manajer",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 36,
-          soal: "FLU: PANAS:::",
-          pilihan: [
-            "a. Mata: buta",
-            "b. Demam: tinggi",
-            "c. Batuk: sakit",
-            "d. Infeksi: ringan",
-            "e. Hidung: bau",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 37,
-          soal: "BUNGA : KEBUN:::",
-          pilihan: [
-            "a. Pohon : hutan",
-            "b. Buku : perpustakaan",
-            "c. Roti : toko",
-            "d. Kucing : rumah",
-            "e. Buku : meja",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 38,
-          soal: "TANAH: BUMI:::",
-          pilihan: [
-            "a. Air: laut",
-            "b. Hutan: pohon",
-            "c. Laut: tanah",
-            "d. Udara: atmosfer",
-            "e. Laut: danau",
-          ],
-          jawaban: "d",
-        },
-        {
-          id: 39,
-          soal: "SEPEDA MOTOR: SOKEBEL :::",
-          pilihan: [
-            "a. Pengendara: pengemudi",
-            "b. Kunci: gembok",
-            "c. Mesin: bahan bakar",
-            "d. Jalan: asfalt",
-            "e. Roda: ban",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 40,
-          soal: "BURUNG: TERBANG:::",
-          pilihan: [
-            "a. Kucing: tidur",
-            "b. Harimau: berburu",
-            "c. Ikan: berenang",
-            "d. Kuda: berlari",
-            "e. Ayam: berkotek",
-          ],
-          jawaban: "c",
-        },
-        {
-          id: 41,
-          soal: "KEMBALI: PERGI:::",
-          pilihan: [
-            "a. Tidur: bangun",
-            "b. Makan: minum",
-            "c. Gembira: sedih",
-            "d. Hujan: cerah",
-            "e. Tertawa: menangis",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 42,
-          soal: "SEMPURNA: KURANG:::",
-          pilihan: [
-            "a. Buruk: bagus",
-            "b. Hijau: coklat",
-            "c. Kecil: besar",
-            "d. Sempurna: tidak sempurna",
-            "e. Panas: dingin",
-          ],
-          jawaban: "d",
-        },
-        {
-          id: 43,
-          soal: "LUMPUH : BERDIRI:::",
-          pilihan: [
-            "a. Menang: kalah",
-            "b. Jatuh: bangkit",
-            "c. Lari: berjalan",
-            "d. Tidur: bangun",
-            "e. Menangis: tertawa",
-          ],
-          jawaban: "b",
-        },
-        {
-          id: 44,
-          soal: "UNGU : VIOLETA :::",
-          pilihan: [
-            "a. Merah : merah muda",
-            "b. Biru : hijau",
-            "c. Kuning : biru",
-            "d. Putih : hitam",
-            "e. Kuning : hitam",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 45,
-          soal: "KECEPATAN : GULIR:::",
-          pilihan: [
-            "a. Laju: berputar",
-            "b. Cerdas: berhenti",
-            "c. Gerak: lambat",
-            "d. Giat: malas",
-            "e. Penuh: kosong",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 46,
-          soal: "GELAP : CAHAYA:::",
-          pilihan: [
-            "a. Hangat: api",
-            "b. Tertutup: terbuka",
-            "c. Terang: redup",
-            "d. Dingin: hujan",
-            "e. Suara: diam",
-          ],
-          jawaban: "c",
-        },
-        {
-          id: 47,
-          soal: "TINGGI : RENDAH :::",
-          pilihan: [
-            "a. Muda : Tua",
-            "b. Gembira: Cemas",
-            "c. Pintar: malas",
-            "d. Sempurna: rusak",
-            "e. Lapang : sesak",
-          ],
-          jawaban: "a",
-        },
-        {
-          id: 48,
-          soal: "KEBAHAGIAAN : KESEDIHAN :::",
-          pilihan: [
-            "a. Gembira : susah",
-            "b. Hujan : panas",
-            "c. Dingin : sejuk",
-            "d. Semangat : malas",
-            "e. Tertawa : menangis",
-          ],
-          jawaban: "e",
-        },
-        {
-          id: 49,
-          soal: "CINTA : KEHIDUPAN :::",
-          pilihan: [
-            "a. Malu: bahagia",
-            "b. Cinta: kebencian",
-            "c. Tenang: gelisah",
-            "d. Hidup: mati",
-            "e. Duka: suka",
-          ],
-          jawaban: "b",
-        },
+  id: 46,
+  soal: "GELAP : CAHAYA:::",
+  pilihan: [
+    "A. Hangat: api",
+    "B. Tertutup: terbuka",
+    "C. Terang: redup",
+    "D. Dingin: hujan",
+    "E. Suara: diam",
+  ],
+  jawaban: "C",
+},
+{
+  id: 47,
+  soal: "TINGGI : RENDAH :::",
+  pilihan: [
+    "A. Muda : Tua",
+    "B. Gembira: Cemas",
+    "C. Pintar: malas",
+    "D. Sempurna: rusak",
+    "E. Lapang : sesak",
+  ],
+  jawaban: "A",
+},
+{
+  id: 48,
+  soal: "KEBAHAGIAAN : KESEDIHAN :::",
+  pilihan: [
+    "A. Gembira : susah",
+    "B. Hujan : panas",
+    "C. Dingin : sejuk",
+    "D. Semangat : malas",
+    "E. Tertawa : menangis",
+  ],
+  jawaban: "E",
+},
+{
+  id: 49,
+  soal: "CINTA : KEHIDUPAN :::",
+  pilihan: [
+    "A. Malu: bahagia",
+    "B. Cinta: kebencian",
+    "C. Tenang: gelisah",
+    "D. Hidup: mati",
+    "E. Duka: suka",
+  ],
+  jawaban: "B",
+},
         {
           id: 50,
           soal: "BERGERAK : TERMOTIVASI :::",
           pilihan: [
-            "a. Berbicara: tercenung",
-            "b. Berhenti: bekerja",
-            "c. Bebas: terjebak",
-            "d. Gembira: senang",
-            "e. Tertidur: bangkit",
+            "A. Berbicara: tercenung",
+            "B. Berhenti: bekerja",
+            "C. Bebas: terjebak",
+            "D. Gembira: senang",
+            "E. Tertidur: bangkit",
           ],
-          jawaban: "a",
+          jawaban: "A",
         }
         ];
 

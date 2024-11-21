@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Bahasa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.quiz-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.quiz-container:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.timer {
+    font-size: 24px;
+    color: #ff6b6b;
+    text-align: right;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background-color: rgba(255, 107, 107, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.question {
+    margin-bottom: 30px;
+}
+
+.question h3 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.answer-btn {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: left;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.answer-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.answer-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.answer-btn:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.btn-outline-primary {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.btn-success {
+    background-color: #2ecc71 !important;
+    color: white !important;
+    border-color: #2ecc71 !important;
+}
+
+.btn-danger {
+    background-color: #e74c3c !important;
+    color: white !important;
+    border-color: #e74c3c !important;
+}
+
+.feedback {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.feedback .alert {
+    border-radius: 10px;
+    padding: 15px;
+    font-weight: 500;
+}
+
+#next-btn {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 18px;
+    background-color: #3498db;
+    border-color: #3498db;
+    transition: all 0.3s ease;
+}
+
+#next-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+#result-modal .modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#result-modal .modal-header {
+    background-color: #3498db;
+    color: white;
+    border-bottom: none;
+}
+
+#result-modal .modal-body {
+    text-align: center;
+    padding: 30px;
+}
+
+#score-result {
+    color: #2c3e50;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+#score-details {
+    background-color: #f1f3f5;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .quiz-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .timer {
+        font-size: 20px;
+    }
+
+    .question h3 {
+        font-size: 18px;
+    }
+
+    .answer-btn {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quiz-container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .timer {
+        font-size: 18px;
+    }
+
+    .question h3 {
+        font-size: 16px;
+    }
+
+    .answer-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-container">
+            <div class="timer" id="timer">50:00</div>
+            <div id="quiz-content">
+                <div class="question" id="question-container">
+                    <h3 id="question-text"></h3>
+                    <div id="answers-container"></div>
+                </div>
+                <div id="feedback" class="feedback text-center"></div>
+                <button id="next-btn" class="btn btn-primary w-100 mt-3" style="display:none;">Lanjut</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hasil -->
+    <div class="modal fade" id="result-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hasil Kuis</h5>
+                </div>
+                <div class="modal-body">
+                    <h2 id="score-result"></h2>
+                    <div id="score-details"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="restartQuiz()">Mulai Ulang</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const quizData = [
+    {
+        id: 1,
+        soal: "1. Apa sinonim dari 'panjang'?",
+        pilihan: [
+            "A. Singkat", 
+            "B. Lebar", 
+            "C. Lurus", 
+            "D. Pendek", 
+            "E. Luas"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 2,
+        soal: "2. Apa antonim dari 'muda'?",
+        pilihan: [
+            "A. Tua", 
+            "B. Kecil", 
+            "C. Besar", 
+            "D. Lemah", 
+            "E. Ringan"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 3,
+        soal: "3. Apa sinonim dari 'bagus'?",
+        pilihan: [
+            "A. Buruk", 
+            "B. Cepat", 
+            "C. Baik", 
+            "D. Berat", 
+            "E. Pendek"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 4,
+        soal: "4. Apa antonim dari 'tinggi'?",
+        pilihan: [
+            "A. Rendah", 
+            "B. Pendek", 
+            "C. Berat", 
+            "D. Dalam", 
+            "E. Lebar"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 5,
+        soal: "5. Apa sinonim dari 'cepat'?",
+        pilihan: [
+            "A. Lambat", 
+            "B. Kilat", 
+            "C. Tepat", 
+            "D. Berat", 
+            "E. Kecil"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 6,
+        soal: "6. Apa antonim dari 'gelap'?",
+        pilihan: [
+            "A. Terang", 
+            "B. Cerah", 
+            "C. Keras", 
+            "D. Pudar", 
+            "E. Kecil"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 7,
+        soal: "7. Apa sinonim dari 'penuh'?",
+        pilihan: [
+            "A. Kosong", 
+            "B. Banyak", 
+            "C. Ringan", 
+            "D. Tepat", 
+            "E. Terisi"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 8,
+        soal: "8. Apa antonim dari 'cepat'?",
+        pilihan: [
+            "A. Lambat", 
+            "B. Giat", 
+            "C. Kecil", 
+            "D. Ringan", 
+            "E. Berat"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 9,
+        soal: "9. Apa sinonim dari 'manis'?",
+        pilihan: [
+            "A. Asam", 
+            "B. Enak", 
+            "C. Pahit", 
+            "D. Terang", 
+            "E. Lembut"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 10,
+        soal: "10. Apa antonim dari 'ramai'?",
+        pilihan: [
+            "A. Sepi", 
+            "B. Tenang", 
+            "C. Sibuk", 
+            "D. Keras", 
+            "E. Gembira"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 11,
+        soal: "11. Apa sinonim dari 'terkenal'?",
+        pilihan: [
+            "A. Terlalu", 
+            "B. Dikenal", 
+            "C. Tersohor", 
+            "D. Agung", 
+            "E. Sederhana"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 12,
+        soal: "12. Apa antonim dari 'dekat'?",
+        pilihan: [
+            "A. Jauh", 
+            "B. Rapat", 
+            "C. Singkat", 
+            "D. Kecil", 
+            "E. Panjang"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 13,
+        soal: "13. Apa sinonim dari 'panas'?",
+        pilihan: [
+            "A. Hangat", 
+            "B. Dingin", 
+            "C. Sejuk", 
+            "D. Cerah", 
+            "E. Terik"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 14,
+        soal: "14. Apa antonim dari 'pintar'?",
+        pilihan: [
+            "A. Bodoh", 
+            "B. Cerdas", 
+            "C. Kuat", 
+            "D. Cepat", 
+            "E. Rajin"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 15,
+        soal: "15. Apa sinonim dari 'cepat'?",
+        pilihan: [
+            "A. Lambat", 
+            "B. Kilat", 
+            "C. Tepat", 
+            "D. Berat", 
+            "E. Kecil"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 16,
+        soal: "16. Apa antonim dari 'baik'?",
+        pilihan: [
+            "A. Buruk", 
+            "B. Giat", 
+            "C. Lemah", 
+            "D. Kuat", 
+            "E. Cerdas"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 17,
+        soal: "17. Apa sinonim dari 'terang'?",
+        pilihan: [
+            "A. Gelap", 
+            "B. Sinar", 
+            "C. Cemerlang", 
+            "D. Pudar", 
+            "E. Cerah"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 18,
+        soal: "18. Apa antonim dari 'besar'?",
+        pilihan: [
+            "A. Kecil", 
+            "B. Lebar", 
+            "C. Tinggi", 
+            "D. Ringan", 
+            "E. Panjang"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 19,
+        soal: "19. Apa sinonim dari 'ringan'?",
+        pilihan: [
+            "A. Berat", 
+            "B. Kecil", 
+            "C. Cepat", 
+            "D. Mudah", 
+            "E. Berat"
+        ],
+        jawaban: "D"
+    },
+    {
+        id: 20,
+        soal: "20. Apa antonim dari 'suka'?",
+        pilihan: [
+            "A. Benci", 
+            "B. Senang", 
+            "C. Gembira", 
+            "D. Marah", 
+            "E. Tenang"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 21,
+        soal: "21. Apa sinonim dari 'besar'?",
+        pilihan: [
+            "A. Kecil", 
+            "B. Agung", 
+            "C. Panjang", 
+            "D. Lebar", 
+            "E. Tinggi"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 22,
+        soal: "22. Apa antonim dari 'baik'?",
+        pilihan: [
+            "A. Buruk", 
+            "B. Cerdas", 
+            "C. Lemah", 
+            "D. Kuat", 
+            "E. Giat"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 23,
+        soal: "23. Apa sinonim dari 'sabar'?",
+        pilihan: [
+            "A. Marah", 
+            "B. Giat", 
+            "C. Tenang", 
+            "D. Panik", 
+            "E. Cemas"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 24,
+        soal: "24. Apa antonim dari 'tinggi'?",
+        pilihan: [
+            "A. Pendek", 
+            "B. Berat", 
+            "C. Lebar", 
+            "D. Kecil", 
+            "E. Panjang"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 25,
+        soal: "25. Apa sinonim dari 'ramah'?",
+        pilihan: [
+            "A. Kasar", 
+            "B. Sabar", 
+            "C. Baik", 
+            "D. Lembut", 
+            "E. Tenang"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 26,
+        soal: "26. Apa antonim dari 'tinggi'?",
+        pilihan: [
+            "A. Rendah", 
+            "B. Pendek", 
+            "C. Lebar", 
+            "D. Dalam", 
+            "E. Berat"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 27,
+        soal: "27. Apa sinonim dari 'baik'?",
+        pilihan: [
+            "A. Buruk", 
+            "B. Cerdas", 
+            "C. Kuat", 
+            "D. Baik hati", 
+            "E. Kecil"
+        ],
+        jawaban: "D"
+    },
+    {
+        id: 28,
+        soal: "28. Apa antonim dari 'gemuk'?",
+        pilihan: [
+            "A. Kurus", 
+            "B. Pendek", 
+            "C. Ringan", 
+            "D. Kecil", 
+            "E. Berat"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 29,
+        soal: "29. Apa sinonim dari 'kasar'?",
+        pilihan: [
+            "A. Halus", 
+            "B. Lembut", 
+            "C. Kaku", 
+            "D. Cerdas", 
+            "E. Sopan"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 30,
+        soal: "30. Apa antonim dari 'besar'?",
+        pilihan: [
+            "A. Kecil", 
+            "B. Berat", 
+            "C. Tinggi", 
+            "D. Panjang", 
+            "E. Ringan"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 31,
+        soal: "31. Apa sinonim dari 'pintar'?",
+        pilihan: [
+            "A. Bodoh", 
+            "B. Cerdas", 
+            "C. Lemah", 
+            "D. Kuat", 
+            "E. Cepat"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 32,
+        soal: "32. Apa antonim dari 'muda'?",
+        pilihan: [
+            "A. Tua", 
+            "B. Kecil", 
+            "C. Besar", 
+            "D. Lemah", 
+            "E. Ringan"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 33,
+        soal: "33. Apa sinonim dari 'lincah'?",
+        pilihan: [
+            "A. Lambat", 
+            "B. Cepat", 
+            "C. Canggung", 
+            "D. Berat", 
+            "E. Tegang"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 34,
+        soal: "34. Apa antonim dari 'suka'?",
+        pilihan: [
+            "A. Benci", 
+            "B. Marah", 
+            "C. Senang", 
+            "D. Cemas", 
+            "E. Gembira"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 35,
+        soal: "35. Apa sinonim dari 'lambat'?",
+        pilihan: [
+            "A. Cepat", 
+            "B. Berat", 
+            "C. Kecil", 
+            "D. Tertunda", 
+            "E. Panjang"
+        ],
+        jawaban: "D"
+    },
+    {
+        id: 36,
+        soal: "36. Apa antonim dari 'keras'?",
+        pilihan: [
+            "A. Lembut", 
+            "B. Berat", 
+            "C. Kurus", 
+            "D. Sopan", 
+            "E. Cepat"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 37,
+        soal: "37. Apa sinonim dari 'tinggi'?",
+        pilihan: [
+            "A. Pendek", 
+            "B. Agung", 
+            "C. Lebar", 
+            "D. Sempurna", 
+            "E. Cemerlang"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 38,
+        soal: "38. Apa antonim dari 'senang'?",
+        pilihan: [
+            "A. Marah", 
+            "B. Gembira", 
+            "C. Sedih", 
+            "D. Tenang", 
+            "E. Kuat"
+        ],
+        jawaban: "C"
+    },
+    {
+        id: 39,
+        soal: "39. Apa sinonim dari 'kurang'?",
+        pilihan: [
+            "A. Banyak", 
+            "B. Cukup", 
+            "C. Terlalu", 
+            "D. Sedikit", 
+            "E. Lebih"
+        ],
+        jawaban: "D"
+    },
+    {
+        id: 40,
+        soal: "40. Apa antonim dari 'dalam'?",
+        pilihan: [
+            "A. Luar", 
+            "B. Kecil", 
+            "C. Sempit", 
+            "D. Pendek", 
+            "E. Tipis"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 41,
+        soal: "41. Apa sinonim dari 'sehat'?",
+        pilihan: [
+            "A. Sakit", 
+            "B. Kuat", 
+            "C. Lemah", 
+            "D. Gembira", 
+            "E. Lelah"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 42,
+        soal: "42. Apa antonim dari 'manis'?",
+        pilihan: [
+            "A. Pahit", 
+            "B. Asam", 
+            "C. Terang", 
+            "D. Lembut", 
+            "E. Cerdas"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 43,
+        soal: "43. Apa sinonim dari 'lembut'?",
+        pilihan: [
+            "A. Kasar", 
+            "B. Halus", 
+            "C. Keras", 
+            "D. Gembira", 
+            "E. Kecil"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 44,
+        soal: "44. Apa antonim dari 'penuh'?",
+        pilihan: [
+            "A. Kosong", 
+            "B. Banyak", 
+            "C. Terisi", 
+            "D. Ringan", 
+            "E. Sedikit"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 45,
+        soal: "45. Apa sinonim dari 'dingin'?",
+        pilihan: [
+            "A. Hangat", 
+            "B. Sejuk", 
+            "C. Panas", 
+            "D. Cerah", 
+            "E. Gembira"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 46,
+        soal: "46. Apa antonim dari 'baru'?",
+        pilihan: [
+            "A. Lama", 
+            "B. Segar", 
+            "C. Kecil", 
+            "D. Agung", 
+            "E. Ringan"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 47,
+        soal: "47. Apa sinonim dari 'banyak'?",
+        pilihan: [
+            "A. Sedikit", 
+            "B. Penuh", 
+            "C. Kurang", 
+            "D. Banyak", 
+            "E. Terbatas"
+        ],
+        jawaban: "D"
+    },
+    {
+        id: 48,
+        soal: "48. Apa antonim dari 'terang'?",
+        pilihan: [
+            "A. Gelap", 
+            "B. Sejuk", 
+            "C. Sinar", 
+            "D. Cemerlang", 
+            "E. Sopan"
+        ],
+        jawaban: "A"
+    },
+    {
+        id: 49,
+        soal: "49. Apa sinonim dari 'kecil'?",
+        pilihan: [
+            "A. Besar", 
+            "B. Ringan", 
+            "C. Pendek", 
+            "D. Sempit", 
+            "E. Agung"
+        ],
+        jawaban: "B"
+    },
+    {
+        id: 50,
+        soal: "50. Apa antonim dari 'ringan'?",
+        pilihan: [
+            "A. Berat", 
+            "B. Kecil", 
+            "C. Cepat", 
+            "D. Sederhana", 
+            "E. Tinggi"
+        ],
+        jawaban: "A"
+    }
+];
+
+
+        class Quiz {
+            constructor(questions) {
+                this.questions = questions;
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.totalQuestions = questions.length;
+                this.timeRemaining = 50 * 60; // 50 menit
+                this.timerInterval = null;
+            }
+
+            startTimer() {
+                this.timerInterval = setInterval(() => {
+                    this.timeRemaining--;
+                    this.updateTimerDisplay();
+
+                    if (this.timeRemaining <= 0) {
+                        this.endQuiz();
+                    }
+                }, 1000);
+            }
+
+            updateTimerDisplay() {
+                const minutes = Math.floor(this.timeRemaining / 60);
+                const seconds = this.timeRemaining % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            loadQuestion() {
+                const questionData = this.questions[this.currentQuestionIndex];
+                const questionText = document.getElementById('question-text');
+                const answersContainer = document.getElementById('answers-container');
+                const feedbackDiv = document.getElementById('feedback');
+                const nextButton = document.getElementById('next-btn');
+
+                // Reset tampilan
+                questionText.textContent = questionData.soal;
+                answersContainer.innerHTML = '';
+                feedbackDiv.innerHTML = '';
+                nextButton.style.display = 'none';
+
+                // Buat tombol jawaban
+                questionData.pilihan.forEach((pilihan) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = pilihan;
+                    btn.classList.add('btn', 'btn-outline-primary', 'answer-btn');
+                    btn.addEventListener('click', () => this.checkAnswer(pilihan));
+                    answersContainer.appendChild(btn);
+                });
+            }
+
+            checkAnswer(selectedAnswer) {
+                const feedbackDiv = document.getElementById('feedback');
+                const nextButton = document.getElementById('next-btn');
+                const answersContainer = document.getElementById('answers-container');
+                const currentQuestion = this.questions[this.currentQuestionIndex];
+
+                // Matikan semua tombol
+                answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+
+                // Tandai jawaban benar dan salah
+                answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
+                    const answerText = btn.textContent;
+                    const correctAnswer = currentQuestion.pilihan.find(p => 
+                        p.startsWith(currentQuestion.jawaban + '.')
+                    );
+                    
+                    if (answerText === correctAnswer) {
+                        btn.classList.add('btn-success');
+                    }
+                    if (answerText === selectedAnswer && selectedAnswer !== correctAnswer) {
+                        btn.classList.add('btn-danger');
+                    }
+                });
+
+                // Berikan feedback
+                if (selectedAnswer.startsWith(currentQuestion.jawaban + '.')) {
+                    feedbackDiv.innerHTML = '<div class="alert alert-success">Jawaban Benar!</div>';
+                    this.score++;
+                } else {
+                    const correctAnswer = currentQuestion.pilihan.find(p => 
+                        p.startsWith(currentQuestion.jawaban + '.')
+                    );
+                    feedbackDiv.innerHTML = `<div class="alert alert-danger">Jawaban Salah. Jawaban yang benar adalah: ${correctAnswer}</div>`;
+                }
+
+                // Tampilkan tombol selanjutnya
+                nextButton.style.display = 'block';
+            }
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                
+                if (this.currentQuestionIndex < this.totalQuestions) {
+                    this.loadQuestion();
+                } else {
+                    this.endQuiz();
+                }
+            }
+
+            endQuiz() {
+                clearInterval(this.timerInterval);
+                const resultModal = new bootstrap.Modal(document.getElementById('result-modal'));
+                const scoreResult = document.getElementById('score-result');
+                const scoreDetails = document.getElementById('score-details');
+
+                scoreResult.textContent = `Skor Anda: ${this.score}/${this.totalQuestions}`;
+                
+                const percentageScore = ((this.score / this.totalQuestions) * 100).toFixed(2);
+                scoreDetails.innerHTML = `
+                    <p>Jumlah Benar: ${this.score}</p>
+                    <p>Jumlah Salah: ${this.totalQuestions - this.score}</p>
+                    <p>Persentase: ${percentageScore}%</p>
+                `;
+
+                resultModal.show();
+            }
+        }
+
+        function restartQuiz() {
+            window.location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const quiz = new Quiz(quizData);
+            quiz.loadQuestion();
+            quiz.startTimer();
+
+            document.getElementById('next-btn').addEventListener('click', () => {
+                quiz.nextQuestion();
+            });
+        });
+    </script>
+</body>
+</html>

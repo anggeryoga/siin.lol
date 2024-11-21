@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Matematika Pintar</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+
+:root {
+    /* Color Palette */
+    --color-primary: #2563eb;      /* Vibrant Blue */
+    --color-secondary: #10b981;    /* Mint Green */
+    --color-accent: #6366f1;       /* Indigo */
+    --color-background: #f0f9ff;   /* Light Blue Background */
+    --color-text-dark: #1e293b;    /* Deep Slate */
+    --color-text-light: #475569;   /* Soft Slate */
+    --color-white: #ffffff;
+
+    /* Typography */
+    --font-primary: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.quiz-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    max-height: 100%;
+    background-color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.quiz-header {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: var(--color-white);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.quiz-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.question-area {
+    flex-grow: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--color-white);
+    overflow-y: auto;
+}
+
+.question {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 30px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.answer-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.answer-btn {
+    background-color: var(--color-background);
+    border: 2px solid var(--color-primary);
+    color: var(--color-text-dark);
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.answer-btn:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+}
+
+.answer-btn.correct {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: var(--color-white);
+}
+
+.answer-btn.incorrect {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: var(--color-white);
+}
+
+.progress-bar {
+    height: 6px;
+    background-color: var(--color-primary);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .answer-options {
+        grid-template-columns: 1fr;
+    }
+
+    .answer-btn {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.question-area {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+/* Safe Area for Mobile Devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .quiz-header {
+        padding-top: calc(20px + env(safe-area-inset-top));
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Modal Instruksi -->
+    <div class="modal fade" id="instructionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Petunjuk Kuis Matematika</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Cara Pengerjaan:</h6>
+                    <ol>
+                        <li>Kuis berisi 10 soal matematika</li>
+                        <li>Soal mencakup penjumlahan, pengurangan, perkalian, dan pembagian</li>
+                        <li>Waktu pengerjaan adalah 15 menit</li>
+                        <li>Setelah menulis jawaban, tekan ENTER untuk lanjut ke soal berikutnya</li>
+                        <li>Jawaban adalah satu digit terakhir dari hasil perhitungan</li>
+                        <li>Contoh: 12 + 14 = 26, jawabannya adalah 6</li>
+                    </ol>
+                    <p class="text-danger">Perhatikan waktu dan ketelitian Anda!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Mulai Kuis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="quiz-container">
+            <div class="quiz-header d-flex justify-content-between align-items-center">
+                <h2 class="m-0">Kuis Matematika</h2>
+                <div class="timer" id="timer">15:00</div>
+            </div>
+            
+            <div class="question-area text-center">
+                <div id="question" class="h3 mb-4 text-primary"></div>
+                <form id="answer-form">
+                    <input 
+                        type="number" 
+                        id="answer-input" 
+                        class="form-control form-control-lg text-center" 
+                        placeholder="Masukkan jawaban"
+                        required
+                    >
+                </form>
+                <div id="feedback" class="mt-2"></div>
+                <div id="question-counter" class="mt-3 text-muted"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hasil Akhir Modal -->
+    <div class="modal fade" id="resultModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Hasil Kuis</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="final-score"></div>
+                    <div id="detailed-results" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="window.location.reload()" class="btn btn-primary">Ulangi Kuis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const quizData = [
+    { question: "1 + 2 = ?", operation: "add", correctLastDigit: 3 },
+    { question: "3 + 4 = ?", operation: "add", correctLastDigit: 7 },
+    { question: "5 + 6 = ?", operation: "add", correctLastDigit: 1 },
+    { question: "7 + 8 = ?", operation: "add", correctLastDigit: 5 },
+    { question: "9 + 10 = ?", operation: "add", correctLastDigit: 9 },
+    { question: "11 + 12 = ?", operation: "add", correctLastDigit: 3 },
+    { question: "13 + 14 = ?", operation: "add", correctLastDigit: 7 },
+    { question: "15 + 16 = ?", operation: "add", correctLastDigit: 1 },
+    { question: "17 + 18 = ?", operation: "add", correctLastDigit: 5 },
+    { question: "19 + 20 = ?", operation: "add", correctLastDigit: 9 },
+    { question: "2 + 3 = ?", operation: "add", correctLastDigit: 5 },
+    { question: "4 + 5 = ?", operation: "add", correctLastDigit: 9 },
+    { question: "6 + 7 = ?", operation: "add", correctLastDigit: 3 },
+    { question: "8 + 9 = ?", operation: "add", correctLastDigit: 7 },
+    { question: "10 + 11 = ?", operation: "add", correctLastDigit: 1 },
+    { question: "12 + 13 = ?", operation: "add", correctLastDigit: 5 },
+    { question: "14 + 15 = ?", operation: "add", correctLastDigit: 9 },
+    { question: "16 + 17 = ?", operation: "add", correctLastDigit: 3 },
+    
+    { question: "3 + 5 = ?", operation: "add", correctLastDigit: 8 },
+    { question: "4 + 6 = ?", operation: "add", correctLastDigit: 0 },
+    { question: "7 + 9 = ?", operation: "add", correctLastDigit: 6 },
+    { question: "10 + 2 = ?", operation: "add", correctLastDigit: 2 },
+    { question: "11 + 7 = ?", operation: "add", correctLastDigit: 8 },
+    
+    { question: "20 + 14 = ?", operation: "add", correctLastDigit: 4 },
+    { question: "5 + 4 = ?", operation: "add", correctLastDigit: 9 },
+    { question: "6 + 8 = ?", operation: "add", correctLastDigit: 4 },
+   
+    
+    { question: "17 + 10 = ?", operation: "add", correctLastDigit: 7 },
+    { question: "18 + 5 = ?", operation: "add", correctLastDigit: 3 },
+    { question: "19 + 2 = ?", operation: "add", correctLastDigit: 1 },
+    { question: "20 + 11 = ?", operation: "add", correctLastDigit: 1 },
+    
+    { question: "15 - 7 = ?", operation: "subtract", correctLastDigit: 8 },
+    { question: "18 - 4 = ?", operation: "subtract", correctLastDigit: 4 },
+    { question: "12 - 5 = ?", operation: "subtract", correctLastDigit: 7 },
+    { question: "10 - 3 = ?", operation: "subtract", correctLastDigit: 7 },
+    { question: "17 - 6 = ?", operation: "subtract", correctLastDigit: 1 },
+    { question: "14 - 9 = ?", operation: "subtract", correctLastDigit: 5 },
+    { question: "20 - 15 = ?", operation: "subtract", correctLastDigit: 5 },
+    { question: "13 - 8 = ?", operation: "subtract", correctLastDigit: 5 },
+    { question: "16 - 7 = ?", operation: "subtract", correctLastDigit: 9 },
+    { question: "19 - 10 = ?", operation: "subtract", correctLastDigit: 9 },
+    { question: "11 - 3 = ?", operation: "subtract", correctLastDigit: 8 },
+    { question: "9 - 4 = ?", operation: "subtract", correctLastDigit: 5 },
+    { question: "18 - 2 = ?", operation: "subtract", correctLastDigit: 6 },
+    { question: "16 - 8 = ?", operation: "subtract", correctLastDigit: 8 },
+    { question: "13 - 6 = ?", operation: "subtract", correctLastDigit: 7 },
+    { question: "14 - 5 = ?", operation: "subtract", correctLastDigit: 9 },
+    { question: "17 - 9 = ?", operation: "subtract", correctLastDigit: 8 },
+    { question: "15 - 10 = ?", operation: "subtract", correctLastDigit: 5 },
+    { question: "12 - 6 = ?", operation: "subtract", correctLastDigit: 6 },
+    { question: "14 - 7 = ?", operation: "subtract", correctLastDigit: 7 }
+];
+
+
+        let currentQuestionIndex = 0;
+        let timeLeft = 15 * 60;
+        let timerInterval;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let answerHistory = [];
+
+        // Instruction Modal
+        const instructionModal = new bootstrap.Modal(document.getElementById('instructionModal'));
+        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+
+        // Show instruction modal on page load
+        window.onload = () => {
+            instructionModal.show();
+        };
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = formatTime(timeLeft);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResult();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                const currentQuestion = quizData[currentQuestionIndex];
+                document.getElementById('question').textContent = currentQuestion.question;
+                document.getElementById('answer-input').value = '';
+                document.getElementById('feedback').textContent = '';
+                document.getElementById('question-counter').textContent = 
+                    `Soal ${currentQuestionIndex + 1} dari ${quizData.length}`;
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+            resultModal.show();
+
+            // Prepare detailed results
+            let detailedResultsHTML = `
+                <h5>Rincian Hasil:</h5>
+                <p>Jawaban Benar: <span class="correct-answer">${correctAnswers}</span></p>
+                <p>Jawaban Salah: <span class="incorrect-answer">${incorrectAnswers}</span></p>
+                <h6>Daftar Soal:</h6>
+                <ul class="list-group">
+            `;
+
+            answerHistory.forEach((item, index) => {
+                detailedResultsHTML += `
+                    <li class="list-group-item ${item.isCorrect ? 'list-group-item-success' : 'list-group-item-danger'}">
+                        ${item.question} - Jawaban: ${item.userAnswer} 
+                        ${item.isCorrect ? '✅ Benar' : '❌ Salah'}
+                    </li>
+                `;
+            });
+
+            detailedResultsHTML += `</ul>`;
+
+            document.getElementById('final-score').innerHTML = `
+                <h4>Kuis Selesai!</h4>
+                <p>Total Soal: ${quizData.length}</p>
+                <p>Waktu Tersisa: ${formatTime(timeLeft)}</p>
+                <p>Nilai Akhir: ${Math.round((correctAnswers / quizData.length) * 100)}%</p>
+            `;
+            document.getElementById('detailed-results').innerHTML = detailedResultsHTML;
+        }
+
+        document.getElementById('answer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userAnswer = parseInt(document.getElementById('answer-input').value);
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = userAnswer === currentQuestion.correctLastDigit;
+
+            // Track answers
+            if (isCorrect) {
+                correctAnswers++;
+                document.getElementById('feedback').innerHTML = `<span class="correct-answer">Benar! ✅</span>`;
+            } else {
+                incorrectAnswers++;
+                document.getElementById('feedback').innerHTML = `<span class="incorrect-answer">Salah! ❌</span>`;
+            }
+
+            // Store answer history
+            answerHistory.push({
+                question: currentQuestion.question,
+                userAnswer: userAnswer,
+                isCorrect: isCorrect
+            });
+
+            // Move to next question
+            currentQuestionIndex++;
+            
+            // Either load next question or show results
+            if (currentQuestionIndex < quizData.length) {
+                setTimeout(loadQuestion, 500);
+            } else {
+                setTimeout(showResult, 500);
+            }
+        });
+
+        // Start timer when instruction modal is closed
+        document.getElementById('instructionModal').addEventListener('hidden.bs.modal', function () {
+            loadQuestion();
+            startTimer();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tes Kepribadian MBTI Dinamis</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    :root {
+      --primary-color: #007bff;
+      --background-color: #f4f7f6;
+      --card-color: #ffffff;
+      --text-color: #333;
+      --secondary-text-color: #666;
+      --hover-color: #e9ecef;
+      --shadow-light: rgba(0,0,0,0.1);
+      --shadow-medium: rgba(0,0,0,0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--background-color);
+      line-height: 1.6;
+      color: var(--text-color);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-color);
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: var(--secondary-text-color);
+      font-weight: 300;
+    }
+
+    .quiz-container {
+      background-color: var(--card-color);
+      border-radius: 15px;
+      box-shadow: 0 10px 25px var(--shadow-light);
+      padding: 30px;
+      border: 2px solid var(--primary-color);
+    }
+
+    .question {
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      border: 1px solid var(--primary-color);
+    }
+
+    .question:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px var(--shadow-medium);
+    }
+
+    .question h2 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin: 6px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .options label:hover {
+      background-color: var(--hover-color);
+      border-color: var(--primary-color);
+    }
+
+    .options input[type="radio"] {
+      margin-right: 12px;
+      accent-color: var(--primary-color);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 15px;
+    }
+
+    .buttons button {
+      flex: 1;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: 2px solid var(--text-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .buttons button:hover {
+      background-color: #0056b3;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 6px var(--shadow-light);
+    }
+
+    #questions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #result {
+      background-color: var(--card-color);
+      border-radius: 15px;
+      padding: 30px;
+      margin-top: 20px;
+      text-align: center;
+      box-shadow: 0 10px 25px var(--shadow-light);
+      border: 2px solid var(--primary-color);
+    }
+
+    .result-details {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .result-details div {
+      background-color: #f1f3f5;
+      padding: 15px;
+      border-radius: 10px;
+      width: 22%;
+      margin: 10px;
+      border: 1px solid var(--primary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .result-details div:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px var(--shadow-medium);
+    }
+
+    @media screen and (max-width: 768px) {
+      .result-details div {
+        width: 100%;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .buttons button {
+        margin-bottom: 10px;
+      }
+    }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tes Kepribadian MBTI</h1>
+      <p>Temukan tipe kepribadian Anda melalui serangkaian pertanyaan mendalam</p>
+    </header>
+
+    <div class="quiz-container">
+      <form id="mbti-form">
+        <div id="questions-container"></div>
+        <div class="buttons">
+          <button type="button" onclick="calculateMBTI()">Dapatkan Hasil</button>
+          <button type="button" onclick="downloadResult()">Unduh Hasil</button>
+        </div>
+      </form>
+
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    // Definisi pertanyaan dalam struktur data JavaScript
+   const MBTI_QUESTIONS = [
+  // Dimensi Energi (E/I) - Lebih Kompleks
+  {
+    id: 'dimensi-energi-1',
+    text: 'Dalam situasi sosial yang intens, Anda lebih cenderung:',
+    options: [
+      { value: 'E', text: 'Merasa bersemangat dan mendapatkan energi dari interaksi' },
+      { value: 'I', text: 'Merasa lelah dan membutuhkan waktu sendiri untuk memulihkan diri' }
+    ]
+  },
+  {
+    id: 'dimensi-energi-2',
+    text: 'Ketika menghadapi tekanan sosial, strategi Anda biasanya:',
+    options: [
+      { value: 'E', text: 'Berbicara terbuka dan mencari dukungan dari orang lain' },
+      { value: 'I', text: 'Merenung sendiri dan mencari solusi secara internal' }
+    ]
+  },
+
+  // Memproses Informasi (S/N) - Lebih Mendalam
+  {
+    id: 'memproses-informasi-1',
+    text: 'Saat menghadapi proyek baru, pendekatan Anda lebih:',
+    options: [
+      { value: 'S', text: 'Memulai dengan langkah konkret dan terukur' },
+      { value: 'N', text: 'Membayangkan keseluruhan visi dan potensi masa depan' }
+    ]
+  },
+  {
+    id: 'memproses-informasi-2',
+    text: 'Ketika mendengar cerita atau teori baru, Anda lebih tertarik pada:',
+    options: [
+      { value: 'S', text: 'Detail faktual dan bukti konkret' },
+      { value: 'N', text: 'Makna simbolis dan kemungkinan tersembunyi' }
+    ]
+  },
+
+  // Pengambilan Keputusan (T/F) - Lebih Nuansed
+  {
+    id: 'pengambilan-keputusan-1',
+    text: 'Dalam konflik antarindividu, prioritas utama Anda adalah:',
+    options: [
+      { value: 'T', text: 'Menemukan solusi objektif yang adil' },
+      { value: 'F', text: 'Menjaga hubungan baik dan perasaan semua pihak' }
+    ]
+  },
+  {
+    id: 'pengambilan-keputusan-2',
+    text: 'Saat membuat keputusan penting, Anda lebih cenderung:',
+    options: [
+      { value: 'T', text: 'Menganalisis pros dan cons secara sistematis' },
+      { value: 'F', text: 'Mendengarkan intuisi dan nuansa emosional' }
+    ]
+  },
+
+  // Struktur dan Fleksibilitas (J/P) - Lebih Kompleks
+  {
+    id: 'struktur-fleksibilitas-1',
+    text: 'Dalam manajemen waktu, Anda lebih suka:',
+    options: [
+      { value: 'J', text: 'Memiliki jadwal terperinci dan terencana' },
+      { value: 'P', text: 'Tetap fleksibel dan beradaptasi sesuai situasi' }
+    ]
+  },
+  {
+    id: 'struktur-fleksibilitas-2',
+    text: 'Menghadapi ketidakpastian, reaksi Anda biasanya:',
+    options: [
+      { value: 'J', text: 'Berusaha mengendalikan dan meminimalkan risiko' },
+      { value: 'P', text: 'Melihatnya sebagai peluang untuk eksplorasi' }
+    ]
+  },
+
+  // Tambahan Dimensi Kompleks
+  {
+    id: 'kreativitas',
+    text: 'Dalam proses kreatif, Anda lebih menyukai:',
+    options: [
+      { value: 'N', text: 'Ide-ide revolusioner dan konsep abstrak' },
+      { value: 'S', text: 'Pendekatan praktis dan implementasi nyata' }
+    ]
+  },
+  {
+    id: 'komunikasi',
+    text: 'Dalam diskusi kelompok, gaya komunikasi Anda:',
+    options: [
+      { value: 'T', text: 'Langsung, fokus pada logika dan efisiensi' },
+      { value: 'F', text: 'Diplomatis, memperhatikan dinamika emosional' }
+    ]
+  },
+  {
+    id: 'belajar',
+    text: 'Metode belajar yang paling efektif bagi Anda adalah:',
+    options: [
+      { value: 'S', text: 'Praktik langsung dan contoh konkret' },
+      { value: 'N', text: 'Teori, konsep, dan diskusi mendalam' }
+    ]
+  },
+  {
+    id: 'konflik',
+    text: 'Saat menghadapi kritik, Anda cenderung:',
+    options: [
+      { value: 'T', text: 'Menganalisanya secara objektif' },
+      { value: 'F', text: 'Mempertimbangkan dampak emosionalnya' }
+    ]
+  },
+  {
+    id: 'motivasi',
+    text: 'Apa yang paling memotivasi Anda dalam pekerjaan?',
+    options: [
+      { value: 'J', text: 'Pencapaian target dan struktur yang jelas' },
+      { value: 'P', text: 'Kebebasan dan ruang untuk improvisasi' }
+    ]
+  },
+  {
+    id: 'lingkungan-kerja',
+    text: 'Lingkungan kerja ideal bagi Anda adalah:',
+    options: [
+      { value: 'E', text: 'Dinamis, kolaboratif, dan sering berinteraksi' },
+      { value: 'I', text: 'Tenang, fokus, dengan waktu refleksi' }
+    ]
+  },
+  {
+    id: 'pemecahan-masalah',
+    text: 'Dalam memecahkan masalah rumit, pendekatan Anda:',
+    options: [
+      { value: 'N', text: 'Mencari solusi inovatif dan tidak konvensional' },
+      { value: 'S', text: 'Menggunakan metode yang terbukti efektif' }
+    ]
+  },
+  {
+    id: 'hubungan-sosial',
+    text: 'Dalam pertemanan, Anda lebih mengutamakan:',
+    options: [
+      { value: 'F', text: 'Kedekatan emosional dan dukungan mutual' },
+      { value: 'T', text: 'Pertukaran intelektual dan kejujuran' }
+    ]
+  },
+  {
+    id: 'keputusan-pribadi',
+    text: 'Saat membuat keputusan personal, Anda lebih percaya pada:',
+    options: [
+      { value: 'T', text: 'Analisis rasional dan pertimbangan logis' },
+      { value: 'F', text: 'Perasaan dan resonansi internal' }
+    ]
+  },
+  {
+    id: 'pengembangan-diri',
+    text: 'Fokus utama pengembangan diri Anda adalah:',
+    options: [
+      { value: 'J', text: 'Meningkatkan disiplin dan pencapaian' },
+      { value: 'P', text: 'Eksplorasi potensi dan fleksibilitas' }
+    ]
+  },
+  {
+    id: 'energi-sosial',
+    text: 'Setelah acara sosial yang panjang, Anda merasa:',
+    options: [
+      { value: 'E', text: 'Bersemangat dan terinspirasi' },
+      { value: 'I', text: 'Perlu waktu untuk menenangkan diri' }
+    ]
+  },
+  {
+    id: 'pendekatan-tugas',
+    text: 'Dalam menyelesaikan proyek, Anda lebih mementingkan:',
+    options: [
+      { value: 'S', text: 'Ketelitian dan kesempurnaan detail' },
+      { value: 'N', text: 'Kreativitas dan inovasi konseptual' }
+    ]
+  }
+];
+
+    // Deskripsi tipe MBTI
+    const MBTI_DESCRIPTIONS = {
+      'ISTJ': 'Pengatur yang andal, sistematis, dan bertanggung jawab.',
+      'ISFJ': 'Pelindung yang setia, penuh perhatian, dan mendukung.',
+      'INFJ': 'Pembaru dengan visi, idealis, dan mendalam.',
+      'INTJ': 'Pemikir strategis, independen, dan berkemauan kuat.',
+      'ISTP': 'Pemecah masalah praktis, adaptif, dan analitis.',
+      'ISFP': 'Seniman yang sensitif, kreatif, dan individualistik.',
+      'INFP': 'Mediator yang idealis, penuh empati, dan berbakat.',
+      'INTP': 'Pemikir logis, inovatif, dan haus akan pengetahuan.',
+      'ESTP': 'Pengusaha yang energetik, spontan, dan berani.',
+      'ESFP': 'Entertainer yang ceria, sosial, dan penuh semangat.',
+      'ENFP': 'Inspirator yang antusias, kreatif, dan humoris.',
+      'ENTP': 'Inventor yang cerdas, suka tantangan, dan imajinatif.',
+      'ESTJ': 'Supervisor yang terorganisir, praktis, dan efisien.',
+      'ESFJ': 'Konsulen yang hangat, peduli, dan kooperatif.',
+      'ENFJ': 'Pemimpin yang kharismatik, inspiratif, dan empatik.',
+      'ENTJ': 'Komandan yang ambisius, percaya diri, dan visioner.'
+    };
+
+    // Fungsi untuk membuat pertanyaan
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      container.innerHTML = ''; // Bersihkan kontainer sebelumnya
+
+      MBTI_QUESTIONS.forEach((question, index) => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('question');
+        
+        const questionTitle = document.createElement('h2');
+        questionTitle.textContent = `${index + 1}. ${question.text}`;
+        questionElement.appendChild(questionTitle);
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.classList.add('options');
+
+        question.options.forEach(option => {
+          const label = document.createElement('label');
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = `q${index + 1}`;
+          radio.value = option.value;
+          radio.required = true;
+
+          const optionText = document.createTextNode(option.text);
+          
+          label.appendChild(radio);
+          label.appendChild(optionText);
+          optionsContainer.appendChild(label);
+        });
+
+        questionElement.appendChild(optionsContainer);
+        container.appendChild(questionElement);
+      });
+    }
+
+    // Fungsi untuk menghitung MBTI
+    function calculateMBTI() {
+      const form = document.getElementById('mbti-form');
+      
+      // Validasi semua pertanyaan terjawab
+      for (let i = 0; i < MBTI_QUESTIONS.length; i++) {
+        if (!form[`q${i+1}`].value) {
+          alert('Mohon jawab semua pertanyaan!');
+          return;
+        }
+      }
+
+      // Menghitung skor untuk setiap dimensi
+      const scores = {
+        E: 0, I: 0,
+        S: 0, N: 0,
+        T: 0, F: 0,
+        J: 0, P: 0
+      };
+
+      for (let i = 0; i < MBTI_QUESTIONS.length; i++) {
+        const value = form[`q${i+1}`].value;
+        scores[value]++;
+      }
+
+      // Menentukan tipe kepribadian
+      const mbti = 
+        (scores.E > scores.I ? 'E' : 'I') +
+        (scores.S > scores.N ? 'S' : 'N') +
+        (scores.T > scores.F ? 'T' : 'F') +
+        (scores.J > scores.P ? 'J' : 'P');
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `
+        <h2>Hasil Tes Kepribadian MBTI Anda</h2>
+        <div class="result-details">
+          <div>
+            <strong>Tipe: ${mbti}</strong>
+            <p>${MBTI_DESCRIPTIONS[mbti] || 'Deskripsi tidak tersedia'}</p>
+          </div>
+          <div>
+            <strong>E/I</strong>
+            <p>${scores.E > scores.I ? 'Ekstrovert' : 'Introvert'}</p>
+          </div>
+          <div>
+            <strong>S/N</strong>
+            <p>${scores.S > scores.N ? 'Sensing' : 'Intuisi'}</p>
+          </div>
+          <div>
+            <strong>T/F</strong>
+            <p>${scores.T > scores.F ? 'Thinking' : 'Feeling'}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function downloadResult() {
+  const resultDiv = document.getElementById('result');
+  if (!resultDiv.innerText.trim()) {
+    alert('Harap selesaikan tes terlebih dahulu!');
+    return;
+  }
+
+  // Tambahkan library html2canvas
+  const script = document.createElement('script');
+  script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+  script.onload = () => {
+    html2canvas(resultDiv, {
+      scale: 2, // Meningkatkan resolusi
+      useCORS: true, 
+      logging: false,
+      backgroundColor: '#f4f7f6' // Sesuaikan dengan warna background di CSS
+    }).then(canvas => {
+      // Konversi canvas ke blob
+      canvas.toBlob(function(blob) {
+        const link = document.createElement('a');
+        link.download = 'Hasil_MBTI.png';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }, 'image/png');
+    });
+  };
+  document.head.appendChild(script);
+}
+    // Render pertanyaan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', renderQuestions);
+  </script>
+</body>
+</html>

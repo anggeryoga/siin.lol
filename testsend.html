@@ -1,202 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Frontend Snapdrop</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #1a1a1a;
-      color: white;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy File Transfer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            color: white;
+        }
 
-    .radar-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
 
-    .radar {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
-      overflow: hidden;
-      animation: rotate 4s linear infinite;
-    }
+        .header {
+            margin-bottom: 30px;
+        }
 
-    @keyframes rotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
+        .device-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
 
-    .circle {
-      position: absolute;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
+        .status {
+            color: #888;
+            margin-bottom: 20px;
+        }
 
-    .circle:nth-child(1) {
-      width: 80%;
-      height: 80%;
-      top: 50%;
-      left: 50%;
-    }
+        .radar-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            margin-bottom: 30px;
+        }
 
-    .circle:nth-child(2) {
-      width: 60%;
-      height: 60%;
-      top: 50%;
-      left: 50%;
-    }
+        .radar {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            overflow: hidden;
+        }
 
-    .circle:nth-child(3) {
-      width: 40%;
-      height: 40%;
-      top: 50%;
-      left: 50%;
-    }
+        .radar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 50%, rgba(0,255,0,0.1) 100%);
+            animation: scan 4s linear infinite;
+            transform-origin: center;
+        }
 
-    .user {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: #ff6a00;
-      border-radius: 50%;
-      cursor: pointer;
-      transform: translate(-50%, -50%);
-      animation: pulse 1s infinite;
-    }
+        @keyframes scan {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-    .user:hover {
-      background-color: #ff4500;
-    }
+        .device {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    .file-panel {
-      margin-top: 20px;
-    }
+        .device-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            animation: pulse 2s infinite;
+        }
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      color: white;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
 
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+        .device-label {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .selected .device-icon {
+            background-color: #2196F3;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+        }
+
+        .file-panel {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .send-button:not(:disabled):hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 25px;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); }
+            to { transform: translate(-50%, 0); }
+        }
+    </style>
 </head>
 <body>
-  <div class="radar-container">
-    <div class="radar">
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div id="users"></div>
+    <div class="container">
+        <div class="header">
+            <div class="device-name">Your Device</div>
+            <div class="status">Connected to local network</div>
+        </div>
+
+        <div class="radar-container">
+            <div class="radar">
+                <div id="devices"></div>
+            </div>
+        </div>
+
+        <div class="file-panel">
+            <input type="file" id="file-input" style="display: none;" multiple>
+            <button id="send-file" class="send-button" disabled>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Choose Files to Send
+            </button>
+        </div>
     </div>
-    <div class="file-panel">
-      <input type="file" id="file-input" style="display: none;">
-      <button id="send-file" disabled>Send File</button>
-    </div>
-  </div>
 
-  <script>
-    const broadcast = new BroadcastChannel('snapdrop-clone');
-    const usersContainer = document.getElementById('users');
-    const fileInput = document.getElementById('file-input');
-    const sendFileButton = document.getElementById('send-file');
+    <div id="toast"></div>
 
-    let userId = Math.random().toString(36).substring(2, 15);
-    let peers = {};
-    let selectedPeerId = null;
-    let dataChannel = null;
+    <script>
+        const broadcast = new BroadcastChannel('easy-file-transfer');
+        const devicesContainer = document.getElementById('devices');
+        const fileInput = document.getElementById('file-input');
+        const sendFileButton = document.getElementById('send-file');
+        const toast = document.getElementById('toast');
 
-    // Announce presence to other users
-    broadcast.postMessage({ type: 'join', userId });
+        let userId = Math.random().toString(36).substring(2, 15);
+        let deviceName = `Device-${userId.substring(0, 4)}`;
+        let peers = {};
+        let selectedPeerId = null;
 
-    broadcast.onmessage = (event) => {
-      const data = event.data;
+        document.querySelector('.device-name').textContent = deviceName;
 
-      if (data.type === 'join' && data.userId !== userId) {
-        peers[data.userId] = data.userId;
-        updateUsers();
-      } else if (data.type === 'leave') {
-        delete peers[data.userId];
-        updateUsers();
-      } else if (data.type === 'file-offer' && data.to === userId) {
-        receiveFile(data);
-      }
-    };
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
 
-    window.addEventListener('beforeunload', () => {
-      broadcast.postMessage({ type: 'leave', userId });
-    });
+        // Announce presence
+        broadcast.postMessage({
+            type: 'join',
+            userId,
+            deviceName
+        });
 
-    function updateUsers() {
-      usersContainer.innerHTML = '';
-      Object.keys(peers).forEach((peerId) => {
-        const userDiv = document.createElement('div');
-        userDiv.classList.add('user');
-        userDiv.style.top = `${Math.random() * 80 + 10}%`;
-        userDiv.style.left = `${Math.random() * 80 + 10}%`;
-        userDiv.setAttribute('data-id', peerId);
-        userDiv.addEventListener('click', () => selectPeer(peerId));
-        usersContainer.appendChild(userDiv);
-      });
-    }
+        broadcast.onmessage = (event) => {
+            const data = event.data;
 
-    function selectPeer(peerId) {
-      selectedPeerId = peerId;
-      sendFileButton.disabled = false;
-    }
-
-    sendFileButton.addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          broadcast.postMessage({
-            type: 'file-offer',
-            to: selectedPeerId,
-            from: userId,
-            fileName: file.name,
-            fileContent: reader.result,
-          });
-          alert('File sent!');
+            if (data.type === 'join' && data.userId !== userId) {
+                peers[data.userId] = {
+                    id: data.userId,
+                    name: data.deviceName
+                };
+                updateDevices();
+            } else if (data.type === 'leave') {
+                delete peers[data.userId];
+                updateDevices();
+            } else if (data.type === 'file-offer' && data.to === userId) {
+                receiveFile(data);
+            }
         };
-        reader.readAsDataURL(file);
-      }
-    });
 
-    function receiveFile(data) {
-      const { fileName, fileContent } = data;
-      const link = document.createElement('a');
-      link.href = fileContent;
-      link.download = fileName;
-      link.click();
-      alert(`File "${fileName}" received!`);
-    }
-  </script>
+        window.addEventListener('beforeunload', () => {
+            broadcast.postMessage({ type: 'leave', userId });
+        });
+
+        function getRandomPosition() {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.random() * 100;
+            return {
+                x: Math.cos(angle) * radius + 150,
+                y: Math.sin(angle) * radius + 150
+            };
+        }
+
+        function updateDevices() {
+            devicesContainer.innerHTML = '';
+            Object.values(peers).forEach((peer) => {
+                const position = getRandomPosition();
+                const deviceDiv = document.createElement('div');
+                deviceDiv.classList.add('device');
+                deviceDiv.style.left = `${position.x}px`;
+                deviceDiv.style.top = `${position.y}px`;
+                deviceDiv.innerHTML = `
+                    <div class="device-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="2" ry="2"/>
+                            <rect x="8" y="8" width="8" height="8" rx="1" ry="1"/>
+                        </svg>
+                    </div>
+                    <div class="device-label">${peer.name}</div>
+                `;
+                deviceDiv.setAttribute('data-id', peer.id);
+                deviceDiv.addEventListener('click', () => selectPeer(peer.id));
+                devicesContainer.appendChild(deviceDiv);
+            });
+
+            if (Object.keys(peers).length === 0) {
+                document.querySelector('.status').textContent = 'Waiting for other devices...';
+            } else {
+                document.querySelector('.status').textContent = `${Object.keys(peers).length} device(s) found`;
+            }
+        }
+
+        function selectPeer(peerId) {
+            const devices = document.querySelectorAll('.device');
+            devices.forEach(device => device.classList.remove('selected'));
+            
+            const selectedDevice = document.querySelector(`[data-id="${peerId}"]`);
+            if (selectedDevice) {
+                selectedDevice.classList.add('selected');
+            }
+            
+            selectedPeerId = peerId;
+            sendFileButton.disabled = false;
+            showToast(`Selected ${peers[peerId].name} for file transfer`);
+        }
+
+        sendFileButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            const files = Array.from(fileInput.files);
+            if (files.length > 0) {
+                showToast(`Sending ${files.length} file(s)...`);
+                
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        broadcast.postMessage({
+                            type: 'file-offer',
+                            to: selectedPeerId,
+                            from: userId,
+                            fromName: deviceName,
+                            fileName: file.name,
+                            fileContent: reader.result,
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                setTimeout(() => {
+                    showToast(`Files sent to ${peers[selectedPeerId].name}!`);
+                }, 1000);
+            }
+        });
+
+        function receiveFile(data) {
+            const link = document.createElement('a');
+            link.href = data.fileContent;
+            link.download = data.fileName;
+            link.click();
+            showToast(`Received "${data.fileName}" from ${data.fromName}`);
+        }
+    </script>
 </body>
 </html>

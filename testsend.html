@@ -1,653 +1,330 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Aplikasi transfer file aman menggunakan QR code">
-    <meta name="theme-color" content="#2563eb">
-    <title>SecureShare - Transfer File via QR</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>Simple File Transfer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #64748b;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --warning: #f59e0b;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            background-color: #f0f2f5;
             padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            padding: 2rem 0;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: var(--secondary);
-            font-size: 1.1rem;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            max-width: 800px;
+        .container {
+            max-width: 600px;
             margin: 0 auto;
-        }
-
-        .card {
             background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-        }
-
-        .card-icon {
-            background: var(--primary);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .drop-zone {
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 2rem;
+        h1 {
             text-align: center;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .drop-zone:hover, .drop-zone.drag-over {
-            border-color: var(--primary);
-            background: #f0f9ff;
-        }
-
-        .drop-zone-text {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-
-        .file-input {
-            display: none;
+        .upload-area:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
         }
 
         .button {
-            background: var(--primary);
+            background-color: #1a73e8;
             color: white;
+            padding: 10px 20px;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 500;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .button:hover {
-            background: var(--primary-dark);
+            background-color: #1557b0;
         }
 
-        .button:disabled {
-            background: var(--secondary);
-            cursor: not-allowed;
-        }
-
-        .button-secondary {
-            background: transparent;
-            border: 1px solid var(--secondary);
-            color: var(--secondary);
-        }
-
-        .button-secondary:hover {
-            background: #f1f5f9;
-        }
-
-        .preview-container {
-            margin: 1.5rem 0;
-            text-align: center;
-            display: none;
-        }
-
-        .preview-image {
-            max-width: 300px;
-            max-height: 300px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .file-info {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .file-info-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-
-        .file-info-label {
-            color: var(--secondary);
-            font-weight: 500;
+        .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f2f5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary);
             width: 0%;
+            height: 100%;
+            background-color: #1a73e8;
             transition: width 0.3s ease;
         }
 
         #qrcode {
-            margin: 1.5rem auto;
-            padding: 1rem;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none;
+            text-align: center;
+            margin: 20px 0;
         }
 
-        .security-info {
-            background: #f0fdf4;
-            border: 1px solid #86efac;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-            display: none;
+        #downloadUrl {
+            word-break: break-all;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
         }
 
-        .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: var(--danger);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-            display: none;
+        #status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
         }
 
-        @media (max-width: 768px) {
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 480px) {
             .container {
-                padding: 1rem;
+                padding: 10px;
             }
-
-            .card {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Loading spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 1rem auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Toast notifications */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            color: white;
-            animation: slideIn 0.3s ease;
-            z-index: 1000;
-            display: none;
-        }
-
-        .toast-success {
-            background: var(--success);
-        }
-
-        .toast-error {
-            background: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="logo">SecureShare</div>
-            <div class="subtitle">Transfer file aman dan cepat menggunakan QR code</div>
-        </div>
-    </header>
-
-    <main class="container">
-        <div class="main-content">
-            <div class="card" id="senderSection">
-                <div class="card-header">
-                    <div class="card-icon">📤</div>
-                    <h2 class="card-title">Kirim File</h2>
-                </div>
-
-                <div class="drop-zone" id="dropZone">
-                    <p class="drop-zone-text">Drag & drop file di sini atau</p>
-                    <button class="button">
-                        <span>Pilih File</span>
-                        <input type="file" class="file-input" id="fileInput" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt">
-                    </button>
-                </div>
-
-                <div class="file-info" id="fileInfo">
-                    <div class="file-info-item">
-                        <span class="file-info-label">Nama File:</span>
-                        <span id="fileName"></span>
-                    </div>
-                    <div class="file-info-item">
-                        <span class="file-info-label">Ukuran:</span>
-                        <span id="fileSize"></span>
-                    </div>
-                    <div class="file-info-item">
-                        <span class="file-info-label">Tipe:</span>
-                        <span id="fileType"></span>
-                    </div>
-                </div>
-
-                <div class="preview-container" id="previewContainer">
-                    <img class="preview-image" id="preview">
-                </div>
-
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress-bar-fill" id="progressBarFill"></div>
-                </div>
-
-                <div class="spinner" id="spinner"></div>
-
-                <div id="qrcode"></div>
-
-                <div class="security-info" id="securityInfo">
-                    <h3>🔒 Informasi Keamanan:</h3>
-                    <p>File dienkripsi sebelum transfer. Kode QR hanya dapat digunakan sekali dan kedaluwarsa dalam 24 jam.</p>
-                </div>
+    <div class="container">
+        <h1>Simple File Transfer</h1>
+        
+        <div id="uploadSection">
+            <div class="upload-area" id="dropZone">
+                <p>Klik atau drop file disini</p>
+                <input type="file" id="fileInput" style="display: none;">
             </div>
 
-            <div class="card" id="downloadSection" style="display: none;">
-                <div class="card-header">
-                    <div class="card-icon">📥</div>
-                    <h2 class="card-title">Download File</h2>
-                </div>
-
-                <div class="file-info">
-                    <div class="file-info-item">
-                        <span class="file-info-label">File:</span>
-                        <span id="receiveFileName"></span>
-                    </div>
-                </div>
-
-                <button id="downloadBtn" class="button">
-                    <span>Download File</span>
-                </button>
-
-                <button id="newTransferBtn" class="button button-secondary" style="margin-left: 1rem;">
-                    <span>Transfer Baru</span>
-                </button>
+            <div class="progress" style="display: none;">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
-        </div>
-    </main>
 
-    <div class="toast" id="toast"></div>
+            <div id="status" style="display: none;"></div>
+            
+            <div id="qrcode"></div>
+            
+            <div id="downloadUrl" style="display: none;"></div>
+        </div>
+
+        <div id="downloadSection" style="display: none;">
+            <h2>Download File</h2>
+            <p id="fileName"></p>
+            <button class="button" id="downloadButton">Download File</button>
+        </div>
+    </div>
 
     <script>
-        // Utility functions
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast toast-${type}`;
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function generateEncryptionKey() {
-            return CryptoJS.lib.WordArray.random(16).toString();
-        }
-
-        // Initialize QR Code
-        const qrcode = new QRCode(document.getElementById('qrcode'), {
-            width: 256,
-            height: 256,
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        // File handling
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const preview = document.getElementById('preview');
-        const previewContainer = document.getElementById('previewContainer');
-        const fileInfo = document.getElementById('fileInfo');
-        const progressBar = document.getElementById('progressBar');
-        const progressBarFill = document.getElementById('progressBarFill');
-        const spinner = document.getElementById('spinner');
-        const securityInfo = document.getElementById('securityInfo');
-
-        // Drag and drop handling
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('drag-over');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('drag-over');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
+        // Utility untuk membagi file besar
+        function* generateChunks(file, chunkSize = 1024 * 1024) {
+            const fileSize = file.size;
+            const chunks = Math.ceil(fileSize / chunkSize);
+            
+            for (let i = 0; i < chunks; i++) {
+                const start = i * chunkSize;
+                const end = Math.min(start + chunkSize, fileSize);
+                yield file.slice(start, end);
             }
-        });
-
-        dropZone.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            // Show file info
-            document.getElementById('fileName').textContent = file.name;
-            document.getElementById('fileSize').textContent = formatFileSize(file.size);
-            document.getElementById('fileType').textContent = file.type || 'Unknown';
-            fileInfo.style.display = 'block';
-
-            // Show progress bar
-            progressBar.style.display = 'block';
-            progressBarFill.style.width = '0%';
-
-            // Show preview for images
-            if (file.type.startsWith('image/')) {
-                previewContainer.style.display = 'block';
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewContainer.style.display = 'none';
-            }
-
-            // Process file
-            processFile(file);
         }
 
+        // Fungsi untuk update progress bar
+        function updateProgress(percent) {
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = `${percent}%`;
+        }
+
+        // Fungsi untuk menampilkan status
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = type;
+            status.style.display = 'block';
+        }
+
+        // Fungsi utama untuk memproses file
         async function processFile(file) {
             try {
-                spinner.style.display = 'block';
+                const transferId = CryptoJS.SHA256(file.name + Date.now()).toString();
+                const encryptionKey = CryptoJS.lib.WordArray.random(16).toString();
                 
-                // Simulate progress
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += 5;
-                    if (progress <= 90) {
-                        progressBarFill.style.width = progress + '%';
-                    }
-                }, 100);
-
-                // Read file as array buffer
-                const buffer = await file.arrayBuffer();
-                const data = new Uint8Array(buffer);
-
-                // Generate encryption key and encrypt data
-                const encryptionKey = generateEncryptionKey();
-                const encryptedData = CryptoJS.AES.encrypt(
-                    CryptoJS.lib.WordArray.create(data),
-                    encryptionKey
-                ).toString();
-
-                // Create transfer data object
-                const transferData = {
+                document.querySelector('.progress').style.display = 'block';
+                
+                // Simpan metadata file
+                const metadata = {
                     name: file.name,
                     type: file.type,
                     size: file.size,
-                    data: encryptedData,
                     timestamp: Date.now(),
-                    expires: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+                    expires: Date.now() + (24 * 60 * 60 * 1000)
                 };
-
-                // Generate unique transfer ID
-                const transferId = CryptoJS.SHA256(file.name + Date.now()).toString();
-
-                // Store data in localStorage (with expiration)
-                localStorage.setItem(`transfer_${transferId}`, JSON.stringify(transferData));
-
-                // Create secure transfer URL with encryption key
-                const transferUrl = `${window.location.origin}${window.location.pathname}#transfer=${transferId}&key=${encryptionKey}`;
-
-                // Complete progress bar
-                clearInterval(progressInterval);
-                progressBarFill.style.width = '100%';
                 
-                // Generate QR code
-                document.getElementById('qrcode').style.display = 'block';
-                qrcode.makeCode(transferUrl);
-
-                // Show security info
-                securityInfo.style.display = 'block';
+                localStorage.setItem(`meta_${transferId}`, JSON.stringify(metadata));
                 
-                showToast('File siap untuk ditransfer!', 'success');
+                // Baca dan enkripsi file
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const encrypted = CryptoJS.AES.encrypt(e.target.result, encryptionKey).toString();
+                        localStorage.setItem(`file_${transferId}`, encrypted);
+                        
+                        // Generate download URL dan QR code
+                        const downloadUrl = `${window.location.href}#${transferId}:${encryptionKey}`;
+                        
+                        // Tampilkan QR code
+                        document.getElementById('qrcode').innerHTML = '';
+                        new QRCode(document.getElementById('qrcode'), {
+                            text: downloadUrl,
+                            width: 256,
+                            height: 256
+                        });
+                        
+                        // Tampilkan URL
+                        const urlDiv = document.getElementById('downloadUrl');
+                        urlDiv.textContent = downloadUrl;
+                        urlDiv.style.display = 'block';
+                        
+                        updateProgress(100);
+                        showStatus('File berhasil diupload!', 'success');
+                    } catch (error) {
+                        showStatus('Error saat mengenkripsi file', 'error');
+                        console.error(error);
+                    }
+                };
+                
+                reader.onerror = () => {
+                    showStatus('Error saat membaca file', 'error');
+                };
+                
+                reader.readAsDataURL(file);
+                
             } catch (error) {
-                console.error('Error processing file:', error);
-                showToast('Gagal memproses file. Silakan coba lagi.', 'error');
-            } finally {
-                spinner.style.display = 'none';
+                showStatus('Error saat memproses file', 'error');
+                console.error(error);
             }
         }
 
-        // Download handling
+        // Setup event listeners
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#1a73e8';
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#ccc';
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ccc';
+            
+            if (e.dataTransfer.files.length > 0) {
+                processFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                processFile(e.target.files[0]);
+            }
+        });
+
+        // Handle download jika ada hash di URL
         if (window.location.hash) {
-            const hashParams = new URLSearchParams(
-                window.location.hash.slice(1).replace('transfer=', 'transfer_id=')
-            );
-            const transferId = hashParams.get('transfer_id');
-            const encryptionKey = hashParams.get('key');
-
+            const [transferId, encryptionKey] = window.location.hash.slice(1).split(':');
             if (transferId && encryptionKey) {
-                document.getElementById('senderSection').style.display = 'none';
+                document.getElementById('uploadSection').style.display = 'none';
                 document.getElementById('downloadSection').style.display = 'block';
-
-                try {
-                    // Get transfer data from localStorage
-                    const transferData = JSON.parse(localStorage.getItem(`transfer_${transferId}`));
-
-                    if (!transferData) {
-                        throw new Error('Transfer tidak ditemukan atau sudah kedaluwarsa');
-                    }
-
-                    if (Date.now() > transferData.expires) {
-                        localStorage.removeItem(`transfer_${transferId}`);
-                        throw new Error('Link transfer sudah kedaluwarsa');
-                    }
-
-                    document.getElementById('receiveFileName').textContent = transferData.name;
-
-                    const downloadBtn = document.getElementById('downloadBtn');
-                    downloadBtn.addEventListener('click', async () => {
+                
+                const metadata = JSON.parse(localStorage.getItem(`meta_${transferId}`));
+                if (metadata) {
+                    document.getElementById('fileName').textContent = metadata.name;
+                    
+                    document.getElementById('downloadButton').addEventListener('click', async () => {
                         try {
-                            downloadBtn.disabled = true;
-                            spinner.style.display = 'block';
-
-                            // Decrypt data
-                            const decryptedData = CryptoJS.AES.decrypt(
-                                transferData.data,
-                                encryptionKey
-                            );
-                            const arrayBuffer = new Uint8Array(decryptedData.words.length * 4);
-                            for (let i = 0; i < decryptedData.words.length; i++) {
-                                const word = decryptedData.words[i];
-                                arrayBuffer[i * 4] = (word >> 24) & 0xff;
-                                arrayBuffer[i * 4 + 1] = (word >> 16) & 0xff;
-                                arrayBuffer[i * 4 + 2] = (word >> 8) & 0xff;
-                                arrayBuffer[i * 4 + 3] = word & 0xff;
+                            const encrypted = localStorage.getItem(`file_${transferId}`);
+                            if (!encrypted) {
+                                throw new Error('File tidak ditemukan atau sudah expired');
                             }
-
-                            // Create blob and download
-                            const blob = new Blob([arrayBuffer], { type: transferData.type });
-                            const url = URL.createObjectURL(blob);
+                            
+                            const decrypted = CryptoJS.AES.decrypt(encrypted, encryptionKey).toString(CryptoJS.enc.Utf8);
+                            
+                            // Create download link
                             const link = document.createElement('a');
-                            link.href = url;
-                            link.download = transferData.name;
+                            link.href = decrypted;
+                            link.download = metadata.name;
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-
-                            // Remove transfer data after successful download
-                            localStorage.removeItem(`transfer_${transferId}`);
-                            showToast('File berhasil diunduh!', 'success');
+                            
+                            // Hapus file setelah didownload
+                            localStorage.removeItem(`file_${transferId}`);
+                            localStorage.removeItem(`meta_${transferId}`);
+                            
+                            showStatus('File berhasil didownload!', 'success');
                         } catch (error) {
-                            console.error('Error downloading file:', error);
-                            showToast('Gagal mengunduh file. Silakan coba lagi.', 'error');
-                        } finally {
-                            downloadBtn.disabled = false;
-                            spinner.style.display = 'none';
+                            showStatus('Error saat mendownload file', 'error');
+                            console.error(error);
                         }
                     });
-
-                    // New transfer button
-                    document.getElementById('newTransferBtn').addEventListener('click', () => {
-                        window.location.href = window.location.pathname;
-                    });
-                } catch (error) {
-                    console.error('Error handling transfer:', error);
-                    showToast(error.message, 'error');
-                    document.getElementById('downloadSection').innerHTML = `
-                        <div class="error-message" style="display: block;">
-                            <h3>❌ Error:</h3>
-                            <p>${error.message}</p>
-                            <button class="button button-secondary" onclick="window.location.href='${window.location.pathname}'">
-                                Mulai Transfer Baru
-                            </button>
-                        </div>
-                    `;
+                } else {
+                    showStatus('File tidak ditemukan atau sudah expired', 'error');
                 }
             }
         }
 
-        // Cleanup expired transfers
-        function cleanupExpiredTransfers() {
+        // Cleanup expired files
+        function cleanupExpiredFiles() {
+            const now = Date.now();
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key.startsWith('transfer_')) {
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        if (Date.now() > data.expires) {
-                            localStorage.removeItem(key);
-                        }
-                    } catch (error) {
-                        console.error('Error cleaning up transfer:', error);
+                if (key.startsWith('meta_')) {
+                    const metadata = JSON.parse(localStorage.getItem(key));
+                    if (now > metadata.expires) {
+                        const transferId = key.replace('meta_', '');
+                        localStorage.removeItem(`file_${transferId}`);
                         localStorage.removeItem(key);
                     }
                 }
             }
         }
 
-        // Run cleanup on load and periodically
-        cleanupExpiredTransfers();
-        setInterval(cleanupExpiredTransfers, 60000); // Check every minute
-
-        // Service Worker Registration for offline support
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(error => {
-                    console.error('ServiceWorker registration failed:', error);
-                });
-            });
-        }
+        // Run cleanup setiap 5 menit
+        setInterval(cleanupExpiredFiles, 5 * 60 * 1000);
     </script>
 </body>
 </html>

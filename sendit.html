@@ -3,71 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share File Lokal</title>
+    <title>ShareFlow - File Sharing Made Easy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .id-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .id-display {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .copy-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #3182ce;
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .drop-zone:hover {
+            border-color: #4299e1;
+        }
+
+        .drop-zone.dragover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .input-group {
+            margin: 1rem 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .send-btn {
+            width: 100%;
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #38a169;
+        }
+
+        .send-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #f7fafc;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #4299e1;
+            transition: width 0.3s;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #48bb78;
+            color: white;
+            transform: translateY(150%);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 1rem auto;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Share File Lokal</h1>
-    <div>
-        <h3>ID Anda:</h3>
-        <p id="myId">Menghubungkan...</p>
-        <h3>Kirim File</h3>
-        <input type="file" id="fileInput">
-        <input type="text" id="peerIdInput" placeholder="Masukkan ID penerima">
-        <button onclick="sendFile()">Kirim</button>
-        <h3>Terima File</h3>
-        <p id="receiveStatus">Menunggu file...</p>
+    <div class="container">
+        <div class="header">
+            <h1>ShareFlow</h1>
+            <p>Transfer file secara lokal dengan mudah dan cepat</p>
+        </div>
+
+        <div class="card">
+            <h2>ID Koneksi Anda</h2>
+            <div class="id-section">
+                <div class="id-display" id="myId">Menghubungkan...</div>
+                <button class="copy-btn" id="copyBtn">Salin ID</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Kirim File</h2>
+            <div class="drop-zone" id="dropZone">
+                <p>Drag & drop file di sini atau klik untuk memilih</p>
+                <input type="file" id="fileInput" hidden>
+            </div>
+            <div class="file-info" id="fileInfo" style="display: none">
+                <span class="file-icon">📄</span>
+                <div>
+                    <div id="fileName"></div>
+                    <div id="fileSize"></div>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="peerIdInput" placeholder="Masukkan ID penerima">
+            </div>
+            <button class="send-btn" id="sendBtn" disabled>Kirim File</button>
+            <div class="status" id="sendStatus" style="display: none">
+                <div id="statusText">Mengirim file...</div>
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>File Masuk</h2>
+            <div class="status" id="receiveStatus">
+                Menunggu file masuk...
+            </div>
+        </div>
     </div>
+
+    <div class="notification" id="notification"></div>
 
     <script>
         const peer = new Peer();
         let conn = null;
+        let selectedFile = null;
 
-        // Inisialisasi PeerJS
-        peer.on('open', id => {
-            document.getElementById('myId').innerText = id;
+        // Initialize clipboard.js
+        new ClipboardJS('#copyBtn', {
+            text: () => document.getElementById('myId').innerText
         });
 
-        // Handle koneksi masuk
+        // Setup PeerJS
+        peer.on('open', id => {
+            document.getElementById('myId').innerText = id;
+            showNotification('Terhubung ke jaringan!');
+        });
+
         peer.on('connection', incomingConn => {
             conn = incomingConn;
             conn.on('data', handleIncomingData);
+            showNotification('Koneksi baru diterima!');
         });
 
-        // Kirim file ke peer
-        function sendFile() {
-            const file = document.getElementById('fileInput').files[0];
-            const peerId = document.getElementById('peerIdInput').value;
-            if (!file || !peerId) {
-                alert("Pastikan file dan ID penerima sudah diisi.");
-                return;
-            }
+        // File selection handling
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-            conn = peer.connect(peerId);
-            conn.on('open', () => {
-                conn.send({ type: 'file-info', name: file.name, size: file.size });
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
 
-                const reader = new FileReader();
-                reader.onload = () => {
-                    conn.send({ type: 'file-data', data: reader.result });
-                    alert("File terkirim!");
-                };
-                reader.readAsArrayBuffer(file);
-            });
+        fileInput.addEventListener('change', (e) => {
+            handleFileSelect(e.target.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            document.getElementById('fileInfo').style.display = 'flex';
+            document.getElementById('fileName').innerText = file.name;
+            document.getElementById('fileSize').innerText = formatFileSize(file.size);
+            sendBtn.disabled = !file || !document.getElementById('peerIdInput').value;
         }
 
-        // Tangani data masuk
+        document.getElementById('peerIdInput').addEventListener('input', (e) => {
+            sendBtn.disabled = !selectedFile || !e.target.value;
+        });
+
+        // Send file function
+        sendBtn.addEventListener('click', async () => {
+            const peerId = document.getElementById('peerIdInput').value;
+            if (!selectedFile || !peerId) return;
+
+            try {
+                conn = peer.connect(peerId);
+                conn.on('open', async () => {
+                    const sendStatus = document.getElementById('sendStatus');
+                    const progressBar = document.getElementById('progressBar');
+                    sendStatus.style.display = 'block';
+
+                    // Send file info first
+                    conn.send({
+                        type: 'file-info',
+                        name: selectedFile.name,
+                        size: selectedFile.size
+                    });
+
+                    // Read and send file in chunks
+                    const CHUNK_SIZE = 16384;
+                    const reader = new FileReader();
+                    let offset = 0;
+
+                    reader.onload = (e) => {
+                        conn.send({
+                            type: 'file-chunk',
+                            data: e.target.result
+                        });
+
+                        offset += e.target.result.byteLength;
+                        const progress = (offset / selectedFile.size) * 100;
+                        progressBar.style.width = `${progress}%`;
+
+                        if (offset < selectedFile.size) {
+                            readNextChunk();
+                        } else {
+                            conn.send({ type: 'file-complete' });
+                            showNotification('File berhasil dikirim!');
+                            setTimeout(() => {
+                                sendStatus.style.display = 'none';
+                                progressBar.style.width = '0%';
+                            }, 2000);
+                        }
+                    };
+
+                    function readNextChunk() {
+                        const blob = selectedFile.slice(offset, offset + CHUNK_SIZE);
+                        reader.readAsArrayBuffer(blob);
+                    }
+
+                    readNextChunk();
+                });
+            } catch (error) {
+                showNotification('Gagal mengirim file: ' + error.message);
+            }
+        });
+
+        // Handle incoming data
+        let receivedChunks = [];
+        let currentFileInfo = null;
+
         function handleIncomingData(data) {
+            const receiveStatus = document.getElementById('receiveStatus');
+
             if (data.type === 'file-info') {
-                document.getElementById('receiveStatus').innerText = `Menerima file: ${data.name}`;
-            } else if (data.type === 'file-data') {
-                const blob = new Blob([data.data]);
+                currentFileInfo = data;
+                receivedChunks = [];
+                receiveStatus.innerText = `Menerima: ${data.name} (${formatFileSize(data.size)})`;
+            } else if (data.type === 'file-chunk') {
+                receivedChunks.push(data.data);
+            } else if (data.type === 'file-complete') {
+                const blob = new Blob(receivedChunks);
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = "FileDiterima";
+                link.download = currentFileInfo.name;
                 link.click();
-                document.getElementById('receiveStatus').innerText = "File diterima dan diunduh!";
+
+                receiveStatus.innerText = `File diterima: ${currentFileInfo.name}`;
+                showNotification('File baru diterima!');
+                receivedChunks = [];
+                currentFileInfo = null;
             }
+        }
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>

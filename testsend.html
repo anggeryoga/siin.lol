@@ -3,410 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Large File Transfer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>File Upload and Download with IndexedDB</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
+        #fileInfo, #downloadSection, #uploadStatus, #downloadStatus {
+            display: none;
         }
-
-        body {
-            background-color: #f0f2f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #1a73e8;
-            margin-bottom: 20px;
-        }
-
-        .upload-area {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover {
-            border-color: #1a73e8;
-            background-color: #f8f9fa;
-        }
-
-        .button {
-            background-color: #1a73e8;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #1557b0;
-        }
-
-        .button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .progress {
-            width: 100%;
+        #progressBar {
             height: 20px;
-            background-color: #f0f2f5;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar {
             width: 0%;
-            height: 100%;
-            background-color: #1a73e8;
-            transition: width 0.3s ease;
+            background-color: green;
         }
-
-        #qrcode {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .file-info {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        #status {
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .success { background-color: #d4edda; color: #155724; }
-        .error { background-color: #f8d7da; color: #721c24; }
-        .info { background-color: #cce5ff; color: #004085; }
-
-        @media (max-width: 480px) {
-            .container { padding: 10px; }
+        #downloadProgress {
+            height: 20px;
+            width: 0%;
+            background-color: blue;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Large File Transfer</h1>
-        
-        <div id="uploadSection">
-            <div class="upload-area" id="dropZone">
-                <p>Klik atau drop file disini</p>
-                <p style="font-size: 0.8em; color: #666;">Support file hingga 2GB</p>
-                <input type="file" id="fileInput" style="display: none;">
-            </div>
+    <h1>Upload and Download File</h1>
 
-            <div class="file-info" id="fileInfo" style="display: none;">
-                <p>Nama File: <span id="fileName"></span></p>
-                <p>Ukuran: <span id="fileSize"></span></p>
-                <p>Status: <span id="uploadStatus">Menunggu upload...</span></p>
-            </div>
+    <!-- File Upload Section -->
+    <div id="dropZone" style="border: 2px dashed #ccc; padding: 20px; width: 300px; text-align: center;">
+        Drag & Drop a file here or click to select
+    </div>
+    <input type="file" id="fileInput" style="display:none" />
+    <div id="fileInfo">
+        <p>File Name: <span id="fileName"></span></p>
+        <p>File Size: <span id="fileSize"></span></p>
+        <p id="uploadStatus">File sedang diproses...</p>
+        <div id="progressBar"></div>
+    </div>
 
-            <div class="progress" style="display: none;">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-
-            <div id="status" style="display: none;"></div>
-            <div id="qrcode"></div>
-            <div id="downloadUrl" style="display: none;" class="file-info"></div>
-        </div>
-
-        <div id="downloadSection" style="display: none;">
-            <h2>Download File</h2>
-            <div class="file-info">
-                <p>Nama File: <span id="downloadFileName"></span></p>
-                <p>Ukuran: <span id="downloadFileSize"></span></p>
-            </div>
-            <div class="progress" style="display: none;">
-                <div class="progress-bar" id="downloadProgress"></div>
-            </div>
-            <button class="button" id="downloadButton">Download File</button>
-            <div id="downloadStatus" style="display: none;"></div>
-        </div>
+    <!-- Download Section -->
+    <div id="downloadSection">
+        <h3>Download File</h3>
+        <p>File Name: <span id="downloadFileName"></span></p>
+        <p>File Size: <span id="downloadFileSize"></span></p>
+        <div id="downloadProgress"></div>
+        <p id="downloadStatus"></p>
+        <button id="downloadButton">Download</button>
+        <div id="qrcode"></div>
     </div>
 
     <script>
-        // Initialize IndexedDB
-        const dbName = 'FileTransferDB';
-        const dbVersion = 1;
+        // IndexedDB setup
         let db;
+        const CHUNK_SIZE = 1024 * 1024; // 1MB per chunk
+        let file;
+        let fileChunks = [];
 
-        const request = indexedDB.open(dbName, dbVersion);
-
-        request.onerror = (event) => {
-            showStatus('Error membuka database', 'error');
+        // Open IndexedDB
+        const request = indexedDB.open("fileStorage", 1);
+        request.onerror = () => console.error("Database failed to open.");
+        request.onsuccess = () => db = request.result;
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            const store = db.createObjectStore("chunks", { keyPath: "id" });
+            store.createIndex("fileId", "fileId");
         };
 
-        request.onupgradeneeded = (event) => {
-            db = event.target.result;
-            if (!db.objectStoreNames.contains('files')) {
-                db.createObjectStore('files', { keyPath: 'id' });
+        // Get DOM elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileNameElem = document.getElementById('fileName');
+        const fileSizeElem = document.getElementById('fileSize');
+        const uploadStatusElem = document.getElementById('uploadStatus');
+        const progressBar = document.getElementById('progressBar');
+        const downloadButton = document.getElementById('downloadButton');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadFileName = document.getElementById('downloadFileName');
+        const downloadFileSize = document.getElementById('downloadFileSize');
+        const downloadProgress = document.getElementById('downloadProgress');
+        const downloadStatusElem = document.getElementById('downloadStatus');
+        const qrCodeContainer = document.getElementById('qrcode');
+
+        // Handle file drop
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const droppedFile = event.dataTransfer.files[0];
+            if (droppedFile) {
+                handleFile(droppedFile);
             }
-            if (!db.objectStoreNames.contains('chunks')) {
-                db.createObjectStore('chunks', { keyPath: ['fileId', 'index'] });
+        });
+
+        // Handle file input
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (event) => {
+            const selectedFile = event.target.files[0];
+            if (selectedFile) {
+                handleFile(selectedFile);
             }
-        };
+        });
 
-        request.onsuccess = (event) => {
-            db = event.target.result;
-        };
+        function handleFile(selectedFile) {
+            file = selectedFile;
+            fileNameElem.textContent = file.name;
+            fileSizeElem.textContent = formatBytes(file.size);
+            fileInfo.style.display = 'block';
 
-        // Utility Functions
-        function formatSize(bytes) {
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            // Initialize file chunks
+            fileChunks = [];
+            uploadStatusElem.textContent = 'File sedang diproses...';
+
+            // Create chunks of file
+            for (let i = 0; i < file.size; i += CHUNK_SIZE) {
+                fileChunks.push(file.slice(i, i + CHUNK_SIZE));
+            }
+
+            // Begin file upload
+            uploadFileChunks(0);
+        }
+
+        function uploadFileChunks(index) {
+            if (index >= fileChunks.length) {
+                uploadStatusElem.textContent = 'Upload selesai!';
+                showQRCode();
+                return;
+            }
+
+            const chunk = fileChunks[index];
+            const chunkId = `${file.name}-${index}`;
+
+            // Store chunk in IndexedDB
+            storeChunk(chunk, chunkId, index).then(() => {
+                const progress = (index + 1) / fileChunks.length * 100;
+                progressBar.style.width = `${progress}%`;
+
+                // Upload next chunk
+                uploadFileChunks(index + 1);
+            }).catch(() => {
+                uploadStatusElem.textContent = 'Terjadi kesalahan saat mengupload chunk!';
+            });
+        }
+
+        function storeChunk(chunk, chunkId, index) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['chunks'], 'readwrite');
+                const store = transaction.objectStore('chunks');
+                const data = { id: chunkId, fileId: file.name, index, chunk };
+                const request = store.put(data);
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject();
+            });
+        }
+
+        function showQRCode() {
+            const fileUrl = `file://${window.location.href}?file=${encodeURIComponent(file.name)}`;
+            new QRCode(qrCodeContainer, {
+                text: fileUrl,
+                width: 128,
+                height: 128
+            });
+
+            // Display download section
+            downloadSection.style.display = 'block';
+            downloadFileName.textContent = file.name;
+            downloadFileSize.textContent = formatBytes(file.size);
+        }
+
+        // Download file by fetching chunks from IndexedDB
+        downloadButton.addEventListener('click', () => {
+            downloadStatusElem.style.display = 'block';
+            downloadProgress.style.display = 'block';
+            downloadProgress.style.width = '0%';
+
+            const transaction = db.transaction(['chunks'], 'readonly');
+            const store = transaction.objectStore('chunks');
+
+            let chunksToDownload = [];
+            for (let i = 0; i < fileChunks.length; i++) {
+                const request = store.get(`${file.name}-${i}`);
+                request.onsuccess = (event) => {
+                    chunksToDownload.push(event.target.result.chunk);
+
+                    // If all chunks are downloaded, combine them into the original file
+                    if (chunksToDownload.length === fileChunks.length) {
+                        const fileBlob = new Blob(chunksToDownload, { type: file.type });
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = URL.createObjectURL(fileBlob);
+                        downloadLink.download = file.name;
+                        downloadLink.click();
+
+                        downloadStatusElem.textContent = 'File berhasil diunduh!';
+                        downloadProgress.style.width = '100%';
+                    }
+                };
+            }
+        });
+
+        // Helper function to format file size
+        function formatBytes(bytes) {
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             if (bytes === 0) return '0 Byte';
             const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
             return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
         }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = type;
-            status.style.display = 'block';
-        }
-
-        function updateProgress(percent, isDownload = false) {
-            const progressBar = isDownload ? 
-                document.getElementById('downloadProgress') :
-                document.getElementById('progressBar');
-            progressBar.style.width = `${percent}%`;
-            progressBar.parentElement.style.display = 'block';
-        }
-
-        // File Processing Functions
-        async function* generateChunks(file, chunkSize = 2 * 1024 * 1024) {
-            let offset = 0;
-            while (offset < file.size) {
-                const chunk = file.slice(offset, offset + chunkSize);
-                offset += chunkSize;
-                yield chunk;
-            }
-        }
-
-        async function processFile(file) {
-            try {
-                const fileId = Date.now().toString();
-                const metadata = {
-                    id: fileId,
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    chunks: Math.ceil(file.size / (2 * 1024 * 1024)),
-                    timestamp: Date.now(),
-                    expires: Date.now() + (24 * 60 * 60 * 1000)
-                };
-
-                // Show file info
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('fileSize').textContent = formatSize(file.size);
-                document.getElementById('fileInfo').style.display = 'block';
-                document.getElementById('uploadStatus').textContent = 'Memulai upload...';
-
-                // Save metadata
-                const transaction = db.transaction(['files'], 'readwrite');
-                const store = transaction.objectStore('files');
-                await store.put(metadata);
-
-                // Process chunks
-                let chunkIndex = 0;
-                const chunkStore = db.transaction(['chunks'], 'readwrite').objectStore('chunks');
-
-                for await (const chunk of generateChunks(file)) {
-                    const reader = new FileReader();
-                    await new Promise((resolve, reject) => {
-                        reader.onload = async () => {
-                            try {
-                                await chunkStore.put({
-                                    fileId,
-                                    index: chunkIndex,
-                                    data: reader.result
-                                });
-                                updateProgress((chunkIndex + 1) * 100 / metadata.chunks);
-                                document.getElementById('uploadStatus').textContent = 
-                                    `Uploading: ${Math.round((chunkIndex + 1) * 100 / metadata.chunks)}%`;
-                                chunkIndex++;
-                                resolve();
-                            } catch (error) {
-                                reject(error);
-                            }
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(chunk);
-                    });
-                }
-
-                // Generate download URL and QR code
-                const downloadUrl = `${window.location.href}#${fileId}`;
-                document.getElementById('qrcode').innerHTML = '';
-                new QRCode(document.getElementById('qrcode'), {
-                    text: downloadUrl,
-                    width: 256,
-                    height: 256
-                });
-
-                document.getElementById('downloadUrl').textContent = downloadUrl;
-                document.getElementById('downloadUrl').style.display = 'block';
-                document.getElementById('uploadStatus').textContent = 'Upload selesai!';
-                showStatus('File berhasil diupload!', 'success');
-
-            } catch (error) {
-                console.error(error);
-                showStatus('Error saat memproses file', 'error');
-            }
-        }
-
-        async function downloadFile(fileId) {
-            try {
-                const transaction = db.transaction(['files', 'chunks'], 'readonly');
-                const fileStore = transaction.objectStore('files');
-                const chunkStore = transaction.objectStore('chunks');
-
-                // Get metadata
-                const metadata = await fileStore.get(fileId);
-                if (!metadata) {
-                    throw new Error('File tidak ditemukan atau sudah expired');
-                }
-
-                document.getElementById('downloadFileName').textContent = metadata.name;
-                document.getElementById('downloadFileSize').textContent = formatSize(metadata.size);
-                updateProgress(0, true);
-
-                // Get all chunks
-                const chunks = [];
-                for (let i = 0; i < metadata.chunks; i++) {
-                    const chunk = await chunkStore.get([fileId, i]);
-                    if (!chunk) throw new Error('Chunk tidak ditemukan');
-                    
-                    chunks.push(chunk.data);
-                    updateProgress((i + 1) * 100 / metadata.chunks, true);
-                }
-
-                // Create download link
-                const link = document.createElement('a');
-                link.href = chunks[0]; // For single chunk files
-                if (chunks.length > 1) {
-                    // Combine chunks for multi-chunk files
-                    const blob = new Blob(chunks.map(chunk => {
-                        const binary = atob(chunk.split(',')[1]);
-                        const array = new Uint8Array(binary.length);
-                        for (let i = 0; i < binary.length; i++) {
-                            array[i] = binary.charCodeAt(i);
-                        }
-                        return array;
-                    }), { type: metadata.type });
-                    link.href = URL.createObjectURL(blob);
-                }
-                link.download = metadata.name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // Cleanup after download
-                const deleteTransaction = db.transaction(['files', 'chunks'], 'readwrite');
-                await deleteTransaction.objectStore('files').delete(fileId);
-                for (let i = 0; i < metadata.chunks; i++) {
-                    await deleteTransaction.objectStore('chunks').delete([fileId, i]);
-                }
-
-                showStatus('File berhasil didownload!', 'success');
-            } catch (error) {
-                console.error(error);
-                showStatus('Error saat mendownload file: ' + error.message, 'error');
-            }
-        }
-
-        // Event Listeners
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#1a73e8';
-        });
-        
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '#ccc';
-        });
-        
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#ccc';
-            if (e.dataTransfer.files.length > 0) {
-                processFile(e.dataTransfer.files[0]);
-            }
-        });
-        
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                processFile(e.target.files[0]);
-            }
-        });
-
-        // Handle download if URL contains file ID
-        if (window.location.hash) {
-            const fileId = window.location.hash.slice(1);
-            if (fileId) {
-                document.getElementById('uploadSection').style.display = 'none';
-                document.getElementById('downloadSection').style.display = 'block';
-                document.getElementById('downloadButton').addEventListener('click', () => {
-                    downloadFile(fileId);
-                });
-            }
-        }
-
-        // Cleanup expired files
-        async function cleanupExpiredFiles() {
-            if (!db) return;
-
-            const transaction = db.transaction(['files'], 'readonly');
-            const store = transaction.objectStore('files');
-            const files = await store.getAll();
-            
-            const now = Date.now();
-            files.forEach(async (file) => {
-                if (now > file.expires) {
-                    const deleteTransaction = db.transaction(['files', 'chunks'], 'readwrite');
-                    await deleteTransaction.objectStore('files').delete(file.id);
-                    for (let i = 0; i < file.chunks; i++) {
-                        await deleteTransaction.objectStore('chunks').delete([file.id, i]);
-                    }
-                }
-            });
-        }
-
-        setInterval(cleanupExpiredFiles, 5 * 60 * 1000);
     </script>
 </body>
 </html>

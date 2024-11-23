@@ -290,10 +290,11 @@
 
         <div class="card">
             <h2>Kirim File</h2>
-            <div class="drop-zone" id="dropZone">
-                <p>Drag & drop file di sini atau klik untuk memilih</p>
-                <input type="file" id="fileInput" hidden>
-            </div>
+          <div class="drop-zone" id="dropZone">
+    <p>Drag & drop file di sini atau klik untuk memilih</p>
+    <input type="file" id="fileInput" hidden multiple>
+    <div class="selected-files" id="selectedFiles"></div>
+</div>
             <div id="fileInfo" style="display: none"></div>
             <div class="pin-input" id="receiverPinInput">
                 <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
@@ -619,7 +620,6 @@ function createReceiveContainer(fileId, fileName) {
     return container;
 }
 
-// Handle incoming data
 function handleIncomingData(data, connection) {
     const receiveStatus = document.getElementById('receiveStatus');
 

@@ -3,140 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy File Transfer</title>
+    <title>Local File Transfer - Auto Discovery</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
-            min-height: 100vh;
-            background-color: #1a1a1a;
-            color: white;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            margin-bottom: 30px;
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
         }
 
-        .device-name {
-            font-size: 24px;
-            margin-bottom: 10px;
+        .instruction {
+            color: #666;
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 1rem;
         }
 
-        .status {
-            color: #888;
-            margin-bottom: 20px;
-        }
-
-        .radar-container {
+        .radar-view {
             position: relative;
             width: 300px;
             height: 300px;
-            margin: 0 auto;
-            margin-bottom: 30px;
-        }
-
-        .radar {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            margin: 2rem auto;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            background: radial-gradient(circle, #f0f0f0 0%, #ffffff 100%);
             overflow: hidden;
         }
 
-        .radar::after {
-            content: '';
+        .radar-circles {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent 50%, rgba(0,255,0,0.1) 100%);
-            animation: scan 4s linear infinite;
-            transform-origin: center;
+            border-radius: 50%;
+            border: 1px solid #e0e0e0;
         }
 
-        @keyframes scan {
+        .radar-sweep {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(66,133,244,0.1) 0%, rgba(66,133,244,0) 100%);
+            transform-origin: right center;
+            animation: sweep 4s infinite linear;
+        }
+
+        @keyframes sweep {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        .device {
+        .device-point {
             position: absolute;
             width: 60px;
             height: 60px;
             transform: translate(-50%, -50%);
             cursor: pointer;
             transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .device-point:hover {
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
         .device-icon {
-            width: 40px;
-            height: 40px;
-            background-color: #4CAF50;
+            width: 100%;
+            height: 100%;
+            background: #4285f4;
             border-radius: 50%;
-            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .device-label {
+            position: absolute;
+            width: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
             margin-top: 5px;
-            font-size: 12px;
-            color: #fff;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(255,255,255,0.9);
+            padding: 2px;
+            border-radius: 3px;
         }
 
-        .selected .device-icon {
-            background-color: #2196F3;
-            box-shadow: 0 0 15px rgba(33, 150, 243, 0.8);
+        .your-info {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            margin-top: auto;
         }
 
-        .file-panel {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+        .network-icon {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 1rem;
         }
 
-        .send-button {
-            padding: 12px 24px;
-            font-size: 16px;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        .your-name {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
         }
 
-        .send-button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
+        .network-status {
+            color: #4285f4;
+            font-size: 0.9rem;
         }
 
-        .send-button:not(:disabled):hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
+        #file-input {
+            display: none;
         }
 
         #toast {
@@ -149,292 +145,244 @@
             padding: 16px 32px;
             border-radius: 25px;
             display: none;
-            animation: slideUp 0.3s ease;
             z-index: 1000;
-        }
-
-        @keyframes slideUp {
-            from { transform: translate(-50%, 100%); }
-            to { transform: translate(-50%, 0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="device-name">Your Device</div>
-            <div class="status">Connecting to local network...</div>
-        </div>
-
-        <div class="radar-container">
-            <div class="radar">
-                <div id="devices"></div>
-            </div>
-        </div>
-
-        <div class="file-panel">
-            <input type="file" id="file-input" style="display: none;" multiple>
-            <button id="send-file" class="send-button" disabled>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                Choose Files to Send
-            </button>
-        </div>
+    <div class="header">
+        local file transfer
     </div>
 
+    <div class="instruction">
+        Tap device icon to send files or long tap to send a message
+    </div>
+
+    <div class="radar-view" id="radar">
+        <div class="radar-circles"></div>
+        <div class="radar-sweep"></div>
+        <!-- Devices will be placed here -->
+    </div>
+
+    <div class="your-info">
+        <svg class="network-icon" viewBox="0 0 24 24" fill="#4285f4">
+            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+        </svg>
+        <div class="your-name" id="your-name"></div>
+        <div class="network-status">Scanning for nearby devices...</div>
+    </div>
+
+    <input type="file" id="file-input" multiple>
     <div id="toast"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
     <script>
-        // Initialize WebSocket connection
-        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const ws = new WebSocket(`${wsProtocol}//${window.location.host}`);
-        
-        const devicesContainer = document.getElementById('devices');
-        const fileInput = document.getElementById('file-input');
-        const sendFileButton = document.getElementById('send-file');
-        const toast = document.getElementById('toast');
-        const statusElement = document.querySelector('.status');
-
-        // Generate unique ID and device name
-        const userId = `user-${Math.random().toString(36).substr(2, 9)}`;
-        const deviceName = `Device-${userId.slice(-4)}`;
-        document.querySelector('.device-name').textContent = deviceName;
-
-        let peers = {};
+        let peer;
+        let roomServer;
+        const connections = new Map();
         let selectedPeerId = null;
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
+
+        function generateName() {
+            const adjectives = ['Quick', 'Lazy', 'Clever', 'Brave', 'Calm', 'Eager', 'Gentle', 'Happy', 'Kind', 'Proud', 'Quiet', 'Wise'];
+            const animals = ['Fox', 'Dog', 'Cat', 'Bear', 'Lion', 'Tiger', 'Wolf', 'Deer', 'Bird', 'Fish', 'Seal', 'Owl'];
+            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${animals[Math.floor(Math.random() * animals.length)]}`;
+        }
+
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            if (/iPhone|iPad|iPod/.test(ua)) return 'iOS Device';
+            if (/Android/.test(ua)) return 'Android Device';
+            if (/Windows/.test(ua)) return 'Windows Device';
+            if (/Mac/.test(ua)) return 'Mac Device';
+            if (/Linux/.test(ua)) return 'Linux Device';
+            return 'Unknown Device';
+        }
 
         function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, duration);
+            setTimeout(() => toast.style.display = 'none', duration);
         }
 
-        function updateStatus(message) {
-            statusElement.textContent = message;
-        }
-
-        function connectWebSocket() {
-            ws.onopen = () => {
-                updateStatus('Connected to local network');
-                reconnectAttempts = 0;
-                
-                // Announce presence immediately after connection
-                ws.send(JSON.stringify({
-                    type: 'join',
-                    userId: userId,
-                    deviceName: deviceName
-                }));
-
-                // Set up periodic announcements
-                setInterval(() => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        ws.send(JSON.stringify({
-                            type: 'heartbeat',
-                            userId: userId,
-                            deviceName: deviceName
-                        }));
-                    }
-                }, 5000);
-            };
-
-            ws.onclose = () => {
-                updateStatus('Disconnected. Attempting to reconnect...');
-                if (reconnectAttempts < maxReconnectAttempts) {
-                    reconnectAttempts++;
-                    setTimeout(connectWebSocket, 3000);
-                } else {
-                    updateStatus('Failed to connect. Please refresh the page.');
-                }
-            };
-
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                updateStatus('Connection error. Please check your network.');
-            };
-
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleMessage(data);
-                } catch (error) {
-                    console.error('Error parsing message:', error);
-                }
-            };
-        }
-
-        function handleMessage(data) {
-            switch (data.type) {
-                case 'join':
-                case 'heartbeat':
-                    if (data.userId !== userId) {
-                        peers[data.userId] = {
-                            id: data.userId,
-                            name: data.deviceName,
-                            lastSeen: Date.now()
-                        };
-                        updateDevices();
-                    }
-                    break;
-
-                case 'leave':
-                    if (data.userId !== userId) {
-                        delete peers[data.userId];
-                        updateDevices();
-                    }
-                    break;
-
-                case 'file-offer':
-                    if (data.to === userId) {
-                        receiveFile(data);
-                    }
-                    break;
-            }
-        }
-
-        function getRandomPosition() {
-            const angle = Math.random() * Math.PI * 2;
-            const radius = Math.random() * 100;
-            return {
-                x: Math.cos(angle) * radius + 150,
-                y: Math.sin(angle) * radius + 150
-            };
-        }
-
-        function updateDevices() {
-            // Clean up stale peers (no heartbeat for 15 seconds)
-            const now = Date.now();
-            Object.keys(peers).forEach(peerId => {
-                if (now - peers[peerId].lastSeen > 15000) {
-                    delete peers[peerId];
-                }
-            });
-
-            devicesContainer.innerHTML = '';
-            Object.values(peers).forEach((peer) => {
-                const position = getRandomPosition();
-                const deviceDiv = document.createElement('div');
-                deviceDiv.classList.add('device');
-                deviceDiv.style.left = `${position.x}px`;
-                deviceDiv.style.top = `${position.y}px`;
-                deviceDiv.innerHTML = `
-                    <div class="device-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="20" rx="2" ry="2"/>
-                            <rect x="8" y="8" width="8" height="8" rx="1" ry="1"/>
-                        </svg>
-                    </div>
-                    <div class="device-label">${peer.name}</div>
-                `;
-                deviceDiv.setAttribute('data-id', peer.id);
-                deviceDiv.addEventListener('click', () => selectPeer(peer.id));
-                if (peer.id === selectedPeerId) {
-                    deviceDiv.classList.add('selected');
-                }
-                devicesContainer.appendChild(deviceDiv);
-            });
-
-            updateStatus(Object.keys(peers).length === 0 ? 
-                'Waiting for other devices...' : 
-                `${Object.keys(peers).length} device(s) found`);
-        }
-
-        function selectPeer(peerId) {
-            selectedPeerId = peerId;
-            updateDevices(); // This will update the selected state
-            sendFileButton.disabled = false;
-            showToast(`Selected ${peers[peerId].name} for file transfer`);
-        }
-
-        function sendFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        ws.send(JSON.stringify({
-                            type: 'file-offer',
-                            to: selectedPeerId,
-                            from: userId,
-                            fromName: deviceName,
-                            fileName: file.name,
-                            fileSize: file.size,
-                            fileType: file.type,
-                            fileContent: reader.result
-                        }));
-                        resolve();
-                    } else {
-                        reject(new Error('WebSocket is not connected'));
-                    }
+        // Initialize room server connection for discovery
+        function initializeRoomServer() {
+            const localRoomServer = `wss://local-discovery.glitch.me`;
+            roomServer = new WebSocket(localRoomServer);
+            
+            roomServer.onopen = () => {
+                const deviceInfo = {
+                    id: peer.id,
+                    name: deviceName,
+                    model: deviceModel
                 };
-                reader.onerror = () => reject(reader.error);
-                reader.readAsDataURL(file);
+                roomServer.send(JSON.stringify({
+                    type: 'join',
+                    device: deviceInfo
+                }));
+            };
+
+            roomServer.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'deviceList') {
+                    handleDeviceList(data.devices);
+                }
+            };
+        }
+
+        function handleDeviceList(devices) {
+            devices.forEach(device => {
+                if (device.id !== peer.id && !connections.has(device.id)) {
+                    connectToPeer(device);
+                }
+            });
+            updateRadarView();
+        }
+
+        function connectToPeer(device) {
+            const conn = peer.connect(device.id, {
+                metadata: {
+                    name: deviceName,
+                    model: deviceModel
+                }
+            });
+            handleConnection(conn);
+        }
+
+        function positionDeviceInRadar(device, index, total) {
+            const radius = 100;
+            const angle = (index * 2 * Math.PI / total) + Math.PI/6;
+            const x = 150 + radius * Math.cos(angle);
+            const y = 150 + radius * Math.sin(angle);
+            
+            const point = document.createElement('div');
+            point.className = 'device-point';
+            point.style.left = `${x}px`;
+            point.style.top = `${y}px`;
+            
+            point.innerHTML = `
+                <div class="device-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                        <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+                    </svg>
+                </div>
+                <div class="device-label">${device.name}<br>${device.model}</div>
+            `;
+            
+            return point;
+        }
+
+        function updateRadarView() {
+            const radar = document.getElementById('radar');
+            const circles = radar.querySelector('.radar-circles');
+            const sweep = radar.querySelector('.radar-sweep');
+            radar.innerHTML = '';
+            radar.appendChild(circles);
+            radar.appendChild(sweep);
+            
+            const devices = Array.from(connections.values());
+            devices.forEach((device, index) => {
+                const point = positionDeviceInRadar(device, index, devices.length);
+                point.addEventListener('click', () => {
+                    selectedPeerId = device.connection.peer;
+                    document.getElementById('file-input').click();
+                });
+                radar.appendChild(point);
             });
         }
 
-        async function handleFileSelection() {
-            const files = Array.from(fileInput.files);
-            if (files.length === 0) return;
+        function handleConnection(conn) {
+            conn.on('open', () => {
+                connections.set(conn.peer, {
+                    connection: conn,
+                    name: conn.metadata.name,
+                    model: conn.metadata.model
+                });
+                updateRadarView();
+                showToast(`Connected to ${conn.metadata.name}`);
+            });
 
-            showToast(`Preparing to send ${files.length} file(s)...`);
-            sendFileButton.disabled = true;
-
-            try {
-                for (const file of files) {
-                    await sendFile(file);
+            conn.on('data', (data) => {
+                if (data.type === 'file') {
+                    receiveFile(data);
                 }
-                showToast(`Successfully sent ${files.length} file(s) to ${peers[selectedPeerId].name}`);
-            } catch (error) {
-                console.error('Error sending files:', error);
-                showToast('Error sending files. Please try again.');
-            } finally {
-                sendFileButton.disabled = false;
-                fileInput.value = ''; // Reset file input
-            }
+            });
+
+            conn.on('close', () => {
+                connections.delete(conn.peer);
+                updateRadarView();
+                showToast(`${conn.metadata.name} disconnected`);
+            });
         }
 
-        function receiveFile(data) {
-            try {
-                const link = document.createElement('a');
-                link.href = data.fileContent;
-                link.download = data.fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showToast(`Received "${data.fileName}" from ${data.fromName}`);
-            } catch (error) {
-                console.error('Error receiving file:', error);
-                showToast('Error receiving file. Please try again.');
+        // Handle file selection and sending
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length && selectedPeerId && connections.has(selectedPeerId)) {
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const connection = connections.get(selectedPeerId).connection;
+                        connection.send({
+                            type: 'file',
+                            name: file.name,
+                            data: reader.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+                showToast(`Sending ${files.length} file(s)...`);
             }
-        }
-
-        // Event Listeners
-        sendFileButton.addEventListener('click', () => {
-            fileInput.click();
         });
 
-        fileInput.addEventListener('change', handleFileSelection);
+        function receiveFile(data) {
+            const link = document.createElement('a');
+            link.href = data.data;
+            link.download = data.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Received "${data.name}"`);
+        }
+
+        // Initialize application
+        const deviceName = generateName();
+        const deviceModel = getDeviceInfo();
+        document.getElementById('your-name').textContent = `You are known as ${deviceName}`;
+
+        // Initialize PeerJS with STUN/TURN servers
+        peer = new Peer({
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]
+            }
+        });
+
+        peer.on('open', (id) => {
+            console.log('My peer ID is: ' + id);
+            initializeRoomServer();
+        });
+
+        peer.on('connection', (conn) => {
+            handleConnection(conn);
+        });
+
+        peer.on('error', (err) => {
+            console.error('PeerJS error:', err);
+            showToast('Connection error: ' + err.message);
+        });
 
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'leave',
-                    userId: userId
-                }));
+            if (roomServer) {
+                roomServer.close();
+            }
+            if (peer) {
+                peer.destroy();
             }
         });
-
-        // Start the connection
-        connectWebSocket();
-
-        // Set up periodic cleanup of stale peers
-        setInterval(updateDevices, 5000);
     </script>
 </body>
 </html>

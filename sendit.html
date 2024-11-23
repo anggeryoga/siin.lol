@@ -339,35 +339,12 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // Utility functions
+       // Generate random 6-digit PIN
 function generatePIN() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function generateFileId() {
-    return Math.random().toString(36).substr(2, 9);
-}
-
-// Initialize variables
-let selectedFiles = new Map(); // Store selected files
-let activeTransfers = new Map(); // Store ongoing transfers
-let connections = new Map(); // Store peer connections
-let receivedFiles = new Map(); // Store received files info
-
-// Initialize PeerJS
-const myPIN = generatePIN();
-displayPIN(myPIN);
-const peer = new Peer(myPIN);
-
-// Display PIN in boxes
+// Display PIN in separate boxes
 function displayPIN(pin) {
     const pinDisplay = document.getElementById('pinDisplay');
     pinDisplay.innerHTML = '';
@@ -379,16 +356,16 @@ function displayPIN(pin) {
     });
 }
 
-// Setup PeerJS events
-peer.on('open', id => {
-    showNotification('Terhubung ke jaringan!');
-});
+// Initialize PeerJS with custom ID (PIN)
+const myPIN = generatePIN();
+displayPIN(myPIN);
+const peer = new Peer(myPIN);
 
-peer.on('connection', incomingConn => {
-    const conn = incomingConn;
-    conn.on('data', data => handleIncomingData(data, conn));
-    showNotification('Koneksi baru diterima!');
-});
+// Store active connections and file transfers
+let connections = new Map(); // Store multiple connections
+let selectedFiles = []; // Store multiple selected files
+let fileTransfers = new Map(); // Track ongoing transfers
+let receivingFiles = new Map(); // Track receiving files
 
 // Copy PIN button
 document.getElementById('copyBtn').addEventListener('click', () => {
@@ -396,7 +373,26 @@ document.getElementById('copyBtn').addEventListener('click', () => {
     showNotification('PIN disalin!');
 });
 
-// Setup PIN input fields
+// Setup PeerJS
+peer.on('open', id => {
+    showNotification('Terhubung ke jaringan!');
+});
+
+peer.on('connection', incomingConn => {
+    setupConnection(incomingConn);
+    showNotification('Koneksi baru diterima!');
+});
+
+function setupConnection(connection) {
+    connections.set(connection.peer, connection);
+    connection.on('data', data => handleIncomingData(data, connection));
+    connection.on('close', () => {
+        connections.delete(connection.peer);
+        cleanupTransfers(connection.peer);
+    });
+}
+
+// Handle PIN input
 const pinInputs = document.querySelectorAll('#receiverPinInput input');
 pinInputs.forEach((input, index) => {
     input.addEventListener('input', (e) => {
@@ -415,12 +411,10 @@ pinInputs.forEach((input, index) => {
     });
 });
 
-// File handling setup
+// File handling
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
-fileInput.setAttribute('multiple', 'true');
 
-// File selection events
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -432,256 +426,250 @@ dropZone.addEventListener('dragleave', () => {
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('dragover');
-    handleFileSelect(e.dataTransfer.files);
+    handleFileSelect(Array.from(e.dataTransfer.files));
 });
 
 fileInput.addEventListener('change', (e) => {
-    handleFileSelect(e.target.files);
+    handleFileSelect(Array.from(e.target.files));
 });
 
-// Handle file selection
 function handleFileSelect(files) {
-    const fileInfoContainer = document.getElementById('fileInfo');
-    fileInfoContainer.style.display = 'block';
-
-    Array.from(files).forEach(file => {
-        const fileId = generateFileId();
-        selectedFiles.set(fileId, {
-            file: file,
-            status: 'pending'
-        });
-
-        const fileElement = createFileElement(fileId, file);
-        fileInfoContainer.appendChild(fileElement);
-    });
-
-    validateSendButton();
-}
-
-// Create file element
-function createFileElement(fileId, file) {
-    const fileDiv = document.createElement('div');
-    fileDiv.className = 'file-info';
-    fileDiv.setAttribute('data-file-id', fileId);
-    
-    fileDiv.innerHTML = `
-        <span>📄</span>
-        <div class="file-info-details">
-            <div class="file-name">${file.name}</div>
-            <div class="file-size">${formatFileSize(file.size)}</div>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress" style="width: 0%"></div>
-                </div>
-                <div class="progress-info">
-                    <span class="progress-text">Menunggu...</span>
-                    <span class="progress-size">0 KB / ${formatFileSize(file.size)}</span>
-                </div>
+    selectedFiles = files;
+    const fileInfo = document.getElementById('fileInfo');
+    fileInfo.style.display = 'flex';
+    fileInfo.innerHTML = files.map(file => `
+        <div class="file-info">
+            <span>📄</span>
+            <div class="file-info-details">
+                <div>${file.name}</div>
+                <div>${formatFileSize(file.size)}</div>
             </div>
         </div>
-        <button class="remove-file" onclick="removeFile('${fileId}')">❌</button>
-    `;
-    
-    return fileDiv;
-}
-
-// Remove file function
-function removeFile(fileId) {
-    selectedFiles.delete(fileId);
-    const element = document.querySelector(`[data-file-id="${fileId}"]`);
-    if (element) {
-        element.remove();
-    }
+    `).join('');
     validateSendButton();
 }
 
-// Validate send button
 function validateSendButton() {
     const pin = Array.from(pinInputs).map(input => input.value).join('');
-    document.getElementById('sendBtn').disabled = selectedFiles.size === 0 || pin.length !== 6;
+    document.getElementById('sendBtn').disabled = selectedFiles.length === 0 || pin.length !== 6;
 }
 
-// Send button click handler
+function createTransferContainer(fileId, fileName) {
+    const container = document.createElement('div');
+    container.id = `transfer-${fileId}`;
+    container.className = 'status';
+    container.innerHTML = `
+        <div>Mengirim: ${fileName}</div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="progress-${fileId}"></div>
+            </div>
+            <div class="progress-info">
+                <span id="progress-text-${fileId}">0%</span>
+                <span id="progress-size-${fileId}">0 KB / 0 KB</span>
+            </div>
+        </div>
+    `;
+    return container;
+}
+
+// Send files
 document.getElementById('sendBtn').addEventListener('click', async () => {
     const receiverPIN = Array.from(pinInputs).map(input => input.value).join('');
-    if (selectedFiles.size === 0 || receiverPIN.length !== 6) return;
+    if (selectedFiles.length === 0 || receiverPIN.length !== 6) return;
 
-    // Send all selected files
-    for (const [fileId, fileData] of selectedFiles) {
-        if (fileData.status === 'pending') {
-            sendFile(fileId, receiverPIN);
-            fileData.status = 'sending';
+    try {
+        let connection = connections.get(receiverPIN);
+        if (!connection) {
+            connection = peer.connect(receiverPIN);
+            setupConnection(connection);
         }
+
+        connection.on('open', async () => {
+            const sendStatus = document.getElementById('sendStatus');
+            sendStatus.style.display = 'block';
+            sendStatus.innerHTML = ''; // Clear previous transfers
+
+            // Send each file
+            for (const file of selectedFiles) {
+                const fileId = Math.random().toString(36).substr(2, 9);
+                const transferContainer = createTransferContainer(fileId, file.name);
+                sendStatus.appendChild(transferContainer);
+
+                await sendFile(file, fileId, connection);
+            }
+        });
+    } catch (error) {
+        showNotification('Gagal mengirim file: ' + error.message);
     }
 });
 
-// Send file function
-async function sendFile(fileId, receiverPIN) {
-    const fileData = selectedFiles.get(fileId);
-    if (!fileData || fileData.status !== 'sending') return;
+async function sendFile(file, fileId, connection) {
+    return new Promise((resolve, reject) => {
+        const CHUNK_SIZE = 16384;
+        let offset = 0;
 
-    const file = fileData.file;
-    try {
-        let conn = connections.get(receiverPIN);
-        if (!conn) {
-            conn = peer.connect(receiverPIN);
-            connections.set(receiverPIN, conn);
-        }
+        // Send file info
+        connection.send({
+            type: 'file-info',
+            fileId: fileId,
+            name: file.name,
+            size: file.size
+        });
 
-        conn.on('open', async () => {
-            const fileElement = document.querySelector(`[data-file-id="${fileId}"]`);
-            const progressBar = fileElement.querySelector('.progress');
-            const progressText = fileElement.querySelector('.progress-text');
-            const progressSize = fileElement.querySelector('.progress-size');
+        const reader = new FileReader();
+        reader.onerror = reject;
 
-            // Send file info
-            conn.send({
-                type: 'file-info',
+        reader.onload = (e) => {
+            connection.send({
+                type: 'file-chunk',
                 fileId: fileId,
-                name: file.name,
-                size: file.size
+                data: e.target.result
             });
 
-            // Send file in chunks
-            const CHUNK_SIZE = 16384;
-            const reader = new FileReader();
-            let offset = 0;
-
-            const readNextChunk = () => {
-                const blob = file.slice(offset, offset + CHUNK_SIZE);
-                reader.readAsArrayBuffer(blob);
-            };
-
-            reader.onload = (e) => {
-                conn.send({
-                    type: 'file-chunk',
-                    fileId: fileId,
-                    data: e.target.result
-                });
-
-                offset += e.target.result.byteLength;
-                const progress = (offset / file.size) * 100;
-                
-                // Update progress
+            offset += e.target.result.byteLength;
+            const progress = (offset / file.size) * 100;
+            
+            // Update progress displays
+            const progressBar = document.getElementById(`progress-${fileId}`);
+            const progressText = document.getElementById(`progress-text-${fileId}`);
+            const progressSize = document.getElementById(`progress-size-${fileId}`);
+            
+            if (progressBar && progressText && progressSize) {
                 progressBar.style.width = `${progress}%`;
                 progressText.textContent = `${Math.round(progress)}%`;
                 progressSize.textContent = `${formatFileSize(offset)} / ${formatFileSize(file.size)}`;
+            }
 
-                if (offset < file.size) {
-                    readNextChunk();
-                } else {
-                    conn.send({ 
-                        type: 'file-complete',
-                        fileId: fileId 
-                    });
-                    
-                    showNotification(`File ${file.name} berhasil dikirim!`);
-                    fileData.status = 'sent';
-                    
-                    setTimeout(() => {
-                        fileElement.remove();
-                        selectedFiles.delete(fileId);
-                    }, 2000);
-                }
-            };
+            if (offset < file.size) {
+                readNextChunk();
+            } else {
+                connection.send({ type: 'file-complete', fileId: fileId });
+                showNotification(`File ${file.name} berhasil dikirim!`);
+                
+                // Remove transfer display after delay
+                setTimeout(() => {
+                    const transferContainer = document.getElementById(`transfer-${fileId}`);
+                    if (transferContainer) {
+                        transferContainer.remove();
+                    }
+                }, 2000);
+                
+                resolve();
+            }
+        };
 
-            readNextChunk();
-        });
-
-    } catch (error) {
-        showNotification(`Gagal mengirim file ${file.name}: ${error.message}`);
-        fileData.status = 'error';
-    }
-}
-
-// Handle incoming data
-function handleIncomingData(data, conn) {
-    if (data.type === 'file-info') {
-        // Initialize new file transfer
-        receivedFiles.set(data.fileId, {
-            chunks: [],
-            info: data,
-            element: createReceivedFileElement(data)
-        });
-
-    } else if (data.type === 'file-chunk') {
-        const fileData = receivedFiles.get(data.fileId);
-        if (fileData) {
-            fileData.chunks.push(data.data);
-            updateReceiveProgress(data.fileId);
+        function readNextChunk() {
+            const blob = file.slice(offset, offset + CHUNK_SIZE);
+            reader.readAsArrayBuffer(blob);
         }
 
-    } else if (data.type === 'file-complete') {
-        completeFileReceive(data.fileId);
-    }
+        readNextChunk();
+    });
 }
 
-// Create received file element
-function createReceivedFileElement(fileInfo) {
-    const receiveContainer = document.getElementById('receiveStatus');
-    const fileElement = document.createElement('div');
-    fileElement.className = 'file-info';
-    fileElement.setAttribute('data-receive-file-id', fileInfo.fileId);
-    
-    fileElement.innerHTML = `
-        <span>📄</span>
-        <div class="file-info-details">
-            <div>${fileInfo.name}</div>
-            <div>${formatFileSize(fileInfo.size)}</div>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress" style="width: 0%"></div>
-                </div>
-                <div class="progress-info">
-                    <span class="progress-text">0%</span>
-                    <span class="progress-size">0 KB / ${formatFileSize(fileInfo.size)}</span>
-                </div>
+function createReceiveContainer(fileId, fileName) {
+    const container = document.createElement('div');
+    container.id = `receive-${fileId}`;
+    container.className = 'status';
+    container.innerHTML = `
+        <div>Menerima: ${fileName}</div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" id="receive-progress-${fileId}"></div>
+            </div>
+            <div class="progress-info">
+                <span id="receive-progress-text-${fileId}">0%</span>
+                <span id="receive-progress-size-${fileId}">0 KB / 0 KB</span>
             </div>
         </div>
     `;
-    
-    receiveContainer.appendChild(fileElement);
-    return fileElement;
+    return container;
 }
 
-// Update receive progress
-function updateReceiveProgress(fileId) {
-    const fileData = receivedFiles.get(fileId);
-    if (!fileData) return;
+// Handle incoming data
+function handleIncomingData(data, connection) {
+    const receiveStatus = document.getElementById('receiveStatus');
 
-    const receivedSize = fileData.chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
-    const progress = (receivedSize / fileData.info.size) * 100;
+    if (data.type === 'file-info') {
+        // Initialize new file transfer
+        receivingFiles.set(data.fileId, {
+            info: data,
+            chunks: [],
+            connection: connection
+        });
 
-    const element = fileData.element;
-    const progressBar = element.querySelector('.progress');
-    const progressText = element.querySelector('.progress-text');
-    const progressSize = element.querySelector('.progress-size');
+        const container = createReceiveContainer(data.fileId, data.name);
+        receiveStatus.appendChild(container);
 
-    progressBar.style.width = `${progress}%`;
-    progressText.textContent = `${Math.round(progress)}%`;
-    progressSize.textContent = `${formatFileSize(receivedSize)} / ${formatFileSize(fileData.info.size)}`;
+    } else if (data.type === 'file-chunk') {
+        const transfer = receivingFiles.get(data.fileId);
+        if (transfer) {
+            transfer.chunks.push(data.data);
+            
+            // Calculate progress
+            const receivedSize = transfer.chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
+            const progress = (receivedSize / transfer.info.size) * 100;
+            
+            // Update progress displays
+            const progressBar = document.getElementById(`receive-progress-${data.fileId}`);
+            const progressText = document.getElementById(`receive-progress-text-${data.fileId}`);
+            const progressSize = document.getElementById(`receive-progress-size-${data.fileId}`);
+            
+            if (progressBar && progressText && progressSize) {
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `${Math.round(progress)}%`;
+                progressSize.textContent = `${formatFileSize(receivedSize)} / ${formatFileSize(transfer.info.size)}`;
+            }
+        }
+
+    } else if (data.type === 'file-complete') {
+        const transfer = receivingFiles.get(data.fileId);
+        if (transfer) {
+            const blob = new Blob(transfer.chunks);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = transfer.info.name;
+            link.click();
+
+            showNotification(`File ${transfer.info.name} diterima!`);
+            
+            // Remove transfer display after delay
+            setTimeout(() => {
+                const container = document.getElementById(`receive-${data.fileId}`);
+                if (container) {
+                    container.remove();
+                }
+            }, 2000);
+            
+            // Cleanup
+            receivingFiles.delete(data.fileId);
+        }
+    }
 }
 
-// Complete file receive
-function completeFileReceive(fileId) {
-    const fileData = receivedFiles.get(fileId);
-    if (!fileData) return;
-
-    const blob = new Blob(fileData.chunks);
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileData.info.name;
-    link.click();
-
-    showNotification(`File ${fileData.info.name} diterima!`);
-
-    setTimeout(() => {
-        fileData.element.remove();
-        receivedFiles.delete(fileId);
-    }, 2000);
+function cleanupTransfers(peerId) {
+    // Cleanup any ongoing transfers for disconnected peer
+    for (const [fileId, transfer] of receivingFiles.entries()) {
+        if (transfer.connection.peer === peerId) {
+            receivingFiles.delete(fileId);
+            const container = document.getElementById(`receive-${fileId}`);
+            if (container) {
+                container.remove();
+            }
+        }
+    }
 }
 
-// Show notification
+// Utility functions
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 function showNotification(message) {
     const notification = document.getElementById('notification');
     notification.textContent = message;

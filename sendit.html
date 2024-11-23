@@ -22,19 +22,29 @@
 
         .container {
             max-width: 800px;
-            margin: 2rem auto;
+            margin: 1rem auto;
             padding: 0 1rem;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .header h1 {
             color: #2d3748;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
         }
 
         .header p {
@@ -44,9 +54,14 @@
         .card {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
 
         .pin-display {
@@ -54,20 +69,29 @@
             justify-content: center;
             gap: 0.5rem;
             margin: 1rem 0;
+            flex-wrap: wrap;
         }
 
         .pin-digit {
-            width: 50px;
-            height: 60px;
+            width: 45px;
+            height: 55px;
             background: #f7fafc;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #4a5568;
+        }
+
+        @media (max-width: 380px) {
+            .pin-digit {
+                width: 40px;
+                height: 50px;
+                font-size: 1.1rem;
+            }
         }
 
         .pin-input {
@@ -75,16 +99,25 @@
             justify-content: center;
             gap: 0.5rem;
             margin: 1rem 0;
+            flex-wrap: wrap;
         }
 
         .pin-input input {
-            width: 50px;
-            height: 60px;
+            width: 45px;
+            height: 55px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             outline: none;
+        }
+
+        @media (max-width: 380px) {
+            .pin-input input {
+                width: 40px;
+                height: 50px;
+                font-size: 1.1rem;
+            }
         }
 
         .pin-input input:focus {
@@ -94,10 +127,24 @@
         .drop-zone {
             border: 2px dashed #cbd5e0;
             border-radius: 8px;
-            padding: 2rem;
+            padding: 1.5rem 1rem;
             text-align: center;
             cursor: pointer;
             transition: border-color 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .drop-zone {
+                padding: 1rem;
+            }
+            .drop-zone p {
+                font-size: 0.85rem;
+            }
         }
 
         .drop-zone:hover {
@@ -109,34 +156,30 @@
             background: #ebf8ff;
         }
 
-        .send-btn {
-            width: 100%;
-            background: #48bb78;
-            color: white;
-            border: none;
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
             padding: 0.75rem;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 1rem;
-        }
-
-        .send-btn:hover {
-            background: #38a169;
-        }
-
-        .send-btn:disabled {
-            background: #a0aec0;
-            cursor: not-allowed;
-        }
-
-        .status {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 6px;
             background: #f7fafc;
-            text-align: center;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .file-info-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .file-info-details div:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .progress-container {
+            margin-top: 0.75rem;
         }
 
         .progress-bar {
@@ -155,46 +198,80 @@
             transition: width 0.3s;
         }
 
-        .file-info {
+        .progress-info {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .button {
+            width: 100%;
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            background: #38a169;
+        }
+
+        .button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .button.copy-btn {
+            background: #4299e1;
+            margin: 0.5rem auto;
+            max-width: 200px;
+            display: block;
+        }
+
+        .button.copy-btn:hover {
+            background: #3182ce;
+        }
+
+        .status {
             margin-top: 1rem;
             padding: 1rem;
-            background: #f7fafc;
             border-radius: 6px;
+            background: #f7fafc;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         .notification {
             position: fixed;
             bottom: 1rem;
             right: 1rem;
+            left: 1rem;
             padding: 1rem;
             border-radius: 6px;
             background: #48bb78;
             color: white;
             transform: translateY(150%);
             transition: transform 0.3s;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        @media (min-width: 480px) {
+            .notification {
+                left: auto;
+                max-width: 300px;
+            }
         }
 
         .notification.show {
             transform: translateY(0);
-        }
-
-        .copy-btn {
-            background: #4299e1;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .copy-btn:hover {
-            background: #3182ce;
         }
     </style>
 </head>
@@ -208,7 +285,7 @@
         <div class="card">
             <h2>PIN Anda</h2>
             <div class="pin-display" id="pinDisplay"></div>
-            <button class="copy-btn" id="copyBtn">Salin PIN</button>
+            <button class="button copy-btn" id="copyBtn">Salin PIN</button>
         </div>
 
         <div class="card">
@@ -219,18 +296,25 @@
             </div>
             <div id="fileInfo" style="display: none"></div>
             <div class="pin-input" id="receiverPinInput">
-                <input type="text" maxlength="1" pattern="\d">
-                <input type="text" maxlength="1" pattern="\d">
-                <input type="text" maxlength="1" pattern="\d">
-                <input type="text" maxlength="1" pattern="\d">
-                <input type="text" maxlength="1" pattern="\d">
-                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
             </div>
-            <button class="send-btn" id="sendBtn" disabled>Kirim File</button>
+            
+            <button class="button" id="sendBtn" disabled>Kirim File</button>
             <div class="status" id="sendStatus" style="display: none">
                 <div id="statusText">Mengirim file...</div>
-                <div class="progress-bar">
-                    <div class="progress" id="progressBar"></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressText">0%</span>
+                        <span id="progressSize">0 KB / 0 KB</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,218 +324,372 @@
             <div class="status" id="receiveStatus">
                 Menunggu file masuk...
             </div>
+            <div class="progress-container" id="receiveProgress" style="display: none">
+                <div class="progress-bar">
+                    <div class="progress" id="receiveProgressBar"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="receiveProgressText">0%</span>
+                    <span id="receiveProgressSize">0 KB / 0 KB</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="notification" id="notification"></div>
 
     <script>
-        // Generate random 6-digit PIN
-        function generatePIN() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        // Display PIN in separate boxes
-        function displayPIN(pin) {
-            const pinDisplay = document.getElementById('pinDisplay');
-            pinDisplay.innerHTML = '';
-            pin.split('').forEach(digit => {
-                const digitBox = document.createElement('div');
-                digitBox.className = 'pin-digit';
-                digitBox.textContent = digit;
-                pinDisplay.appendChild(digitBox);
-            });
-        }
-
-        // Initialize PeerJS with custom ID (PIN)
-        const myPIN = generatePIN();
-        displayPIN(myPIN);
-        const peer = new Peer(myPIN);
-        
-        let conn = null;
-        let selectedFile = null;
-
-        // Copy PIN button
-        document.getElementById('copyBtn').addEventListener('click', () => {
-            navigator.clipboard.writeText(myPIN);
-            showNotification('PIN disalin!');
-        });
-
-        // Setup PeerJS
-        peer.on('open', id => {
-            showNotification('Terhubung ke jaringan!');
-        });
-
-        peer.on('connection', incomingConn => {
-            conn = incomingConn;
-            conn.on('data', handleIncomingData);
-            showNotification('Koneksi baru diterima!');
-        });
-
-        // Handle PIN input
-        const pinInputs = document.querySelectorAll('#receiverPinInput input');
-        pinInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value) {
-                    if (index < pinInputs.length - 1) {
-                        pinInputs[index + 1].focus();
-                    }
-                }
-                validateSendButton();
-            });
-
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    pinInputs[index - 1].focus();
-                }
-            });
-        });
-
-        // File handling
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            handleFileSelect(e.dataTransfer.files[0]);
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            handleFileSelect(e.target.files[0]);
-        });
-
-        function handleFileSelect(file) {
-            selectedFile = file;
-            const fileInfo = document.getElementById('fileInfo');
-            fileInfo.style.display = 'flex';
-            fileInfo.innerHTML = `
-                <div class="file-info">
-                    <span>📄</span>
-                    <div>
-                        <div>${file.name}</div>
-                        <div>${formatFileSize(file.size)}</div>
-                    </div>
-                </div>
-            `;
-            validateSendButton();
-        }
-
-        function validateSendButton() {
-            const pin = Array.from(pinInputs).map(input => input.value).join('');
-            document.getElementById('sendBtn').disabled = !selectedFile || pin.length !== 6;
-        }
-
-        // Send file
-        document.getElementById('sendBtn').addEventListener('click', async () => {
-            const receiverPIN = Array.from(pinInputs).map(input => input.value).join('');
-            if (!selectedFile || receiverPIN.length !== 6) return;
-
-            try {
-                conn = peer.connect(receiverPIN);
-                conn.on('open', async () => {
-                    const sendStatus = document.getElementById('sendStatus');
-                    const progressBar = document.getElementById('progressBar');
-                    sendStatus.style.display = 'block';
-
-                    // Send file info
-                    conn.send({
-                        type: 'file-info',
-                        name: selectedFile.name,
-                        size: selectedFile.size
-                    });
-
-                    // Read and send file in chunks
-                    const CHUNK_SIZE = 16384;
-                    const reader = new FileReader();
-                    let offset = 0;
-
-                    reader.onload = (e) => {
-                        conn.send({
-                            type: 'file-chunk',
-                            data: e.target.result
-                        });
-
-                        offset += e.target.result.byteLength;
-                        const progress = (offset / selectedFile.size) * 100;
-                        progressBar.style.width = `${progress}%`;
-
-                        if (offset < selectedFile.size) {
-                            readNextChunk();
-                        } else {
-                            conn.send({ type: 'file-complete' });
-                            showNotification('File berhasil dikirim!');
-                            setTimeout(() => {
-                                sendStatus.style.display = 'none';
-                                progressBar.style.width = '0%';
-                            }, 2000);
-                        }
-                    };
-
-                    function readNextChunk() {
-                        const blob = selectedFile.slice(offset, offset + CHUNK_SIZE);
-                        reader.readAsArrayBuffer(blob);
-                    }
-
-                    readNextChunk();
-                });
-            } catch (error) {
-                showNotification('Gagal mengirim file: ' + error.message);
-            }
-        });
-
-        // Handle incoming data
-        let receivedChunks = [];
-        let currentFileInfo = null;
-
-        function handleIncomingData(data) {
-            const receiveStatus = document.getElementById('receiveStatus');
-
-            if (data.type === 'file-info') {
-                currentFileInfo = data;
-                receivedChunks = [];
-                receiveStatus.innerText = `Menerima: ${data.name} (${formatFileSize(data.size)})`;
-            } else if (data.type === 'file-chunk') {
-                receivedChunks.push(data.data);
-            } else if (data.type === 'file-complete') {
-                const blob = new Blob(receivedChunks);
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = currentFileInfo.name;
-                link.click();
-
-                receiveStatus.innerText = `File diterima: ${currentFileInfo.name}`;
-                showNotification('File baru diterima!');
-                receivedChunks = [];
-                currentFileInfo = null;
-            }
-        }
-
         // Utility functions
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+function generatePIN() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function generateFileId() {
+    return Math.random().toString(36).substr(2, 9);
+}
+
+// Initialize variables
+let selectedFiles = new Map(); // Store selected files
+let activeTransfers = new Map(); // Store ongoing transfers
+let connections = new Map(); // Store peer connections
+let receivedFiles = new Map(); // Store received files info
+
+// Initialize PeerJS
+const myPIN = generatePIN();
+displayPIN(myPIN);
+const peer = new Peer(myPIN);
+
+// Display PIN in boxes
+function displayPIN(pin) {
+    const pinDisplay = document.getElementById('pinDisplay');
+    pinDisplay.innerHTML = '';
+    pin.split('').forEach(digit => {
+        const digitBox = document.createElement('div');
+        digitBox.className = 'pin-digit';
+        digitBox.textContent = digit;
+        pinDisplay.appendChild(digitBox);
+    });
+}
+
+// Setup PeerJS events
+peer.on('open', id => {
+    showNotification('Terhubung ke jaringan!');
+});
+
+peer.on('connection', incomingConn => {
+    const conn = incomingConn;
+    conn.on('data', data => handleIncomingData(data, conn));
+    showNotification('Koneksi baru diterima!');
+});
+
+// Copy PIN button
+document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(myPIN);
+    showNotification('PIN disalin!');
+});
+
+// Setup PIN input fields
+const pinInputs = document.querySelectorAll('#receiverPinInput input');
+pinInputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+        if (e.target.value) {
+            if (index < pinInputs.length - 1) {
+                pinInputs[index + 1].focus();
+            }
+        }
+        validateSendButton();
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+            pinInputs[index - 1].focus();
+        }
+    });
+});
+
+// File handling setup
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+fileInput.setAttribute('multiple', 'true');
+
+// File selection events
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    handleFileSelect(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', (e) => {
+    handleFileSelect(e.target.files);
+});
+
+// Handle file selection
+function handleFileSelect(files) {
+    const fileInfoContainer = document.getElementById('fileInfo');
+    fileInfoContainer.style.display = 'block';
+
+    Array.from(files).forEach(file => {
+        const fileId = generateFileId();
+        selectedFiles.set(fileId, {
+            file: file,
+            status: 'pending'
+        });
+
+        const fileElement = createFileElement(fileId, file);
+        fileInfoContainer.appendChild(fileElement);
+    });
+
+    validateSendButton();
+}
+
+// Create file element
+function createFileElement(fileId, file) {
+    const fileDiv = document.createElement('div');
+    fileDiv.className = 'file-info';
+    fileDiv.setAttribute('data-file-id', fileId);
+    
+    fileDiv.innerHTML = `
+        <span>📄</span>
+        <div class="file-info-details">
+            <div class="file-name">${file.name}</div>
+            <div class="file-size">${formatFileSize(file.size)}</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-text">Menunggu...</span>
+                    <span class="progress-size">0 KB / ${formatFileSize(file.size)}</span>
+                </div>
+            </div>
+        </div>
+        <button class="remove-file" onclick="removeFile('${fileId}')">❌</button>
+    `;
+    
+    return fileDiv;
+}
+
+// Remove file function
+function removeFile(fileId) {
+    selectedFiles.delete(fileId);
+    const element = document.querySelector(`[data-file-id="${fileId}"]`);
+    if (element) {
+        element.remove();
+    }
+    validateSendButton();
+}
+
+// Validate send button
+function validateSendButton() {
+    const pin = Array.from(pinInputs).map(input => input.value).join('');
+    document.getElementById('sendBtn').disabled = selectedFiles.size === 0 || pin.length !== 6;
+}
+
+// Send button click handler
+document.getElementById('sendBtn').addEventListener('click', async () => {
+    const receiverPIN = Array.from(pinInputs).map(input => input.value).join('');
+    if (selectedFiles.size === 0 || receiverPIN.length !== 6) return;
+
+    // Send all selected files
+    for (const [fileId, fileData] of selectedFiles) {
+        if (fileData.status === 'pending') {
+            sendFile(fileId, receiverPIN);
+            fileData.status = 'sending';
+        }
+    }
+});
+
+// Send file function
+async function sendFile(fileId, receiverPIN) {
+    const fileData = selectedFiles.get(fileId);
+    if (!fileData || fileData.status !== 'sending') return;
+
+    const file = fileData.file;
+    try {
+        let conn = connections.get(receiverPIN);
+        if (!conn) {
+            conn = peer.connect(receiverPIN);
+            connections.set(receiverPIN, conn);
         }
 
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+        conn.on('open', async () => {
+            const fileElement = document.querySelector(`[data-file-id="${fileId}"]`);
+            const progressBar = fileElement.querySelector('.progress');
+            const progressText = fileElement.querySelector('.progress-text');
+            const progressSize = fileElement.querySelector('.progress-size');
+
+            // Send file info
+            conn.send({
+                type: 'file-info',
+                fileId: fileId,
+                name: file.name,
+                size: file.size
+            });
+
+            // Send file in chunks
+            const CHUNK_SIZE = 16384;
+            const reader = new FileReader();
+            let offset = 0;
+
+            const readNextChunk = () => {
+                const blob = file.slice(offset, offset + CHUNK_SIZE);
+                reader.readAsArrayBuffer(blob);
+            };
+
+            reader.onload = (e) => {
+                conn.send({
+                    type: 'file-chunk',
+                    fileId: fileId,
+                    data: e.target.result
+                });
+
+                offset += e.target.result.byteLength;
+                const progress = (offset / file.size) * 100;
+                
+                // Update progress
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `${Math.round(progress)}%`;
+                progressSize.textContent = `${formatFileSize(offset)} / ${formatFileSize(file.size)}`;
+
+                if (offset < file.size) {
+                    readNextChunk();
+                } else {
+                    conn.send({ 
+                        type: 'file-complete',
+                        fileId: fileId 
+                    });
+                    
+                    showNotification(`File ${file.name} berhasil dikirim!`);
+                    fileData.status = 'sent';
+                    
+                    setTimeout(() => {
+                        fileElement.remove();
+                        selectedFiles.delete(fileId);
+                    }, 2000);
+                }
+            };
+
+            readNextChunk();
+        });
+
+    } catch (error) {
+        showNotification(`Gagal mengirim file ${file.name}: ${error.message}`);
+        fileData.status = 'error';
+    }
+}
+
+// Handle incoming data
+function handleIncomingData(data, conn) {
+    if (data.type === 'file-info') {
+        // Initialize new file transfer
+        receivedFiles.set(data.fileId, {
+            chunks: [],
+            info: data,
+            element: createReceivedFileElement(data)
+        });
+
+    } else if (data.type === 'file-chunk') {
+        const fileData = receivedFiles.get(data.fileId);
+        if (fileData) {
+            fileData.chunks.push(data.data);
+            updateReceiveProgress(data.fileId);
         }
-    </script>
+
+    } else if (data.type === 'file-complete') {
+        completeFileReceive(data.fileId);
+    }
+}
+
+// Create received file element
+function createReceivedFileElement(fileInfo) {
+    const receiveContainer = document.getElementById('receiveStatus');
+    const fileElement = document.createElement('div');
+    fileElement.className = 'file-info';
+    fileElement.setAttribute('data-receive-file-id', fileInfo.fileId);
+    
+    fileElement.innerHTML = `
+        <span>📄</span>
+        <div class="file-info-details">
+            <div>${fileInfo.name}</div>
+            <div>${formatFileSize(fileInfo.size)}</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-text">0%</span>
+                    <span class="progress-size">0 KB / ${formatFileSize(fileInfo.size)}</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    receiveContainer.appendChild(fileElement);
+    return fileElement;
+}
+
+// Update receive progress
+function updateReceiveProgress(fileId) {
+    const fileData = receivedFiles.get(fileId);
+    if (!fileData) return;
+
+    const receivedSize = fileData.chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
+    const progress = (receivedSize / fileData.info.size) * 100;
+
+    const element = fileData.element;
+    const progressBar = element.querySelector('.progress');
+    const progressText = element.querySelector('.progress-text');
+    const progressSize = element.querySelector('.progress-size');
+
+    progressBar.style.width = `${progress}%`;
+    progressText.textContent = `${Math.round(progress)}%`;
+    progressSize.textContent = `${formatFileSize(receivedSize)} / ${formatFileSize(fileData.info.size)}`;
+}
+
+// Complete file receive
+function completeFileReceive(fileId) {
+    const fileData = receivedFiles.get(fileId);
+    if (!fileData) return;
+
+    const blob = new Blob(fileData.chunks);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileData.info.name;
+    link.click();
+
+    showNotification(`File ${fileData.info.name} diterima!`);
+
+    setTimeout(() => {
+        fileData.element.remove();
+        receivedFiles.delete(fileId);
+    }, 2000);
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+  </script>
 </body>
 </html>

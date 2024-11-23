@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share File Lokal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #1a73e8;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #1a73e8;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .connection-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .connection-id {
+            font-family: monospace;
+            color: #1a73e8;
+            font-size: 18px;
+            word-break: break-all;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1557b0;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background-color: #1a73e8;
+            transition: width 0.3s;
+        }
+
+        #reconnectButton {
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Share File Lokal</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('send')">Kirim File</button>
+            <button class="tab" onclick="switchTab('receive')">Terima File</button>
+        </div>
+
+        <div id="sendTab" class="tab-content active">
+            <div class="connection-info">
+                <h3>ID Koneksi Anda:</h3>
+                <p class="connection-id" id="myId">
+                    <span class="loading-spinner"></span>
+                    Menghubungkan...
+                </p>
+                <button id="reconnectButton" onclick="reconnect()" style="display: none;">Hubungkan Ulang</button>
+            </div>
+
+            <div class="file-input-wrapper">
+                <button>Pilih File</button>
+                <input type="file" id="fileInput" multiple>
+            </div>
+
+            <div class="selected-files" id="selectedFiles"></div>
+
+            <input type="text" id="recipientId" placeholder="Masukkan ID penerima">
+            <button onclick="sendFiles()" id="sendButton" disabled>Kirim File</button>
+
+            <div id="sendStatus" class="status"></div>
+            <div class="progress-bar">
+                <div class="progress" id="sendProgress"></div>
+            </div>
+        </div>
+
+        <div id="receiveTab" class="tab-content">
+            <div class="connection-info">
+                <h3>ID Koneksi Anda:</h3>
+                <p class="connection-id" id="myId2">
+                    <span class="loading-spinner"></span>
+                    Menghubungkan...
+                </p>
+            </div>
+
+            <div id="receiveStatus" class="status"></div>
+            <div class="progress-bar">
+                <div class="progress" id="receiveProgress"></div>
+            </div>
+
+            <div class="file-list" id="receivedFiles"></div>
+        </div>
+    </div>
+
+    <script>
+        let peer = null;
+        let conn = null;
+        const chunksSize = 16384; // 16KB chunks
+        let fileQueue = [];
+        let currentFile = null;
+        let receivedSize = 0;
+        let totalSize = 0;
+        let fileBuffer = [];
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 3;
+
+        // Inisialisasi PeerJS
+        function initPeer() {
+            showStatus('success', 'Menghubungkan ke server...');
+            
+            // Menggunakan server PeerJS publik
+            peer = new Peer({
+                debug: 2
+            });
+
+            peer.on('open', (id) => {
+                document.getElementById('myId').innerHTML = id;
+                document.getElementById('myId2').innerHTML = id;
+                document.getElementById('reconnectButton').style.display = 'none';
+                showStatus('success', 'Terhubung ke server!');
+                reconnectAttempts = 0;
+            });
+
+            peer.on('connection', (connection) => {
+                conn = connection;
+                setupConnectionHandlers();
+            });
+
+            peer.on('error', (err) => {
+                console.error('PeerJS error:', err);
+                handlePeerError(err);
+            });
+
+            peer.on('disconnected', () => {
+                showStatus('error', 'Terputus dari server');
+                document.getElementById('reconnectButton').style.display = 'block';
+            });
+        }
+
+        function handlePeerError(err) {
+            let errorMessage = 'Terjadi kesalahan: ';
+            
+            switch(err.type) {
+                case 'browser-incompatible':
+                    errorMessage += 'Browser tidak mendukung WebRTC';
+                    break;
+                case 'invalid-id':
+                    errorMessage += 'ID tidak valid';
+                    break;
+                case 'invalid-key':
+                    errorMessage += 'API key tidak valid';
+                    break;
+                case 'network':
+                    errorMessage += 'Masalah jaringan';
+                    break;
+                case 'peer-unavailable':
+                    errorMessage += 'Peer tidak ditemukan';
+                    break;
+                case 'ssl-unavailable':
+                    errorMessage += 'SSL diperlukan';
+                    break;
+                case 'server-error':
+                    errorMessage += 'Kesalahan server';
+                    break;
+                case 'socket-error':
+                    errorMessage += 'Kesalahan koneksi';
+                    break;
+                case 'socket-closed':
+                    errorMessage += 'Koneksi tertutup';
+                    break;
+                default:
+                    errorMessage += err.message || 'Unknown error';
+            }
+
+            showStatus('error', errorMessage);
+            document.getElementById('reconnectButton').style.display = 'block';
+        }
+
+        function reconnect() {
+            if (reconnectAttempts >= maxReconnectAttempts) {
+                showStatus('error', 'Gagal menghubungkan setelah beberapa percobaan. Silakan muat ulang halaman.');
+                return;
+            }
+
+            reconnectAttempts++;
+            if (peer) {
+                peer.destroy();
+            }
+            initPeer();
+        }
+
+        function setupConnectionHandlers() {
+            conn.on('data', (data) => {
+                if (data.type === 'file-header') {
+                    // Mulai menerima file baru
+                    currentFile = {
+                        name: data.fileName,
+                        size: data.fileSize,
+                        type: data.fileType
+                    };
+                    receivedSize = 0;
+                    totalSize = data.fileSize;
+                    fileBuffer = [];
+                    showStatus('success', `Menerima file: ${data.fileName}`);
+                } else if (data.type === 'file-chunk') {
+                    // Terima chunk data
+                    fileBuffer.push(data.chunk);
+                    receivedSize += data.chunk.byteLength;
+                    updateProgress('receive', (receivedSize / totalSize) * 100);
+
+                    if (receivedSize === totalSize) {
+                        // File selesai diterima
+                        const blob = new Blob(fileBuffer, { type: currentFile.type });
+                        const url = URL.createObjectURL(blob);
+                        
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        fileItem.innerHTML = `
+                            <span>${currentFile.name}</span>
+                            <a href="${url}" download="${currentFile.name}">
+                                <button>Download</button>
+                            </a>
+                        `;
+                        document.getElementById('receivedFiles').appendChild(fileItem);
+                        
+                        showStatus('success', `File ${currentFile.name} berhasil diterima!`);
+                        fileBuffer = [];
+                        currentFile = null;
+                    }
+                }
+            });
+
+            conn.on('close', () => {
+                showStatus('error', 'Koneksi terputus');
+                conn = null;
+            });
+
+            conn.on('error', (err) => {
+                showStatus('error', `Kesalahan koneksi: ${err.message}`);
+            });
+        }
+
+        function connectToPeer(peerId) {
+            if (!peer) {
+                showStatus('error', 'Tidak terhubung ke server. Silakan hubungkan ulang.');
+                return;
+            }
+
+            try {
+                conn = peer.connect(peerId);
+                if (conn) {
+                    setupConnectionHandlers();
+                    showStatus('success', 'Menghubungkan ke peer...');
+                }
+            } catch (err) {
+                showStatus('error', `Gagal menghubungkan ke peer: ${err.message}`);
+            }
+        }
+
+        function sendFiles() {
+            if (!conn || fileQueue.length === 0) {
+                showStatus('error', 'Tidak ada koneksi atau file yang dipilih');
+                return;
+            }
+            
+            const file = fileQueue[0];
+            currentFile = file;
+            
+            try {
+                // Kirim informasi file
+                conn.send({
+                    type: 'file-header',
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type
+                });
+
+                const reader = new FileReader();
+                let offset = 0;
+
+                reader.onload = (e) => {
+                    const chunk = e.target.result;
+                    try {
+                        conn.send({
+                            type: 'file-chunk',
+                            chunk: chunk
+                        });
+
+                        offset += chunk.byteLength;
+                        updateProgress('send', (offset / file.size) * 100);
+
+                        if (offset < file.size) {
+                            // Baca chunk berikutnya
+                            readNextChunk();
+                        } else {
+                            // File selesai dikirim
+                            fileQueue.shift();
+                            if (fileQueue.length > 0) {
+                                // Kirim file berikutnya
+                                sendFiles();
+                            } else {
+                                showStatus('success', 'Semua file berhasil dikirim!');
+                            }
+                        }
+                    } catch (err) {
+                        showStatus('error', `Gagal mengirim chunk: ${err.message}`);
+                    }
+                };
+
+                reader.onerror = (err) => {
+                    showStatus('error', `Gagal membaca file: ${err.message}`);
+                };
+
+                function readNextChunk() {
+                    const slice = file.slice(offset, offset + chunksSize);
+                    reader.readAsArrayBuffer(slice);
+                }
+
+                readNextChunk();
+            } catch (err) {
+                showStatus('error', `Gagal memulai pengiriman: ${err.message}`);
+            }
+        }
+
+        // UI Functions
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const activeTab = tabName === 'send' ? 'sendTab' : 'receiveTab';
+            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(activeTab).classList.add('active');
+        }
+
+        function showStatus(type, message) {
+            const sendStatus = document.getElementById('sendStatus');
+            const receiveStatus = document.getElementById('receiveStatus');
+            
+            sendStatus.textContent = message;
+            receiveStatus.textContent = message;
+            sendStatus.className = `status ${type}`;
+            receiveStatus.className = `status ${type}`;
+        }
+
+        function updateProgress(type, percentage) {
+            const progressBar = document.getElementById(`${type}Progress`);
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Event Listeners
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            fileQueue = files;
+            
+            const selectedFiles = document.getElementById('selectedFiles');
+            selectedFiles.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name} (${formatFileSize(file.size)})</span>
+                    <button onclick="removeFileFromQueue('${file.name}')" class="remove-file">Hapus</button>
+                `;
+                selectedFiles.appendChild(fileItem);
+            });
+
+            document.getElementById('sendButton').disabled = fileQueue.length === 0;
+            
+            if (fileQueue.length > 0) {
+                showStatus('success', `${fileQueue.length} file dipilih`);
+            }
+        });
+
+        function removeFileFromQueue(fileName) {
+            fileQueue = fileQueue.filter(file => file.name !== fileName);
+            
+            const selectedFiles = document.getElementById('selectedFiles');
+            const fileItem = selectedFiles.querySelector(`div[data-filename="${fileName}"]`);
+            if (fileItem) {
+                fileItem.remove();
+            }
+            
+            document.getElementById('sendButton').disabled = fileQueue.length === 0;
+            
+            if (fileQueue.length === 0) {
+                showStatus('error', 'Tidak ada file yang dipilih');
+            } else {
+                showStatus('success', `${fileQueue.length} file dipilih`);
+            }
+        }
+
+        document.getElementById('recipientId').addEventListener('input', (e) => {
+            const peerId = e.target.value.trim();
+            if (peerId && peer) {
+                connectToPeer(peerId);
+            }
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            if (peer) {
+                peer.destroy();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initPeer();
+        });
+    </script>
+</body>
+</html>

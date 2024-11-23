@@ -150,6 +150,7 @@
             border-radius: 25px;
             display: none;
             animation: slideUp 0.3s ease;
+            z-index: 1000;
         }
 
         @keyframes slideUp {
@@ -162,7 +163,7 @@
     <div class="container">
         <div class="header">
             <div class="device-name">Your Device</div>
-            <div class="status">Connected to local network</div>
+            <div class="status">Connecting to local network...</div>
         </div>
 
         <div class="radar-container">
@@ -187,18 +188,25 @@
     <div id="toast"></div>
 
     <script>
-        const broadcast = new BroadcastChannel('easy-file-transfer');
+        // Initialize WebSocket connection
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${wsProtocol}//${window.location.host}`);
+        
         const devicesContainer = document.getElementById('devices');
         const fileInput = document.getElementById('file-input');
         const sendFileButton = document.getElementById('send-file');
         const toast = document.getElementById('toast');
+        const statusElement = document.querySelector('.status');
 
-        let userId = Math.random().toString(36).substring(2, 15);
-        let deviceName = `Device-${userId.substring(0, 4)}`;
+        // Generate unique ID and device name
+        const userId = `user-${Math.random().toString(36).substr(2, 9)}`;
+        const deviceName = `Device-${userId.slice(-4)}`;
+        document.querySelector('.device-name').textContent = deviceName;
+
         let peers = {};
         let selectedPeerId = null;
-
-        document.querySelector('.device-name').textContent = deviceName;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
 
         function showToast(message, duration = 3000) {
             toast.textContent = message;
@@ -208,33 +216,87 @@
             }, duration);
         }
 
-        // Announce presence
-        broadcast.postMessage({
-            type: 'join',
-            userId,
-            deviceName
-        });
+        function updateStatus(message) {
+            statusElement.textContent = message;
+        }
 
-        broadcast.onmessage = (event) => {
-            const data = event.data;
+        function connectWebSocket() {
+            ws.onopen = () => {
+                updateStatus('Connected to local network');
+                reconnectAttempts = 0;
+                
+                // Announce presence immediately after connection
+                ws.send(JSON.stringify({
+                    type: 'join',
+                    userId: userId,
+                    deviceName: deviceName
+                }));
 
-            if (data.type === 'join' && data.userId !== userId) {
-                peers[data.userId] = {
-                    id: data.userId,
-                    name: data.deviceName
-                };
-                updateDevices();
-            } else if (data.type === 'leave') {
-                delete peers[data.userId];
-                updateDevices();
-            } else if (data.type === 'file-offer' && data.to === userId) {
-                receiveFile(data);
+                // Set up periodic announcements
+                setInterval(() => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'heartbeat',
+                            userId: userId,
+                            deviceName: deviceName
+                        }));
+                    }
+                }, 5000);
+            };
+
+            ws.onclose = () => {
+                updateStatus('Disconnected. Attempting to reconnect...');
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    setTimeout(connectWebSocket, 3000);
+                } else {
+                    updateStatus('Failed to connect. Please refresh the page.');
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateStatus('Connection error. Please check your network.');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+        }
+
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'join':
+                case 'heartbeat':
+                    if (data.userId !== userId) {
+                        peers[data.userId] = {
+                            id: data.userId,
+                            name: data.deviceName,
+                            lastSeen: Date.now()
+                        };
+                        updateDevices();
+                    }
+                    break;
+
+                case 'leave':
+                    if (data.userId !== userId) {
+                        delete peers[data.userId];
+                        updateDevices();
+                    }
+                    break;
+
+                case 'file-offer':
+                    if (data.to === userId) {
+                        receiveFile(data);
+                    }
+                    break;
             }
-        };
-
-        window.addEventListener('beforeunload', () => {
-            broadcast.postMessage({ type: 'leave', userId });
-        });
+        }
 
         function getRandomPosition() {
             const angle = Math.random() * Math.PI * 2;
@@ -246,6 +308,14 @@
         }
 
         function updateDevices() {
+            // Clean up stale peers (no heartbeat for 15 seconds)
+            const now = Date.now();
+            Object.keys(peers).forEach(peerId => {
+                if (now - peers[peerId].lastSeen > 15000) {
+                    delete peers[peerId];
+                }
+            });
+
             devicesContainer.innerHTML = '';
             Object.values(peers).forEach((peer) => {
                 const position = getRandomPosition();
@@ -264,67 +334,107 @@
                 `;
                 deviceDiv.setAttribute('data-id', peer.id);
                 deviceDiv.addEventListener('click', () => selectPeer(peer.id));
+                if (peer.id === selectedPeerId) {
+                    deviceDiv.classList.add('selected');
+                }
                 devicesContainer.appendChild(deviceDiv);
             });
 
-            if (Object.keys(peers).length === 0) {
-                document.querySelector('.status').textContent = 'Waiting for other devices...';
-            } else {
-                document.querySelector('.status').textContent = `${Object.keys(peers).length} device(s) found`;
-            }
+            updateStatus(Object.keys(peers).length === 0 ? 
+                'Waiting for other devices...' : 
+                `${Object.keys(peers).length} device(s) found`);
         }
 
         function selectPeer(peerId) {
-            const devices = document.querySelectorAll('.device');
-            devices.forEach(device => device.classList.remove('selected'));
-            
-            const selectedDevice = document.querySelector(`[data-id="${peerId}"]`);
-            if (selectedDevice) {
-                selectedDevice.classList.add('selected');
-            }
-            
             selectedPeerId = peerId;
+            updateDevices(); // This will update the selected state
             sendFileButton.disabled = false;
             showToast(`Selected ${peers[peerId].name} for file transfer`);
         }
 
-        sendFileButton.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', () => {
-            const files = Array.from(fileInput.files);
-            if (files.length > 0) {
-                showToast(`Sending ${files.length} file(s)...`);
-                
-                files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        broadcast.postMessage({
+        function sendFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
                             type: 'file-offer',
                             to: selectedPeerId,
                             from: userId,
                             fromName: deviceName,
                             fileName: file.name,
-                            fileContent: reader.result,
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                });
+                            fileSize: file.size,
+                            fileType: file.type,
+                            fileContent: reader.result
+                        }));
+                        resolve();
+                    } else {
+                        reject(new Error('WebSocket is not connected'));
+                    }
+                };
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(file);
+            });
+        }
 
-                setTimeout(() => {
-                    showToast(`Files sent to ${peers[selectedPeerId].name}!`);
-                }, 1000);
+        async function handleFileSelection() {
+            const files = Array.from(fileInput.files);
+            if (files.length === 0) return;
+
+            showToast(`Preparing to send ${files.length} file(s)...`);
+            sendFileButton.disabled = true;
+
+            try {
+                for (const file of files) {
+                    await sendFile(file);
+                }
+                showToast(`Successfully sent ${files.length} file(s) to ${peers[selectedPeerId].name}`);
+            } catch (error) {
+                console.error('Error sending files:', error);
+                showToast('Error sending files. Please try again.');
+            } finally {
+                sendFileButton.disabled = false;
+                fileInput.value = ''; // Reset file input
+            }
+        }
+
+        function receiveFile(data) {
+            try {
+                const link = document.createElement('a');
+                link.href = data.fileContent;
+                link.download = data.fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast(`Received "${data.fileName}" from ${data.fromName}`);
+            } catch (error) {
+                console.error('Error receiving file:', error);
+                showToast('Error receiving file. Please try again.');
+            }
+        }
+
+        // Event Listeners
+        sendFileButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', handleFileSelection);
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'leave',
+                    userId: userId
+                }));
             }
         });
 
-        function receiveFile(data) {
-            const link = document.createElement('a');
-            link.href = data.fileContent;
-            link.download = data.fileName;
-            link.click();
-            showToast(`Received "${data.fileName}" from ${data.fromName}`);
-        }
+        // Start the connection
+        connectWebSocket();
+
+        // Set up periodic cleanup of stale peers
+        setInterval(updateDevices, 5000);
     </script>
 </body>
 </html>

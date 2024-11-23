@@ -1,10 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local File Transfer - Auto Discovery</title>
+    <meta name="description" content="Aplikasi transfer file aman menggunakan QR code">
+    <meta name="theme-color" content="#2563eb">
+    <title>SecureShare - Transfer File via QR</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,377 +25,629 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
-            padding: 1rem;
             text-align: center;
-            color: #666;
-            font-size: 0.9rem;
+            padding: 2rem 0;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .instruction {
-            color: #666;
-            text-align: center;
-            font-size: 1.1rem;
-            padding: 1rem;
-        }
-
-        .radar-view {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 2rem auto;
-            border-radius: 50%;
-            background: radial-gradient(circle, #f0f0f0 0%, #ffffff 100%);
-            overflow: hidden;
-        }
-
-        .radar-circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 1px solid #e0e0e0;
-        }
-
-        .radar-sweep {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(66,133,244,0.1) 0%, rgba(66,133,244,0) 100%);
-            transform-origin: right center;
-            animation: sweep 4s infinite linear;
-        }
-
-        @keyframes sweep {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .device-point {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1;
-        }
-
-        .device-point:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-        .device-icon {
-            width: 100%;
-            height: 100%;
-            background: #4285f4;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .device-label {
-            position: absolute;
-            width: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: #666;
-            background: rgba(255,255,255,0.9);
-            padding: 2px;
-            border-radius: 3px;
-        }
-
-        .your-info {
-            text-align: center;
-            padding: 2rem;
-            background: #f8f9fa;
-            margin-top: auto;
-        }
-
-        .network-icon {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 1rem;
-        }
-
-        .your-name {
-            font-size: 1.2rem;
-            color: #333;
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
-        .network-status {
-            color: #4285f4;
-            font-size: 0.9rem;
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
         }
 
-        #file-input {
-            display: none;
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            background: var(--primary);
             color: white;
-            padding: 16px 32px;
-            border-radius: 25px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .drop-zone-text {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
             display: none;
+        }
+
+        .button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button:hover {
+            background: var(--primary-dark);
+        }
+
+        .button:disabled {
+            background: var(--secondary);
+            cursor: not-allowed;
+        }
+
+        .button-secondary {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .button-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .preview-container {
+            margin: 1.5rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .file-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info-label {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #qrcode {
+            margin: 1.5rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .security-info {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            animation: slideIn 0.3s ease;
             z-index: 1000;
+            display: none;
+        }
+
+        .toast-success {
+            background: var(--success);
+        }
+
+        .toast-error {
+            background: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        local file transfer
-    </div>
+    <header class="header">
+        <div class="container">
+            <div class="logo">SecureShare</div>
+            <div class="subtitle">Transfer file aman dan cepat menggunakan QR code</div>
+        </div>
+    </header>
 
-    <div class="instruction">
-        Tap device icon to send files or long tap to send a message
-    </div>
+    <main class="container">
+        <div class="main-content">
+            <div class="card" id="senderSection">
+                <div class="card-header">
+                    <div class="card-icon">📤</div>
+                    <h2 class="card-title">Kirim File</h2>
+                </div>
 
-    <div class="radar-view" id="radar">
-        <div class="radar-circles"></div>
-        <div class="radar-sweep"></div>
-        <!-- Devices will be placed here -->
-    </div>
+                <div class="drop-zone" id="dropZone">
+                    <p class="drop-zone-text">Drag & drop file di sini atau</p>
+                    <button class="button">
+                        <span>Pilih File</span>
+                        <input type="file" class="file-input" id="fileInput" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt">
+                    </button>
+                </div>
 
-    <div class="your-info">
-        <svg class="network-icon" viewBox="0 0 24 24" fill="#4285f4">
-            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-        </svg>
-        <div class="your-name" id="your-name"></div>
-        <div class="network-status">Scanning for nearby devices...</div>
-    </div>
+                <div class="file-info" id="fileInfo">
+                    <div class="file-info-item">
+                        <span class="file-info-label">Nama File:</span>
+                        <span id="fileName"></span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">Ukuran:</span>
+                        <span id="fileSize"></span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">Tipe:</span>
+                        <span id="fileType"></span>
+                    </div>
+                </div>
 
-    <input type="file" id="file-input" multiple>
-    <div id="toast"></div>
+                <div class="preview-container" id="previewContainer">
+                    <img class="preview-image" id="preview">
+                </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+
+                <div class="spinner" id="spinner"></div>
+
+                <div id="qrcode"></div>
+
+                <div class="security-info" id="securityInfo">
+                    <h3>🔒 Informasi Keamanan:</h3>
+                    <p>File dienkripsi sebelum transfer. Kode QR hanya dapat digunakan sekali dan kedaluwarsa dalam 24 jam.</p>
+                </div>
+            </div>
+
+            <div class="card" id="downloadSection" style="display: none;">
+                <div class="card-header">
+                    <div class="card-icon">📥</div>
+                    <h2 class="card-title">Download File</h2>
+                </div>
+
+                <div class="file-info">
+                    <div class="file-info-item">
+                        <span class="file-info-label">File:</span>
+                        <span id="receiveFileName"></span>
+                    </div>
+                </div>
+
+                <button id="downloadBtn" class="button">
+                    <span>Download File</span>
+                </button>
+
+                <button id="newTransferBtn" class="button button-secondary" style="margin-left: 1rem;">
+                    <span>Transfer Baru</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
     <script>
-        let peer;
-        let roomServer;
-        const connections = new Map();
-        let selectedPeerId = null;
-
-        function generateName() {
-            const adjectives = ['Quick', 'Lazy', 'Clever', 'Brave', 'Calm', 'Eager', 'Gentle', 'Happy', 'Kind', 'Proud', 'Quiet', 'Wise'];
-            const animals = ['Fox', 'Dog', 'Cat', 'Bear', 'Lion', 'Tiger', 'Wolf', 'Deer', 'Bird', 'Fish', 'Seal', 'Owl'];
-            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${animals[Math.floor(Math.random() * animals.length)]}`;
-        }
-
-        function getDeviceInfo() {
-            const ua = navigator.userAgent;
-            if (/iPhone|iPad|iPod/.test(ua)) return 'iOS Device';
-            if (/Android/.test(ua)) return 'Android Device';
-            if (/Windows/.test(ua)) return 'Windows Device';
-            if (/Mac/.test(ua)) return 'Mac Device';
-            if (/Linux/.test(ua)) return 'Linux Device';
-            return 'Unknown Device';
-        }
-
-        function showToast(message, duration = 3000) {
+        // Utility functions
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
+            toast.className = `toast toast-${type}`;
             toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', duration);
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
         }
 
-        // Initialize room server connection for discovery
-        function initializeRoomServer() {
-            const localRoomServer = `wss://local-discovery.glitch.me`;
-            roomServer = new WebSocket(localRoomServer);
-            
-            roomServer.onopen = () => {
-                const deviceInfo = {
-                    id: peer.id,
-                    name: deviceName,
-                    model: deviceModel
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function generateEncryptionKey() {
+            return CryptoJS.lib.WordArray.random(16).toString();
+        }
+
+        // Initialize QR Code
+        const qrcode = new QRCode(document.getElementById('qrcode'), {
+            width: 256,
+            height: 256,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // File handling
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('previewContainer');
+        const fileInfo = document.getElementById('fileInfo');
+        const progressBar = document.getElementById('progressBar');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const spinner = document.getElementById('spinner');
+        const securityInfo = document.getElementById('securityInfo');
+
+        // Drag and drop handling
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileType').textContent = file.type || 'Unknown';
+            fileInfo.style.display = 'block';
+
+            // Show progress bar
+            progressBar.style.display = 'block';
+            progressBarFill.style.width = '0%';
+
+            // Show preview for images
+            if (file.type.startsWith('image/')) {
+                previewContainer.style.display = 'block';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
                 };
-                roomServer.send(JSON.stringify({
-                    type: 'join',
-                    device: deviceInfo
-                }));
-            };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
 
-            roomServer.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'deviceList') {
-                    handleDeviceList(data.devices);
+            // Process file
+            processFile(file);
+        }
+
+        async function processFile(file) {
+            try {
+                spinner.style.display = 'block';
+                
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 5;
+                    if (progress <= 90) {
+                        progressBarFill.style.width = progress + '%';
+                    }
+                }, 100);
+
+                // Read file as array buffer
+                const buffer = await file.arrayBuffer();
+                const data = new Uint8Array(buffer);
+
+                // Generate encryption key and encrypt data
+                const encryptionKey = generateEncryptionKey();
+                const encryptedData = CryptoJS.AES.encrypt(
+                    CryptoJS.lib.WordArray.create(data),
+                    encryptionKey
+                ).toString();
+
+                // Create transfer data object
+                const transferData = {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    data: encryptedData,
+                    timestamp: Date.now(),
+                    expires: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+                };
+
+                // Generate unique transfer ID
+                const transferId = CryptoJS.SHA256(file.name + Date.now()).toString();
+
+                // Store data in localStorage (with expiration)
+                localStorage.setItem(`transfer_${transferId}`, JSON.stringify(transferData));
+
+                // Create secure transfer URL with encryption key
+                const transferUrl = `${window.location.origin}${window.location.pathname}#transfer=${transferId}&key=${encryptionKey}`;
+
+                // Complete progress bar
+                clearInterval(progressInterval);
+                progressBarFill.style.width = '100%';
+                
+                // Generate QR code
+                document.getElementById('qrcode').style.display = 'block';
+                qrcode.makeCode(transferUrl);
+
+                // Show security info
+                securityInfo.style.display = 'block';
+                
+                showToast('File siap untuk ditransfer!', 'success');
+            } catch (error) {
+                console.error('Error processing file:', error);
+                showToast('Gagal memproses file. Silakan coba lagi.', 'error');
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Download handling
+        if (window.location.hash) {
+            const hashParams = new URLSearchParams(
+                window.location.hash.slice(1).replace('transfer=', 'transfer_id=')
+            );
+            const transferId = hashParams.get('transfer_id');
+            const encryptionKey = hashParams.get('key');
+
+            if (transferId && encryptionKey) {
+                document.getElementById('senderSection').style.display = 'none';
+                document.getElementById('downloadSection').style.display = 'block';
+
+                try {
+                    // Get transfer data from localStorage
+                    const transferData = JSON.parse(localStorage.getItem(`transfer_${transferId}`));
+
+                    if (!transferData) {
+                        throw new Error('Transfer tidak ditemukan atau sudah kedaluwarsa');
+                    }
+
+                    if (Date.now() > transferData.expires) {
+                        localStorage.removeItem(`transfer_${transferId}`);
+                        throw new Error('Link transfer sudah kedaluwarsa');
+                    }
+
+                    document.getElementById('receiveFileName').textContent = transferData.name;
+
+                    const downloadBtn = document.getElementById('downloadBtn');
+                    downloadBtn.addEventListener('click', async () => {
+                        try {
+                            downloadBtn.disabled = true;
+                            spinner.style.display = 'block';
+
+                            // Decrypt data
+                            const decryptedData = CryptoJS.AES.decrypt(
+                                transferData.data,
+                                encryptionKey
+                            );
+                            const arrayBuffer = new Uint8Array(decryptedData.words.length * 4);
+                            for (let i = 0; i < decryptedData.words.length; i++) {
+                                const word = decryptedData.words[i];
+                                arrayBuffer[i * 4] = (word >> 24) & 0xff;
+                                arrayBuffer[i * 4 + 1] = (word >> 16) & 0xff;
+                                arrayBuffer[i * 4 + 2] = (word >> 8) & 0xff;
+                                arrayBuffer[i * 4 + 3] = word & 0xff;
+                            }
+
+                            // Create blob and download
+                            const blob = new Blob([arrayBuffer], { type: transferData.type });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = transferData.name;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+
+                            // Remove transfer data after successful download
+                            localStorage.removeItem(`transfer_${transferId}`);
+                            showToast('File berhasil diunduh!', 'success');
+                        } catch (error) {
+                            console.error('Error downloading file:', error);
+                            showToast('Gagal mengunduh file. Silakan coba lagi.', 'error');
+                        } finally {
+                            downloadBtn.disabled = false;
+                            spinner.style.display = 'none';
+                        }
+                    });
+
+                    // New transfer button
+                    document.getElementById('newTransferBtn').addEventListener('click', () => {
+                        window.location.href = window.location.pathname;
+                    });
+                } catch (error) {
+                    console.error('Error handling transfer:', error);
+                    showToast(error.message, 'error');
+                    document.getElementById('downloadSection').innerHTML = `
+                        <div class="error-message" style="display: block;">
+                            <h3>❌ Error:</h3>
+                            <p>${error.message}</p>
+                            <button class="button button-secondary" onclick="window.location.href='${window.location.pathname}'">
+                                Mulai Transfer Baru
+                            </button>
+                        </div>
+                    `;
                 }
-            };
+            }
         }
 
-        function handleDeviceList(devices) {
-            devices.forEach(device => {
-                if (device.id !== peer.id && !connections.has(device.id)) {
-                    connectToPeer(device);
+        // Cleanup expired transfers
+        function cleanupExpiredTransfers() {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('transfer_')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (Date.now() > data.expires) {
+                            localStorage.removeItem(key);
+                        }
+                    } catch (error) {
+                        console.error('Error cleaning up transfer:', error);
+                        localStorage.removeItem(key);
+                    }
                 }
-            });
-            updateRadarView();
+            }
         }
 
-        function connectToPeer(device) {
-            const conn = peer.connect(device.id, {
-                metadata: {
-                    name: deviceName,
-                    model: deviceModel
-                }
-            });
-            handleConnection(conn);
-        }
+        // Run cleanup on load and periodically
+        cleanupExpiredTransfers();
+        setInterval(cleanupExpiredTransfers, 60000); // Check every minute
 
-        function positionDeviceInRadar(device, index, total) {
-            const radius = 100;
-            const angle = (index * 2 * Math.PI / total) + Math.PI/6;
-            const x = 150 + radius * Math.cos(angle);
-            const y = 150 + radius * Math.sin(angle);
-            
-            const point = document.createElement('div');
-            point.className = 'device-point';
-            point.style.left = `${x}px`;
-            point.style.top = `${y}px`;
-            
-            point.innerHTML = `
-                <div class="device-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-                        <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
-                    </svg>
-                </div>
-                <div class="device-label">${device.name}<br>${device.model}</div>
-            `;
-            
-            return point;
-        }
-
-        function updateRadarView() {
-            const radar = document.getElementById('radar');
-            const circles = radar.querySelector('.radar-circles');
-            const sweep = radar.querySelector('.radar-sweep');
-            radar.innerHTML = '';
-            radar.appendChild(circles);
-            radar.appendChild(sweep);
-            
-            const devices = Array.from(connections.values());
-            devices.forEach((device, index) => {
-                const point = positionDeviceInRadar(device, index, devices.length);
-                point.addEventListener('click', () => {
-                    selectedPeerId = device.connection.peer;
-                    document.getElementById('file-input').click();
+        // Service Worker Registration for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(error => {
+                    console.error('ServiceWorker registration failed:', error);
                 });
-                radar.appendChild(point);
             });
         }
-
-        function handleConnection(conn) {
-            conn.on('open', () => {
-                connections.set(conn.peer, {
-                    connection: conn,
-                    name: conn.metadata.name,
-                    model: conn.metadata.model
-                });
-                updateRadarView();
-                showToast(`Connected to ${conn.metadata.name}`);
-            });
-
-            conn.on('data', (data) => {
-                if (data.type === 'file') {
-                    receiveFile(data);
-                }
-            });
-
-            conn.on('close', () => {
-                connections.delete(conn.peer);
-                updateRadarView();
-                showToast(`${conn.metadata.name} disconnected`);
-            });
-        }
-
-        // Handle file selection and sending
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length && selectedPeerId && connections.has(selectedPeerId)) {
-                files.forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const connection = connections.get(selectedPeerId).connection;
-                        connection.send({
-                            type: 'file',
-                            name: file.name,
-                            data: reader.result
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                });
-                showToast(`Sending ${files.length} file(s)...`);
-            }
-        });
-
-        function receiveFile(data) {
-            const link = document.createElement('a');
-            link.href = data.data;
-            link.download = data.name;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast(`Received "${data.name}"`);
-        }
-
-        // Initialize application
-        const deviceName = generateName();
-        const deviceModel = getDeviceInfo();
-        document.getElementById('your-name').textContent = `You are known as ${deviceName}`;
-
-        // Initialize PeerJS with STUN/TURN servers
-        peer = new Peer({
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478' }
-                ]
-            }
-        });
-
-        peer.on('open', (id) => {
-            console.log('My peer ID is: ' + id);
-            initializeRoomServer();
-        });
-
-        peer.on('connection', (conn) => {
-            handleConnection(conn);
-        });
-
-        peer.on('error', (err) => {
-            console.error('PeerJS error:', err);
-            showToast('Connection error: ' + err.message);
-        });
-
-        // Clean up on page unload
-        window.addEventListener('beforeunload', () => {
-            if (roomServer) {
-                roomServer.close();
-            }
-            if (peer) {
-                peer.destroy();
-            }
-        });
     </script>
 </body>
 </html>

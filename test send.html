@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontend Snapdrop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #1a1a1a;
+      color: white;
+    }
+
+    .radar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .radar {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+      overflow: hidden;
+      animation: rotate 4s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .circle {
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .circle:nth-child(1) {
+      width: 80%;
+      height: 80%;
+      top: 50%;
+      left: 50%;
+    }
+
+    .circle:nth-child(2) {
+      width: 60%;
+      height: 60%;
+      top: 50%;
+      left: 50%;
+    }
+
+    .circle:nth-child(3) {
+      width: 40%;
+      height: 40%;
+      top: 50%;
+      left: 50%;
+    }
+
+    .user {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6a00;
+      border-radius: 50%;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      animation: pulse 1s infinite;
+    }
+
+    .user:hover {
+      background-color: #ff4500;
+    }
+
+    .file-panel {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="radar-container">
+    <div class="radar">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div id="users"></div>
+    </div>
+    <div class="file-panel">
+      <input type="file" id="file-input" style="display: none;">
+      <button id="send-file" disabled>Send File</button>
+    </div>
+  </div>
+
+  <script>
+    const broadcast = new BroadcastChannel('snapdrop-clone');
+    const usersContainer = document.getElementById('users');
+    const fileInput = document.getElementById('file-input');
+    const sendFileButton = document.getElementById('send-file');
+
+    let userId = Math.random().toString(36).substring(2, 15);
+    let peers = {};
+    let selectedPeerId = null;
+    let dataChannel = null;
+
+    // Announce presence to other users
+    broadcast.postMessage({ type: 'join', userId });
+
+    broadcast.onmessage = (event) => {
+      const data = event.data;
+
+      if (data.type === 'join' && data.userId !== userId) {
+        peers[data.userId] = data.userId;
+        updateUsers();
+      } else if (data.type === 'leave') {
+        delete peers[data.userId];
+        updateUsers();
+      } else if (data.type === 'file-offer' && data.to === userId) {
+        receiveFile(data);
+      }
+    };
+
+    window.addEventListener('beforeunload', () => {
+      broadcast.postMessage({ type: 'leave', userId });
+    });
+
+    function updateUsers() {
+      usersContainer.innerHTML = '';
+      Object.keys(peers).forEach((peerId) => {
+        const userDiv = document.createElement('div');
+        userDiv.classList.add('user');
+        userDiv.style.top = `${Math.random() * 80 + 10}%`;
+        userDiv.style.left = `${Math.random() * 80 + 10}%`;
+        userDiv.setAttribute('data-id', peerId);
+        userDiv.addEventListener('click', () => selectPeer(peerId));
+        usersContainer.appendChild(userDiv);
+      });
+    }
+
+    function selectPeer(peerId) {
+      selectedPeerId = peerId;
+      sendFileButton.disabled = false;
+    }
+
+    sendFileButton.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          broadcast.postMessage({
+            type: 'file-offer',
+            to: selectedPeerId,
+            from: userId,
+            fileName: file.name,
+            fileContent: reader.result,
+          });
+          alert('File sent!');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function receiveFile(data) {
+      const { fileName, fileContent } = data;
+      const link = document.createElement('a');
+      link.href = fileContent;
+      link.download = fileName;
+      link.click();
+      alert(`File "${fileName}" received!`);
+    }
+  </script>
+</body>
+</html>

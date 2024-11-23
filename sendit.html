@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareFlow - File Sharing Made Easy</title>
+    <title>ShareFlow - Simple PIN Sharing</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -50,35 +49,46 @@
             margin-bottom: 1.5rem;
         }
 
-        .id-section {
+        .pin-display {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: #f7fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
         }
 
-        .id-display {
-            flex: 1;
-            font-size: 1.1rem;
-            font-weight: 500;
+        .pin-digit {
+            width: 50px;
+            height: 60px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
             color: #4a5568;
         }
 
-        .copy-btn {
-            background: #4299e1;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
+        .pin-input {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
         }
 
-        .copy-btn:hover {
-            background: #3182ce;
+        .pin-input input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .pin-input input:focus {
+            border-color: #4299e1;
         }
 
         .drop-zone {
@@ -99,18 +109,6 @@
             background: #ebf8ff;
         }
 
-        .input-group {
-            margin: 1rem 0;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
         .send-btn {
             width: 100%;
             background: #48bb78;
@@ -121,6 +119,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s;
+            margin-top: 1rem;
         }
 
         .send-btn:hover {
@@ -137,6 +136,7 @@
             padding: 1rem;
             border-radius: 6px;
             background: #f7fafc;
+            text-align: center;
         }
 
         .progress-bar {
@@ -160,10 +160,9 @@
             align-items: center;
             gap: 1rem;
             margin-top: 1rem;
-        }
-
-        .file-icon {
-            font-size: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 6px;
         }
 
         .notification {
@@ -182,14 +181,20 @@
             transform: translateY(0);
         }
 
-        @media (max-width: 640px) {
-            .container {
-                margin: 1rem auto;
-            }
+        .copy-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 0 auto;
+            display: block;
+        }
 
-            .header h1 {
-                font-size: 2rem;
-            }
+        .copy-btn:hover {
+            background: #3182ce;
         }
     </style>
 </head>
@@ -197,15 +202,13 @@
     <div class="container">
         <div class="header">
             <h1>ShareFlow</h1>
-            <p>Transfer file secara lokal dengan mudah dan cepat</p>
+            <p>Transfer file dengan PIN 6 digit</p>
         </div>
 
         <div class="card">
-            <h2>ID Koneksi Anda</h2>
-            <div class="id-section">
-                <div class="id-display" id="myId">Menghubungkan...</div>
-                <button class="copy-btn" id="copyBtn">Salin ID</button>
-            </div>
+            <h2>PIN Anda</h2>
+            <div class="pin-display" id="pinDisplay"></div>
+            <button class="copy-btn" id="copyBtn">Salin PIN</button>
         </div>
 
         <div class="card">
@@ -214,15 +217,14 @@
                 <p>Drag & drop file di sini atau klik untuk memilih</p>
                 <input type="file" id="fileInput" hidden>
             </div>
-            <div class="file-info" id="fileInfo" style="display: none">
-                <span class="file-icon">📄</span>
-                <div>
-                    <div id="fileName"></div>
-                    <div id="fileSize"></div>
-                </div>
-            </div>
-            <div class="input-group">
-                <input type="text" id="peerIdInput" placeholder="Masukkan ID penerima">
+            <div id="fileInfo" style="display: none"></div>
+            <div class="pin-input" id="receiverPinInput">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
             </div>
             <button class="send-btn" id="sendBtn" disabled>Kirim File</button>
             <div class="status" id="sendStatus" style="display: none">
@@ -244,18 +246,39 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        const peer = new Peer();
+        // Generate random 6-digit PIN
+        function generatePIN() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Display PIN in separate boxes
+        function displayPIN(pin) {
+            const pinDisplay = document.getElementById('pinDisplay');
+            pinDisplay.innerHTML = '';
+            pin.split('').forEach(digit => {
+                const digitBox = document.createElement('div');
+                digitBox.className = 'pin-digit';
+                digitBox.textContent = digit;
+                pinDisplay.appendChild(digitBox);
+            });
+        }
+
+        // Initialize PeerJS with custom ID (PIN)
+        const myPIN = generatePIN();
+        displayPIN(myPIN);
+        const peer = new Peer(myPIN);
+        
         let conn = null;
         let selectedFile = null;
 
-        // Initialize clipboard.js
-        new ClipboardJS('#copyBtn', {
-            text: () => document.getElementById('myId').innerText
+        // Copy PIN button
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(myPIN);
+            showNotification('PIN disalin!');
         });
 
         // Setup PeerJS
         peer.on('open', id => {
-            document.getElementById('myId').innerText = id;
             showNotification('Terhubung ke jaringan!');
         });
 
@@ -265,10 +288,28 @@
             showNotification('Koneksi baru diterima!');
         });
 
-        // File selection handling
+        // Handle PIN input
+        const pinInputs = document.querySelectorAll('#receiverPinInput input');
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value) {
+                    if (index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                }
+                validateSendButton();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // File handling
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-        const sendBtn = document.getElementById('sendBtn');
 
         dropZone.addEventListener('click', () => fileInput.click());
         dropZone.addEventListener('dragover', (e) => {
@@ -290,29 +331,38 @@
 
         function handleFileSelect(file) {
             selectedFile = file;
-            document.getElementById('fileInfo').style.display = 'flex';
-            document.getElementById('fileName').innerText = file.name;
-            document.getElementById('fileSize').innerText = formatFileSize(file.size);
-            sendBtn.disabled = !file || !document.getElementById('peerIdInput').value;
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.style.display = 'flex';
+            fileInfo.innerHTML = `
+                <div class="file-info">
+                    <span>📄</span>
+                    <div>
+                        <div>${file.name}</div>
+                        <div>${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+            `;
+            validateSendButton();
         }
 
-        document.getElementById('peerIdInput').addEventListener('input', (e) => {
-            sendBtn.disabled = !selectedFile || !e.target.value;
-        });
+        function validateSendButton() {
+            const pin = Array.from(pinInputs).map(input => input.value).join('');
+            document.getElementById('sendBtn').disabled = !selectedFile || pin.length !== 6;
+        }
 
-        // Send file function
-        sendBtn.addEventListener('click', async () => {
-            const peerId = document.getElementById('peerIdInput').value;
-            if (!selectedFile || !peerId) return;
+        // Send file
+        document.getElementById('sendBtn').addEventListener('click', async () => {
+            const receiverPIN = Array.from(pinInputs).map(input => input.value).join('');
+            if (!selectedFile || receiverPIN.length !== 6) return;
 
             try {
-                conn = peer.connect(peerId);
+                conn = peer.connect(receiverPIN);
                 conn.on('open', async () => {
                     const sendStatus = document.getElementById('sendStatus');
                     const progressBar = document.getElementById('progressBar');
                     sendStatus.style.display = 'block';
 
-                    // Send file info first
+                    // Send file info
                     conn.send({
                         type: 'file-info',
                         name: selectedFile.name,

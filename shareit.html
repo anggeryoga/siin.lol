@@ -348,319 +348,390 @@ h1 {
     </div>
 
     <script>
-        let peer = null;
-        let conn = null;
-        const chunksSize = 16384;
-        let fileQueue = [];
-        let currentFile = null;
-        let receivedSize = 0;
-        let totalSize = 0;
-        let fileBuffer = [];
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 3;
+        // Global variables
+let peer = null;
+let conn = null;
+let fileQueue = [];
+let currentFile = null;
+let receivedSize = 0;
+let totalSize = 0;
+let fileBuffer = [];
+let myPeerId = null;
+const chunksSize = 16384; // 16KB chunks
 
-        function generateSimpleId() {
-            const chars = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
-            let result = '';
-            for (let i = 0; i < 6; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
+// Initialize PeerJS connection
+function initPeer() {
+    showStatus('info', 'Menghubungkan ke server...');
+    
+    // Generate random ID for this peer
+    myPeerId = generatePeerId();
+    
+    // Create new Peer connection
+    peer = new Peer(myPeerId, {
+        host: 'peerjs-server.herokuapp.com',
+        secure: true,
+        port: 443,
+        debug: 1,
+        config: {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    });
+
+    // Handle successful connection
+    peer.on('open', (id) => {
+        document.getElementById('myId').textContent = id;
+        document.getElementById('myId2').textContent = id;
+        showStatus('success', 'Terhubung ke server! Siap untuk berbagi file');
+    });
+
+    // Handle incoming connections
+    peer.on('connection', handleIncomingConnection);
+
+    // Handle connection errors
+    peer.on('error', handlePeerError);
+
+    // Handle disconnection
+    peer.on('disconnected', () => {
+        showStatus('error', 'Terputus dari server. Mencoba menghubungkan kembali...');
+        peer.reconnect();
+    });
+}
+
+// Generate a random peer ID
+function generatePeerId() {
+    const chars = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Handle incoming peer connections
+function handleIncomingConnection(connection) {
+    // Close existing connection if any
+    if (conn) {
+        conn.close();
+    }
+    
+    conn = connection;
+    setupConnectionHandlers();
+    showStatus('success', 'Terhubung dengan peer!');
+}
+
+// Handle peer errors
+function handlePeerError(error) {
+    console.error('Peer error:', error);
+    let message = 'Terjadi kesalahan koneksi. ';
+    
+    switch (error.type) {
+        case 'peer-unavailable':
+            message += 'Peer tidak ditemukan. Pastikan kode koneksi benar.';
+            break;
+        case 'network':
+            message += 'Masalah jaringan. Periksa koneksi internet Anda.';
+            break;
+        case 'server-error':
+            message += 'Tidak dapat terhubung ke server. Coba lagi nanti.';
+            break;
+        default:
+            message += 'Silakan coba lagi.';
+    }
+    
+    showStatus('error', message);
+}
+
+// Set up handlers for peer connection
+function setupConnectionHandlers() {
+    if (!conn) return;
+
+    conn.on('data', handleIncomingData);
+    
+    conn.on('open', () => {
+        showStatus('success', 'Koneksi siap untuk transfer file');
+    });
+
+    conn.on('close', () => {
+        showStatus('info', 'Koneksi tertutup');
+        conn = null;
+    });
+
+    conn.on('error', (err) => {
+        showStatus('error', 'Error koneksi: ' + err.message);
+        conn = null;
+    });
+}
+
+// Handle incoming data
+function handleIncomingData(data) {
+    if (data.type === 'file-header') {
+        // New file incoming
+        currentFile = {
+            name: data.fileName,
+            size: data.fileSize,
+            type: data.fileType
+        };
+        receivedSize = 0;
+        totalSize = data.fileSize;
+        fileBuffer = [];
+        showStatus('info', `Menerima file: ${data.fileName}`);
+        
+    } else if (data.type === 'file-chunk') {
+        // Receive file chunk
+        fileBuffer.push(data.chunk);
+        receivedSize += data.chunk.byteLength;
+        updateProgress('receive', (receivedSize / totalSize) * 100);
+
+        // Check if file is complete
+        if (receivedSize === totalSize) {
+            completeFileReceive();
+        }
+    }
+}
+
+// Complete file receive process
+function completeFileReceive() {
+    const blob = new Blob(fileBuffer, { type: currentFile.type });
+    const url = URL.createObjectURL(blob);
+    
+    // Create file item in received files list
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+    fileItem.innerHTML = `
+        <div class="file-info">
+            <span class="file-name">${currentFile.name}</span>
+            <span class="file-size">(${formatFileSize(currentFile.size)})</span>
+        </div>
+        <div class="file-actions">
+            <a href="${url}" download="${currentFile.name}">
+                <button class="download-button">Download</button>
+            </a>
+        </div>
+    `;
+    
+    document.getElementById('receivedFiles').appendChild(fileItem);
+    showStatus('success', `File ${currentFile.name} siap didownload!`);
+    
+    // Reset file receive state
+    fileBuffer = [];
+    currentFile = null;
+    updateProgress('receive', 0);
+}
+
+// Connect to another peer
+function connectToPeer(peerId) {
+    if (!peer) {
+        showStatus('error', 'Tidak terhubung ke server. Refresh halaman.');
+        return;
+    }
+
+    // Prevent self-connection
+    if (peerId === myPeerId) {
+        showStatus('error', 'Tidak dapat terhubung ke diri sendiri');
+        return;
+    }
+
+    // Close existing connection
+    if (conn) {
+        conn.close();
+    }
+
+    try {
+        conn = peer.connect(peerId, {
+            reliable: true,
+            serialization: 'binary'
+        });
+        
+        setupConnectionHandlers();
+    } catch (err) {
+        showStatus('error', 'Gagal membuat koneksi: ' + err.message);
+    }
+}
+
+// Send files to peer
+function sendFiles() {
+    if (!conn || !conn.open) {
+        showStatus('error', 'Tidak ada koneksi ke peer');
+        return;
+    }
+
+    if (fileQueue.length === 0) {
+        showStatus('error', 'Tidak ada file yang dipilih');
+        return;
+    }
+
+    sendNextFile();
+}
+
+// Send next file in queue
+function sendNextFile() {
+    const file = fileQueue[0];
+    currentFile = file;
+    
+    // Send file header first
+    conn.send({
+        type: 'file-header',
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type
+    });
+
+    // Setup file reader
+    const reader = new FileReader();
+    let offset = 0;
+
+    reader.onload = (e) => {
+        if (!conn.open) {
+            showStatus('error', 'Koneksi terputus');
+            return;
         }
 
-        function initPeer() {
-            showStatus('success', 'Menghubungkan ke server...');
-            
-            const simpleId = generateSimpleId();
-            
-            peer = new Peer(simpleId, {
-                debug: 2
-            });
+        const chunk = e.target.result;
+        conn.send({
+            type: 'file-chunk',
+            chunk: chunk
+        });
 
-            peer.on('open', (id) => {
-                document.getElementById('myId').innerHTML = id;
-                document.getElementById('myId2').innerHTML = id;
-                document.getElementById('reconnectButton').style.display = 'none';
-                showStatus('success', 'Terhubung! Bagikan kode koneksi Anda ke pengirim/penerima');
-                reconnectAttempts = 0;
-            });
+        offset += chunk.byteLength;
+        updateProgress('send', (offset / file.size) * 100);
 
-            peer.on('connection', (connection) => {
-                conn = connection;
-                setupConnectionHandlers();
-                showStatus('success', 'Terhubung dengan pengirim!');
-            });
-
-            peer.on('error', (err) => {
-                console.error('PeerJS error:', err);
-                handlePeerError(err);
-            });
-
-            peer.on('disconnected', () => {
-                showStatus('error', 'Terputus dari server');
-                document.getElementById('reconnectButton').style.display = 'block';
-            });
-        }
-
-        function handlePeerError(err) {
-            let errorMessage = 'Terjadi kesalahan: ';
-            
-            switch(err.type) {
-                case 'browser-incompatible':
-                    errorMessage += 'Browser tidak mendukung WebRTC';
-                    break;
-                case 'invalid-id':
-                    errorMessage += 'ID tidak valid';
-                    break;
-                case 'peer-unavailable':
-                    errorMessage += 'Peer tidak ditemukan';
-                    break;
-                default:
-                    errorMessage += 'Koneksi gagal';
-            }
-
-            showStatus('error', errorMessage);
-            document.getElementById('reconnectButton').style.display = 'block';
-        }
-
-        function reconnect() {
-            if (reconnectAttempts >= maxReconnectAttempts) {
-                showStatus('error', 'Gagal menghubungkan. Silakan muat ulang halaman.');
-                return;
-            }
-
-            reconnectAttempts++;
-            if (peer) {
-                peer.destroy();
-            }
-            initPeer();
-        }
-
-        function setupConnectionHandlers() {
-            conn.on('data', (data) => {
-                if (data.type === 'file-header') {
-                    currentFile = {
-                        name: data.fileName,
-                        size: data.fileSize,
-                        type: data.fileType
-                    };
-                    receivedSize = 0;
-                    totalSize = data.fileSize;
-                    fileBuffer = [];
-                    showStatus('success', `Menerima file: ${data.fileName}`);
-                } else if (data.type === 'file-chunk') {
-                    fileBuffer.push(data.chunk);
-                    receivedSize += data.chunk.byteLength;
-                    updateProgress('receive', (receivedSize / totalSize) * 100);
-
-                    if (receivedSize === totalSize) {
-                        const blob = new Blob(fileBuffer, { type: currentFile.type });
-                        const url = URL.createObjectURL(blob);
-                        
-                        const fileItem = document.createElement('div');
-                        fileItem.className = 'file-item';
-                        fileItem.innerHTML = `
-                            <div class="file-info">
-                                <span class="file-name">${currentFile.name}</span>
-                                <span class="file-size">(${formatFileSize(currentFile.size)})</span>
-                            </div>
-                            <div class="file-actions">
-                                <a href="${url}" download="${currentFile.name}">
-                                    <button class="download-button">Download</button>
-                                </a>
-                            </div>
-                        `;
-                        document.getElementById('receivedFiles').appendChild(fileItem);
-                        
-                        showStatus('success', `File ${currentFile.name} siap didownload!`);
-                        fileBuffer = [];
-                        currentFile = null;
-                    }
-                }
-            });
-
-            conn.on('close', () => {
-                showStatus('error', 'Koneksi terputus');
-                conn = null;
-            });
-        }
-
-        function connectToPeer(peerId) {
-            if (!peer) {
-                showStatus('error', 'Tidak terhubung ke server. Silakan hubungkan ulang.');
-                return;
-            }
-
-            try {
-                conn = peer.connect(peerId);
-                if (conn) {
-                    setupConnectionHandlers();
-                    showStatus('success', 'Menghubungkan ke peer...');
-                }
-            } catch (err) {
-                showStatus('error', `Gagal menghubungkan ke peer: ${err.message}`);
-            }
-        }
-
-        function sendFiles() {
-            if (!conn || fileQueue.length === 0) {
-                showStatus('error', 'Tidak ada koneksi atau file yang dipilih');
-                return;
-            }
-            
-            const file = fileQueue[0];
-            currentFile = file;
-            
-            try {
-                conn.send({
-                    type: 'file-header',
-                    fileName: file.name,
-                    fileSize: file.size,
-                    fileType: file.type
-                });
-
-                const reader = new FileReader();
-                let offset = 0;
-
-                reader.onload = (e) => {
-                    const chunk = e.target.result;
-                    try {
-                        conn.send({
-                            type: 'file-chunk',
-                            chunk: chunk
-                        });
-
-                        offset += chunk.byteLength;
-                        updateProgress('send', (offset / file.size) * 100);
-
-                        if (offset < file.size) {
-                            readNextChunk();
-                        } else {
-                            fileQueue.shift();
-                            if (fileQueue.length > 0) {
-                                sendFiles();
-                            } else {
-                                showStatus('success', 'Semua file berhasil dikirim!');
-                            }
-                        }
-                    } catch (err) {
-                        showStatus('error', `Gagal mengirim chunk: ${err.message}`);
-                    }
-                };
-
-                reader.onerror = (err) => {
-                    showStatus('error', `Gagal membaca file: ${err.message}`);
-                };
-
-                function readNextChunk() {
-                    const slice = file.slice(offset, offset + chunksSize);
-                    reader.readAsArrayBuffer(slice);
-                }
-
-                readNextChunk();
-            } catch (err) {
-                showStatus('error', `Gagal memulai pengiriman: ${err.message}`);
-            }
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            const activeTab = tabName === 'send' ? 'sendTab' : 'receiveTab';
-            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(activeTab).classList.add('active');
-        }
-
-        function showStatus(type, message) {
-            const sendStatus = document.getElementById('sendStatus');
-            const receiveStatus = document.getElementById('receiveStatus');
-            
-            sendStatus.textContent = message;
-            receiveStatus.textContent = message;
-            sendStatus.className = `status ${type}`;
-            receiveStatus.className = `status ${type}`;
-        }
-
-        function updateProgress(type, percentage) {
-            const progressBar = document.getElementById(`${type}Progress`);
-            progressBar.style.width = `${percentage}%`;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            fileQueue = files;
-            
-            const selectedFiles = document.getElementById('selectedFiles');
-            selectedFiles.innerHTML = '';
-            
-            files.forEach(file => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <div class="file-info">
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-size">(${formatFileSize(file.size)})</span>
-                    </div>
-                    <button onclick="removeFileFromQueue('${file.name}')" class="download-button">Hapus</button>
-                `;
-                selectedFiles.appendChild(fileItem);
-            });
-
-            document.getElementById('sendButton').disabled = fileQueue.length === 0;
+        if (offset < file.size) {
+            // Read next chunk
+            readNextChunk();
+        } else {
+            // File complete, remove from queue
+            fileQueue.shift();
+            updateProgress('send', 0);
             
             if (fileQueue.length > 0) {
-                showStatus('success', `${fileQueue.length} file dipilih`);
-            }
-        });
-
-        function removeFileFromQueue(fileName) {
-            fileQueue = fileQueue.filter(file => file.name !== fileName);
-            
-            const selectedFiles = document.getElementById('selectedFiles');
-            Array.from(selectedFiles.children).forEach(child => {
-                if (child.querySelector('.file-name').textContent === fileName) {
-                    child.remove();
-                }
-            });
-            
-            document.getElementById('sendButton').disabled = fileQueue.length === 0;
-            
-            if (fileQueue.length === 0) {
-                showStatus('error', 'Tidak ada file yang dipilih');
+                // Send next file if queue not empty
+                sendNextFile();
             } else {
-                showStatus('success', `${fileQueue.length} file dipilih`);
+                showStatus('success', 'Semua file terkirim!');
             }
         }
+    };
 
-        document.getElementById('recipientId').addEventListener('input', (e) => {
-            const peerId = e.target.value.trim();
-            if (peerId && peer) {
-                connectToPeer(peerId);
-            }
-        });
+    reader.onerror = (error) => {
+        showStatus('error', 'Error membaca file: ' + error.message);
+    };
 
-        window.addEventListener('beforeunload', () => {
-            if (peer) {
-                peer.destroy();
-            }
-        });
+    // Read file chunks
+    function readNextChunk() {
+        const slice = file.slice(offset, offset + chunksSize);
+        reader.readAsArrayBuffer(slice);
+    }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initPeer();
-        });
+    // Start reading
+    readNextChunk();
+}
+
+// UI update functions
+function showStatus(type, message) {
+    const elements = ['sendStatus', 'receiveStatus'];
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+    });
+}
+
+function updateProgress(type, percentage) {
+    const progressBar = document.getElementById(`${type}Progress`);
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Tab switching
+function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    const activeTab = tabName === 'send' ? 'sendTab' : 'receiveTab';
+    document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('active');
+    document.getElementById(activeTab).classList.add('active');
+}
+
+// File input handler
+document.getElementById('fileInput').addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    fileQueue = files;
+    
+    const selectedFiles = document.getElementById('selectedFiles');
+    selectedFiles.innerHTML = '';
+    
+    files.forEach(file => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <div class="file-info">
+                <span class="file-name">${file.name}</span>
+                <span class="file-size">(${formatFileSize(file.size)})</span>
+            </div>
+            <button onclick="removeFile('${file.name}')" class="remove-button">Hapus</button>
+        `;
+        selectedFiles.appendChild(fileItem);
+    });
+
+    document.getElementById('sendButton').disabled = files.length === 0;
+    showStatus('info', `${files.length} file dipilih`);
+});
+
+// Remove file from queue
+function removeFile(fileName) {
+    fileQueue = fileQueue.filter(file => file.name !== fileName);
+    
+    const selectedFiles = document.getElementById('selectedFiles');
+    const fileItems = selectedFiles.getElementsByClassName('file-item');
+    for (let i = fileItems.length - 1; i >= 0; i--) {
+        if (fileItems[i].querySelector('.file-name').textContent === fileName) {
+            fileItems[i].remove();
+        }
+    }
+    
+    document.getElementById('sendButton').disabled = fileQueue.length === 0;
+    showStatus('info', fileQueue.length > 0 ? `${fileQueue.length} file dipilih` : 'Tidak ada file dipilih');
+}
+
+// Recipient ID input handler
+document.getElementById('recipientId').addEventListener('input', (e) => {
+    const peerId = e.target.value.trim().toUpperCase();
+    e.target.value = peerId;
+    
+    if (peerId && peerId !== myPeerId) {
+        connectToPeer(peerId);
+    }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initPeer();
+});
+
+// Clean up on page unload
+window.addEventListener('beforeunload', () => {
+    if (peer) {
+        peer.destroy();
+    }
+});
     </script>
 </body>
 </html>

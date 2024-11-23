@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share File Lokal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+</head>
+<body>
+    <h1>Share File Lokal</h1>
+    <div>
+        <h3>ID Anda:</h3>
+        <p id="myId">Menghubungkan...</p>
+        <h3>Kirim File</h3>
+        <input type="file" id="fileInput">
+        <input type="text" id="peerIdInput" placeholder="Masukkan ID penerima">
+        <button onclick="sendFile()">Kirim</button>
+        <h3>Terima File</h3>
+        <p id="receiveStatus">Menunggu file...</p>
+    </div>
+
+    <script>
+        const peer = new Peer();
+        let conn = null;
+
+        // Inisialisasi PeerJS
+        peer.on('open', id => {
+            document.getElementById('myId').innerText = id;
+        });
+
+        // Handle koneksi masuk
+        peer.on('connection', incomingConn => {
+            conn = incomingConn;
+            conn.on('data', handleIncomingData);
+        });
+
+        // Kirim file ke peer
+        function sendFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const peerId = document.getElementById('peerIdInput').value;
+            if (!file || !peerId) {
+                alert("Pastikan file dan ID penerima sudah diisi.");
+                return;
+            }
+
+            conn = peer.connect(peerId);
+            conn.on('open', () => {
+                conn.send({ type: 'file-info', name: file.name, size: file.size });
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    conn.send({ type: 'file-data', data: reader.result });
+                    alert("File terkirim!");
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // Tangani data masuk
+        function handleIncomingData(data) {
+            if (data.type === 'file-info') {
+                document.getElementById('receiveStatus').innerText = `Menerima file: ${data.name}`;
+            } else if (data.type === 'file-data') {
+                const blob = new Blob([data.data]);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "FileDiterima";
+                link.click();
+                document.getElementById('receiveStatus').innerText = "File diterima dan diunduh!";
+            }
+        }
+    </script>
+</body>
+</html>

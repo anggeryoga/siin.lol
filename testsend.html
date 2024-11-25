@@ -3,205 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload and Download with IndexedDB</title>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <title>QR File Downloader</title>
     <style>
-        #fileInfo, #downloadSection, #uploadStatus, #downloadStatus {
-            display: none;
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
         }
-        #progressBar {
-            height: 20px;
-            width: 0%;
-            background-color: green;
+        .container {
+            text-align: center;
         }
-        #downloadProgress {
-            height: 20px;
-            width: 0%;
-            background-color: blue;
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        #qrcode {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Upload and Download File</h1>
-
-    <!-- File Upload Section -->
-    <div id="dropZone" style="border: 2px dashed #ccc; padding: 20px; width: 300px; text-align: center;">
-        Drag & Drop a file here or click to select
-    </div>
-    <input type="file" id="fileInput" style="display:none" />
-    <div id="fileInfo">
-        <p>File Name: <span id="fileName"></span></p>
-        <p>File Size: <span id="fileSize"></span></p>
-        <p id="uploadStatus">File sedang diproses...</p>
-        <div id="progressBar"></div>
-    </div>
-
-    <!-- Download Section -->
-    <div id="downloadSection">
-        <h3>Download File</h3>
-        <p>File Name: <span id="downloadFileName"></span></p>
-        <p>File Size: <span id="downloadFileSize"></span></p>
-        <div id="downloadProgress"></div>
-        <p id="downloadStatus"></p>
-        <button id="downloadButton">Download</button>
+    <div class="container">
+        <h1>Upload File & Generate QR Code</h1>
+        <input type="file" id="fileInput" accept="*">
+        <button id="generateQR">Generate QR</button>
         <div id="qrcode"></div>
     </div>
 
+    <!-- Include QRCode.js -->
     <script>
-        // IndexedDB setup
-        let db;
-        const CHUNK_SIZE = 1024 * 1024; // 1MB per chunk
-        let file;
-        let fileChunks = [];
+        /*!
+        * QRCode.js
+        * https://github.com/davidshimjs/qrcodejs
+        */
+        const QRCode = (function () {
+            const createQRCode = function (element, text, options) {
+                options = options || {};
+                const qrCode = new QRCodeImpl(options.typeNumber || 4, options.correctLevel || QRErrorCorrectLevel.H);
+                qrCode.addData(text);
+                qrCode.make();
 
-        // Open IndexedDB
-        const request = indexedDB.open("fileStorage", 1);
-        request.onerror = () => console.error("Database failed to open.");
-        request.onsuccess = () => db = request.result;
-        request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            const store = db.createObjectStore("chunks", { keyPath: "id" });
-            store.createIndex("fileId", "fileId");
-        };
+                const size = options.width || 256;
+                const canvas = document.createElement("canvas");
+                canvas.width = canvas.height = size;
 
-        // Get DOM elements
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileNameElem = document.getElementById('fileName');
-        const fileSizeElem = document.getElementById('fileSize');
-        const uploadStatusElem = document.getElementById('uploadStatus');
-        const progressBar = document.getElementById('progressBar');
-        const downloadButton = document.getElementById('downloadButton');
-        const downloadSection = document.getElementById('downloadSection');
-        const downloadFileName = document.getElementById('downloadFileName');
-        const downloadFileSize = document.getElementById('downloadFileSize');
-        const downloadProgress = document.getElementById('downloadProgress');
-        const downloadStatusElem = document.getElementById('downloadStatus');
-        const qrCodeContainer = document.getElementById('qrcode');
+                const ctx = canvas.getContext("2d");
+                const tileW = size / qrCode.getModuleCount();
+                const tileH = size / qrCode.getModuleCount();
 
-        // Handle file drop
-        dropZone.addEventListener('drop', (event) => {
-            event.preventDefault();
-            const droppedFile = event.dataTransfer.files[0];
-            if (droppedFile) {
-                handleFile(droppedFile);
-            }
-        });
+                qrCode.modules.forEach((row, rowIndex) => {
+                    row.forEach((col, colIndex) => {
+                        ctx.fillStyle = col ? "#000" : "#fff";
+                        ctx.fillRect(colIndex * tileW, rowIndex * tileH, tileW, tileH);
+                    });
+                });
 
-        // Handle file input
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (event) => {
-            const selectedFile = event.target.files[0];
-            if (selectedFile) {
-                handleFile(selectedFile);
-            }
-        });
+                element.innerHTML = ""; // Clear previous QR code
+                element.appendChild(canvas);
+            };
 
-        function handleFile(selectedFile) {
-            file = selectedFile;
-            fileNameElem.textContent = file.name;
-            fileSizeElem.textContent = formatBytes(file.size);
-            fileInfo.style.display = 'block';
+            return {
+                toCanvas: createQRCode,
+            };
+        })();
 
-            // Initialize file chunks
-            fileChunks = [];
-            uploadStatusElem.textContent = 'File sedang diproses...';
+        document.getElementById("generateQR").addEventListener("click", async () => {
+            const fileInput = document.getElementById("fileInput");
+            const qrcodeContainer = document.getElementById("qrcode");
 
-            // Create chunks of file
-            for (let i = 0; i < file.size; i += CHUNK_SIZE) {
-                fileChunks.push(file.slice(i, i + CHUNK_SIZE));
-            }
+            // Clear previous QR code
+            qrcodeContainer.innerHTML = "";
 
-            // Begin file upload
-            uploadFileChunks(0);
-        }
-
-        function uploadFileChunks(index) {
-            if (index >= fileChunks.length) {
-                uploadStatusElem.textContent = 'Upload selesai!';
-                showQRCode();
+            if (fileInput.files.length === 0) {
+                alert("Please upload a file first!");
                 return;
             }
 
-            const chunk = fileChunks[index];
-            const chunkId = `${file.name}-${index}`;
+            const file = fileInput.files[0];
 
-            // Store chunk in IndexedDB
-            storeChunk(chunk, chunkId, index).then(() => {
-                const progress = (index + 1) / fileChunks.length * 100;
-                progressBar.style.width = `${progress}%`;
-
-                // Upload next chunk
-                uploadFileChunks(index + 1);
-            }).catch(() => {
-                uploadStatusElem.textContent = 'Terjadi kesalahan saat mengupload chunk!';
-            });
-        }
-
-        function storeChunk(chunk, chunkId, index) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['chunks'], 'readwrite');
-                const store = transaction.objectStore('chunks');
-                const data = { id: chunkId, fileId: file.name, index, chunk };
-                const request = store.put(data);
-
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject();
-            });
-        }
-
-        function showQRCode() {
-            const fileUrl = `file://${window.location.href}?file=${encodeURIComponent(file.name)}`;
-            new QRCode(qrCodeContainer, {
-                text: fileUrl,
-                width: 128,
-                height: 128
-            });
-
-            // Display download section
-            downloadSection.style.display = 'block';
-            downloadFileName.textContent = file.name;
-            downloadFileSize.textContent = formatBytes(file.size);
-        }
-
-        // Download file by fetching chunks from IndexedDB
-        downloadButton.addEventListener('click', () => {
-            downloadStatusElem.style.display = 'block';
-            downloadProgress.style.display = 'block';
-            downloadProgress.style.width = '0%';
-
-            const transaction = db.transaction(['chunks'], 'readonly');
-            const store = transaction.objectStore('chunks');
-
-            let chunksToDownload = [];
-            for (let i = 0; i < fileChunks.length; i++) {
-                const request = store.get(`${file.name}-${i}`);
-                request.onsuccess = (event) => {
-                    chunksToDownload.push(event.target.result.chunk);
-
-                    // If all chunks are downloaded, combine them into the original file
-                    if (chunksToDownload.length === fileChunks.length) {
-                        const fileBlob = new Blob(chunksToDownload, { type: file.type });
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = URL.createObjectURL(fileBlob);
-                        downloadLink.download = file.name;
-                        downloadLink.click();
-
-                        downloadStatusElem.textContent = 'File berhasil diunduh!';
-                        downloadProgress.style.width = '100%';
-                    }
-                };
+            // Ensure the file size is within range
+            if (file.size > 100 * 1024 * 1024 || file.size < 10 * 1024 * 1024) {
+                alert("File size must be between 10MB and 100MB.");
+                return;
             }
-        });
 
-        // Helper function to format file size
-        function formatBytes(bytes) {
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            if (bytes === 0) return '0 Byte';
-            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-        }
+            // Read file data
+            const fileURL = URL.createObjectURL(file);
+
+            // Generate QR Code with file URL
+            QRCode.toCanvas(qrcodeContainer, fileURL, { width: 200 });
+            console.log("QR Code generated successfully!");
+        });
     </script>
 </body>
 </html>

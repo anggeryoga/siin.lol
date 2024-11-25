@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Autentikasi Sidik Jari</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .list {
+      margin-top: 20px;
+    }
+
+    .item {
+      background: #f8f9fa;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Autentikasi Sidik Jari</h1>
+    <button id="registerFingerprint">Tambah Sidik Jari</button>
+    <button id="authenticateFingerprint">Lihat Sidik Jari</button>
+
+    <div class="list" id="idList"></div>
+  </div>
+
+  <script>
+    const idList = document.getElementById("idList");
+
+    // Fungsi untuk menyimpan data sidik jari di local storage
+    const storeFingerprintData = (id, name, age) => {
+      const data = JSON.parse(localStorage.getItem("fingerprintData")) || [];
+      data.push({ id, name, age });
+      localStorage.setItem("fingerprintData", JSON.stringify(data));
+    };
+
+    // Fungsi untuk memvalidasi sidik jari menggunakan WebAuthn API
+    const authenticateFingerprint = async () => {
+      try {
+        const publicKeyCredentialRequestOptions = {
+          challenge: new Uint8Array(32), // Challenge dari server
+          allowCredentials: [], // Bisa diisi ID kunci pengguna yang sah
+          timeout: 60000,
+          userVerification: "required",
+        };
+
+        // Gunakan API untuk autentikasi sidik jari
+        const credential = await navigator.credentials.get({
+          publicKey: publicKeyCredentialRequestOptions,
+        });
+
+        if (credential) {
+          displayFingerprintData();
+        } else {
+          alert("Autentikasi gagal!");
+        }
+      } catch (error) {
+        alert("Perangkat tidak mendukung sidik jari atau autentikasi dibatalkan.");
+        console.error(error);
+      }
+    };
+
+    // Fungsi untuk menampilkan data sidik jari yang tersimpan
+    const displayFingerprintData = () => {
+      const data = JSON.parse(localStorage.getItem("fingerprintData")) || [];
+      idList.innerHTML = "";
+
+      if (data.length === 0) {
+        idList.innerHTML = "<p>Tidak ada data sidik jari terdaftar.</p>";
+        return;
+      }
+
+      data.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `<p>ID: ${item.id}</p><p>Nama: ${item.name}</p><p>Usia: ${item.age}</p>`;
+        idList.appendChild(div);
+      });
+    };
+
+    // Tambah sidik jari (simulasi pendaftaran)
+    document.getElementById("registerFingerprint").addEventListener("click", () => {
+      const name = prompt("Masukkan nama:");
+      const age = prompt("Masukkan usia:");
+
+      if (name && age) {
+        const id = Date.now(); // Simpan ID unik untuk sidik jari
+        storeFingerprintData(id, name, age);
+        alert("Sidik jari berhasil ditambahkan!");
+      } else {
+        alert("Nama dan usia harus diisi.");
+      }
+    });
+
+    // Lihat sidik jari
+    document.getElementById("authenticateFingerprint").addEventListener("click", authenticateFingerprint);
+  </script>
+</body>
+</html>

@@ -162,8 +162,108 @@
     </div>
 
     <script>
-        // The JavaScript remains the same as in the original file
-        // (Entire previous script block is copied without changes)
+         // Konfigurasi WebRTC
+         const servers = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+            ]
+        };
+
+        // Variabel Global
+        let localStream;
+        let peerConnection;
+        let localCode = '';
+        let remoteCode = '';
+
+        // Elemen DOM
+        const localVideo = document.getElementById('localVideo');
+        const connectionCode = document.getElementById('connectionCode');
+        const remoteCodeInput = document.getElementById('remoteCode');
+        const connectButton = document.getElementById('connectButton');
+
+        // Inisialisasi Kamera
+        async function startCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+                localVideo.srcObject = localStream;
+                generateConnectionCode();
+            } catch (error) {
+                console.error('Gagal mengakses kamera:', error);
+                alert('Gagal mengakses kamera. Pastikan izin kamera diaktifkan.');
+            }
+        }
+
+        // Generate Kode Koneksi Acak
+        function generateConnectionCode() {
+            localCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            connectionCode.textContent = localCode;
+        }
+
+        // Membuat Koneksi WebRTC
+        async function createConnection() {
+            peerConnection = new RTCPeerConnection(servers);
+
+            // Tambahkan trek lokal
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // Buat penawaran
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            return offer;
+        }
+
+        // Menerima Koneksi
+        async function connectToRemote() {
+            remoteCode = remoteCodeInput.value.toUpperCase();
+            if (!remoteCode) {
+                alert('Masukkan kode koneksi');
+                return;
+            }
+
+            try {
+                // Buat koneksi
+                peerConnection = new RTCPeerConnection(servers);
+
+                // Tambahkan trek lokal
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+
+                // Tangani trek remote
+                peerConnection.ontrack = (event) => {
+                    const remoteStream = event.streams[0];
+                    // Opsional: tambahkan video remote jika diperlukan
+                    console.log('Aliran remote diterima');
+                };
+
+                // Buat jawaban
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+
+                // Di sini Anda akan mengirim offer ke peer melalui server signaling
+                // Untuk contoh sederhana, kita asumsikan pertukaran manual
+                console.log('Kode Lokal:', localCode);
+                console.log('Kode Remote:', remoteCode);
+                console.log('Tawaran:', JSON.stringify(offer));
+            } catch (error) {
+                console.error('Gagal membuat koneksi:', error);
+                alert('Gagal membuat koneksi. Periksa kode dan coba lagi.');
+            }
+        }
+
+        // Inisialisasi Events
+        connectButton.addEventListener('click', connectToRemote);
+
+        // Mulai kamera saat halaman dimuat
+        window.addEventListener('load', startCamera);
     </script>
 </body>
 </html>

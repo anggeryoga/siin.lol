@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berbagi Kamera WebRTC</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Toastr for Notifications -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <style>
+        .video-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        #localVideo, #remoteVideo {
+            max-width: 100%;
+            background-color: #000;
+        }
+        #qrCode {
+            max-width: 200px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">📹 WebRTC Berbagi Kamera</h1>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header">Pengaturan Kamera</div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button id="startCamera" class="btn btn-primary">
+                                Aktifkan Kamera
+                            </button>
+                            <button id="generateRoom" class="btn btn-success">
+                                Buat Ruang Berbagi
+                            </button>
+                            <input type="text" id="roomInput" class="form-control mt-2" placeholder="Masukkan Kode Ruang">
+                            <button id="joinRoom" class="btn btn-secondary">
+                                Gabung Ruang
+                            </button>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <img id="qrCode" src="" alt="QR Kode Ruang" class="img-fluid d-none">
+                            <p id="roomCode" class="text-muted mt-2"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Video Stream</div>
+                    <div class="card-body">
+                        <div class="video-container">
+                            <h5>Kamera Lokal</h5>
+                            <video id="localVideo" autoplay muted playsinline class="mb-3"></video>
+                            <h5>Kamera Remote</h5>
+                            <video id="remoteVideo" autoplay playsinline></video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        // Konfigurasi Firebase (GANTI DENGAN KONFIGURASI ANDA)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Konfigurasi WebRTC
+        const configuration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { 
+                    urls: 'turn:openrelay.metered.ca:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                }
+            ]
+        };
+
+        // Elemen DOM
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const startCameraBtn = document.getElementById('startCamera');
+        const generateRoomBtn = document.getElementById('generateRoom');
+        const joinRoomBtn = document.getElementById('joinRoom');
+        const roomInput = document.getElementById('roomInput');
+        const qrCodeImg = document.getElementById('qrCode');
+        const roomCodeDisplay = document.getElementById('roomCode');
+
+        let localStream;
+        let peerConnection;
+        let roomId;
+
+        // Fungsi Memulai Kamera
+        async function startCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        width: { ideal: 1280 }, 
+                        height: { ideal: 720 },
+                        facingMode: 'environment'
+                    },
+                    audio: false
+                });
+                localVideo.srcObject = localStream;
+                toastr.success('Kamera berhasil diaktifkan');
+                startCameraBtn.disabled = true;
+            } catch (error) {
+                toastr.error('Gagal mengakses kamera: ' + error.message);
+            }
+        }
+
+        // Fungsi Membuat Ruang
+        async function createRoom() {
+            if (!localStream) {
+                toastr.warning('Aktifkan kamera terlebih dahulu');
+                return;
+            }
+
+            // Generate room ID unik
+            roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            roomCodeDisplay.textContent = `Kode Ruang: ${roomId}`;
+
+            // Membuat QR Code
+            const qr = qrcode(0, 'M');
+            qr.addData(window.location.href + '?room=' + roomId);
+            qr.make();
+            qrCodeImg.src = qr.createDataURL();
+            qrCodeImg.classList.remove('d-none');
+
+            // Menyiapkan Firebase Realtime Database
+            const roomRef = database.ref('rooms/' + roomId);
+            
+            // WebRTC Setup
+            peerConnection = new RTCPeerConnection(configuration);
+
+            // Menambahkan trek lokal
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // Membuat penawaran
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+
+            // Menyimpan penawaran di Firebase
+            const roomWithOffer = {
+                offer: {
+                    type: offer.type,
+                    sdp: offer.sdp
+                }
+            };
+            await roomRef.set(roomWithOffer);
+
+            // Mendengarkan jawaban
+            roomRef.on('child_added', async (snapshot) => {
+                const data = snapshot.val();
+                if (data.answer) {
+                    await peerConnection.setRemoteDescription(
+                        new RTCSessionDescription(data.answer)
+                    );
+                    toastr.success('Koneksi berhasil!');
+                }
+            });
+
+            // Menangani kandidat ICE
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    roomRef.push().set({ candidate: event.candidate.toJSON() });
+                }
+            };
+
+            // Menangani trek remote
+            peerConnection.ontrack = (event) => {
+                remoteVideo.srcObject = event.streams[0];
+                toastr.info('Aliran video remote diterima');
+            };
+        }
+
+        // Fungsi Bergabung ke Ruang
+        async function joinRoom() {
+            const roomCode = roomInput.value.toUpperCase();
+            if (!roomCode) {
+                toastr.warning('Masukkan kode ruang');
+                return;
+            }
+
+            if (!localStream) {
+                toastr.warning('Aktifkan kamera terlebih dahulu');
+                return;
+            }
+
+            const roomRef = database.ref('rooms/' + roomCode);
+
+            // Mendengarkan penawaran
+            roomRef.once('value', async (snapshot) => {
+                const roomData = snapshot.val();
+                if (!roomData || !roomData.offer) {
+                    toastr.error('Ruang tidak ditemukan');
+                    return;
+                }
+
+                // WebRTC Setup
+                peerConnection = new RTCPeerConnection(configuration);
+
+                // Menambahkan trek lokal
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+
+                // Menangani trek remote
+                peerConnection.ontrack = (event) => {
+                    remoteVideo.srcObject = event.streams[0];
+                    toastr.info('Aliran video remote diterima');
+                };
+
+                // Menerima penawaran
+                await peerConnection.setRemoteDescription(
+                    new RTCSessionDescription(roomData.offer)
+                );
+
+                // Membuat jawaban
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+
+                // Menyimpan jawaban
+                await roomRef.update({
+                    answer: {
+                        type: answer.type,
+                        sdp: answer.sdp
+                    }
+                });
+
+                // Menangani kandidat ICE
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        roomRef.push().set({ candidate: event.candidate.toJSON() });
+                    }
+                };
+
+                // Mendengarkan kandidat ICE
+                roomRef.on('child_added', async (snapshot) => {
+                    const candidate = snapshot.val().candidate;
+                    if (candidate) {
+                        await peerConnection.addIceCandidate(
+                            new RTCIceCandidate(candidate)
+                        );
+                    }
+                });
+            });
+        }
+
+        // Event Listeners
+        startCameraBtn.addEventListener('click', startCamera);
+        generateRoomBtn.addEventListener('click', createRoom);
+        joinRoomBtn.addEventListener('click', joinRoom);
+
+        // Mendukung join via URL parameter
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            if (roomParam) {
+                roomInput.value = roomParam;
+            }
+        });
+
+        // Konfigurasi Toastr
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-bottom-right"
+        };
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Berbagi Kamera</title>
+    <title>Berbagi Kamera - Video Call</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -29,17 +29,24 @@
         }
         
         .video-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .video-wrapper {
             border: 3px solid black;
             background-color: #000;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+            width: 45%;
         }
         
         video {
             width: 100%;
-            max-height: 500px;
+            height: 100%;
             object-fit: cover;
             border: none;
         }
@@ -92,9 +99,7 @@
             transform: translate(-2px, -2px);
         }
         
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
+        .btn-primary, .btn-secondary {
             border: 3px solid black;
             border-radius: 8px;
             padding: 10px 20px;
@@ -103,30 +108,53 @@
             transition: all 0.3s ease;
         }
         
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
         .btn-primary:hover {
             background-color: #0056b3;
             transform: translate(-3px, -3px);
             box-shadow: 7px 7px 0 rgba(0,0,0,0.3);
         }
         
-        .btn-primary:active {
-            transform: translate(0, 0);
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        .btn-secondary:hover {
+            background-color: #545b62;
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0 rgba(0,0,0,0.3);
+        }
+        
+        .connection-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .call-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        #videoCallSection {
+            display: none;
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-                border-width: 2px;
-                box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
+            .video-container {
+                flex-direction: column;
+                align-items: center;
             }
             
-            h1 {
-                font-size: 2rem;
-            }
-            
-            #connectionCode {
-                font-size: 1.5rem;
+            .video-wrapper {
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -139,17 +167,20 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="video-container mb-3">
-                    <video id="localVideo" autoplay muted playsinline></video>
+        <!-- Connection Section -->
+        <div id="connectionSection">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="video-container mb-3">
+                        <div class="video-wrapper">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row mt-3">
-            <div class="col-md-8 offset-md-2 text-center">
-                <div id="connectionSection">
+            <div class="row mt-3">
+                <div class="col-md-8 offset-md-2 text-center connection-section">
                     <h4>Kode Koneksi:</h4>
                     <div id="connectionCode" class="mb-3">-</div>
                     <div class="d-flex justify-content-center gap-2">
@@ -159,11 +190,28 @@
                 </div>
             </div>
         </div>
+
+        <!-- Video Call Section -->
+        <div id="videoCallSection">
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <video id="localVideoCall" autoplay muted playsinline></video>
+                </div>
+                <div class="video-wrapper">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                </div>
+            </div>
+            <div class="call-controls text-center">
+                <button id="toggleAudioBtn" class="btn btn-secondary">Toggle Audio</button>
+                <button id="toggleVideoBtn" class="btn btn-secondary">Toggle Video</button>
+                <button id="endCallBtn" class="btn btn-primary">Akhiri Panggilan</button>
+            </div>
+        </div>
     </div>
 
     <script>
-         // Konfigurasi WebRTC
-         const servers = {
+        // WebRTC Configuration
+        const servers = {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
@@ -171,56 +219,79 @@
             ]
         };
 
-        // Variabel Global
+        // Global Variables
         let localStream;
+        let remoteStream;
         let peerConnection;
         let localCode = '';
         let remoteCode = '';
 
-        // Elemen DOM
+        // DOM Elements
+        const connectionSection = document.getElementById('connectionSection');
+        const videoCallSection = document.getElementById('videoCallSection');
         const localVideo = document.getElementById('localVideo');
+        const localVideoCall = document.getElementById('localVideoCall');
+        const remoteVideo = document.getElementById('remoteVideo');
         const connectionCode = document.getElementById('connectionCode');
         const remoteCodeInput = document.getElementById('remoteCode');
         const connectButton = document.getElementById('connectButton');
+        const toggleAudioBtn = document.getElementById('toggleAudioBtn');
+        const toggleVideoBtn = document.getElementById('toggleVideoBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
 
-        // Inisialisasi Kamera
+        // Initialize Camera
         async function startCamera() {
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({
                     video: true,
-                    audio: false
+                    audio: true
                 });
                 localVideo.srcObject = localStream;
+                localVideoCall.srcObject = localStream;
                 generateConnectionCode();
             } catch (error) {
-                console.error('Gagal mengakses kamera:', error);
+                console.error('Failed to access camera:', error);
                 alert('Gagal mengakses kamera. Pastikan izin kamera diaktifkan.');
             }
         }
 
-        // Generate Kode Koneksi Acak
+        // Generate Random Connection Code
         function generateConnectionCode() {
             localCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             connectionCode.textContent = localCode;
         }
 
-        // Membuat Koneksi WebRTC
-        async function createConnection() {
+        // Create WebRTC Peer Connection
+        async function createPeerConnection() {
             peerConnection = new RTCPeerConnection(servers);
 
-            // Tambahkan trek lokal
+            remoteStream = new MediaStream();
+            remoteVideo.srcObject = remoteStream;
+
+            // Add local tracks to the peer connection
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
 
-            // Buat penawaran
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
+            // Listen for remote tracks
+            peerConnection.ontrack = (event) => {
+                event.streams[0].getTracks().forEach(track => {
+                    remoteStream.addTrack(track);
+                });
+            };
 
-            return offer;
+            // ICE candidate handling
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    // In a real application, you would send this candidate to the other peer
+                    console.log('ICE candidate:', event.candidate);
+                }
+            };
+
+            return peerConnection;
         }
 
-        // Menerima Koneksi
+        // Connect to Remote Peer
         async function connectToRemote() {
             remoteCode = remoteCodeInput.value.toUpperCase();
             if (!remoteCode) {
@@ -229,28 +300,18 @@
             }
 
             try {
-                // Buat koneksi
-                peerConnection = new RTCPeerConnection(servers);
+                // Create peer connection
+                await createPeerConnection();
 
-                // Tambahkan trek lokal
-                localStream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStream);
-                });
-
-                // Tangani trek remote
-                peerConnection.ontrack = (event) => {
-                    const remoteStream = event.streams[0];
-                    // Opsional: tambahkan video remote jika diperlukan
-                    console.log('Aliran remote diterima');
-                };
-
-                // Buat jawaban
+                // Create offer
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
 
-                // Di sini Anda akan mengirim offer ke peer melalui server signaling
-                // Untuk contoh sederhana, kita asumsikan pertukaran manual
-                console.log('Kode Lokal:', localCode);
+                // Transition to video call view
+                connectionSection.style.display = 'none';
+                videoCallSection.style.display = 'block';
+
+                console.log('Koneksi dibuat. Kode Lokal:', localCode);
                 console.log('Kode Remote:', remoteCode);
                 console.log('Tawaran:', JSON.stringify(offer));
             } catch (error) {
@@ -259,10 +320,51 @@
             }
         }
 
-        // Inisialisasi Events
-        connectButton.addEventListener('click', connectToRemote);
+        // Toggle Audio
+        function toggleAudio() {
+            const audioTracks = localStream.getAudioTracks();
+            audioTracks.forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            toggleAudioBtn.textContent = audioTracks[0].enabled ? 'Matikan Audio' : 'Hidupkan Audio';
+        }
 
-        // Mulai kamera saat halaman dimuat
+        // Toggle Video
+        function toggleVideo() {
+            const videoTracks = localStream.getVideoTracks();
+            videoTracks.forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            toggleVideoBtn.textContent = videoTracks[0].enabled ? 'Matikan Video' : 'Hidupkan Video';
+        }
+
+        // End Call
+        function endCall() {
+            // Close peer connection
+            if (peerConnection) {
+                peerConnection.close();
+            }
+
+            // Stop all tracks
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+
+            // Reset to connection view
+            connectionSection.style.display = 'block';
+            videoCallSection.style.display = 'none';
+
+            // Restart camera
+            startCamera();
+        }
+
+        // Initialize Event Listeners
+        connectButton.addEventListener('click', connectToRemote);
+        toggleAudioBtn.addEventListener('click', toggleAudio);
+        toggleVideoBtn.addEventListener('click', toggleVideo);
+        endCallBtn.addEventListener('click', endCall);
+
+        // Start camera when page loads
         window.addEventListener('load', startCamera);
     </script>
 </body>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generator Tanda Tangan Profesional</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .signature-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.075);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        #signatureCanvas {
+            background-color: #ffffff;
+            border: 2px dashed #4a90e2;
+            border-radius: 8px;
+            cursor: crosshair;
+            width: 100%;
+            height: 350px;
+            background-image: 
+                linear-gradient(rgba(74, 144, 226, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 144, 226, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            image-rendering: high-quality;
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .control-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .color-width-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-signature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #colorPicker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .control-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .color-width-group {
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signature-container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-center mb-4 text-primary">
+                        <i class="fas fa-signature"></i> Generator Tanda Tangan
+                    </h2>
+                    <canvas id="signatureCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="color-width-group">
+                    <div class="d-flex align-items-center">
+                        <label class="me-2">Warna:</label>
+                        <input type="color" id="colorPicker" value="#000000">
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <label class="me-2">Ketebalan:</label>
+                        <input type="range" class="form-range" id="lineWidth" min="1" max="15" value="3">
+                    </div>
+                </div>
+
+                <div class="button-group d-flex gap-2">
+                    <button id="clearBtn" class="btn btn-danger btn-signature">
+                        <i class="fas fa-eraser"></i> Hapus
+                    </button>
+                    <button id="downloadPNGBtn" class="btn btn-primary btn-signature">
+                        <i class="fas fa-download"></i> Unduh PNG
+                    </button>
+                    <button id="downloadSignatureBtn" class="btn btn-success btn-signature">
+                        <i class="fas fa-file-alt"></i> Unduh Dokumen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const lineWidthInput = document.getElementById('lineWidth');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadPNGBtn = document.getElementById('downloadPNGBtn');
+        const downloadSignatureBtn = document.getElementById('downloadSignatureBtn');
+
+        // Responsive canvas sizing
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth * 2;  // Meningkatkan resolusi
+            canvas.height = canvas.clientHeight * 2;
+            canvas.style.width = '100%';
+            canvas.style.height = '350px';
+            
+            ctx.scale(2, 2);  // Scale untuk HD
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Advanced smoothing variables
+        let points = [];
+        const SMOOTHING_FACTOR = 0.3;
+
+        function drawCurve(points) {
+            if (points.length < 2) return;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length - 2; i++) {
+                const xc = (points[i].x + points[i + 1].x) / 2;
+                const yc = (points[i].y + points[i + 1].y) / 2;
+                ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+            }
+
+            ctx.strokeStyle = colorPicker.value;
+            ctx.lineWidth = lineWidthInput.value;
+            ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+            ctx.stroke();
+        }
+
+        function startDrawing(e) {
+            points = [];
+            const x = e.offsetX || e.touches[0].clientX - canvas.offsetLeft;
+            const y = e.offsetY || e.touches[0].clientY - canvas.offsetTop;
+            points.push({ x, y });
+            canvas.addEventListener('mousemove', drawing);
+            canvas.addEventListener('touchmove', drawing);
+        }
+
+        function drawing(e) {
+            const x = e.offsetX || e.touches[0].clientX - canvas.offsetLeft;
+            const y = e.offsetY || e.touches[0].clientY - canvas.offsetTop;
+            points.push({ x, y });
+            drawCurve(points);
+        }
+
+        function stopDrawing() {
+            canvas.removeEventListener('mousemove', drawing);
+            canvas.removeEventListener('touchmove', drawing);
+            points = [];
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e);
+        }, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // Clear canvas
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // Download PNG
+        downloadPNGBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'signature.png';
+            link.href = canvas.toDataURL('image/png', 1.0);  // Kualitas tertinggi
+            link.click();
+        });
+
+        // Download signature with advanced paper effect
+        downloadSignatureBtn.addEventListener('click', () => {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Ukuran kertas A4 dengan resolusi tinggi
+            tempCanvas.width = 2480;  // 300 DPI
+            tempCanvas.height = 3508;
+            
+            // Efek kertas yang kompleks
+            function createPaperTexture(ctx) {
+                // Gradien latar belakang
+                const gradient = ctx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
+                gradient.addColorStop(0, 'rgba(255, 253, 208, 0.7)');
+                gradient.addColorStop(1, 'rgba(255, 249, 196, 0.5)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                // Efek kertas kusut
+                for (let i = 0; i < 500; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random() * tempCanvas.width, 0);
+                    ctx.quadraticCurveTo(
+                        Math.random() * tempCanvas.width, 
+                        Math.random() * tempCanvas.height, 
+                        Math.random() * tempCanvas.width, 
+                        tempCanvas.height
+                    );
+                    ctx.strokeStyle = `rgba(0,0,0,${Math.random() * 0.02})`;
+                    ctx.lineWidth = Math.random() * 2;
+                    ctx.stroke();
+                }
+            }
+
+            // Buat tekstur kertas
+            createPaperTexture(tempCtx);
+
+            // Efek lipatan/kerutan
+            tempCtx.save();
+            tempCtx.shadowColor = 'rgba(0,0,0,0.2)';
+            tempCtx.shadowBlur = 20;
+            tempCtx.shadowOffsetX = 5;
+            tempCtx.shadowOffsetY = 5;
+
+            // Gambar tanda tangan di tengah
+            const signatureImage = new Image();
+            signatureImage.onload = function() {
+                // Skala dan posisi tanda tangan
+                const scale = Math.min(
+                    (tempCanvas.width * 0.7) / signatureImage.width,
+                    (tempCanvas.height * 0.3) / signatureImage.height
+                );
+                
+                const scaledWidth = signatureImage.width * scale;
+                const scaledHeight = signatureImage.height * scale;
+                
+                const x = (tempCanvas.width - scaledWidth) / 2;
+                const y = (tempCanvas.height * 0.7);  // Posisi 70% dari atas
+                
+                tempCtx.drawImage(signatureImage, x, y, scaledWidth, scaledHeight);
+                
+                // Unduh dokumen
+                const link = document.createElement('a');
+                link.download = 'signature_dokumen.png';
+                link.href = tempCanvas.toDataURL('image/png', 1.0);
+                link.click();
+            };
+            signatureImage.src = canvas.toDataURL('image/png', 1.0);
+
+            tempCtx.restore();
+        });
+    </script>
+</body>
+</html>

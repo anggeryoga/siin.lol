@@ -133,12 +133,12 @@
 
         // Responsive canvas sizing
         function resizeCanvas() {
-            canvas.width = canvas.clientWidth * 2;  // Meningkatkan resolusi
+            canvas.width = canvas.clientWidth * 2;
             canvas.height = canvas.clientHeight * 2;
             canvas.style.width = '100%';
             canvas.style.height = '350px';
             
-            ctx.scale(2, 2);  // Scale untuk HD
+            ctx.scale(2, 2);
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
         }
@@ -209,80 +209,81 @@
         downloadPNGBtn.addEventListener('click', () => {
             const link = document.createElement('a');
             link.download = 'signature.png';
-            link.href = canvas.toDataURL('image/png', 1.0);  // Kualitas tertinggi
+            link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
         });
 
-        // Download signature with advanced paper effect
+        // Download signature with enhanced professional document
         downloadSignatureBtn.addEventListener('click', () => {
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             
-            // Ukuran kertas A4 dengan resolusi tinggi
-            tempCanvas.width = 2480;  // 300 DPI
+            // A4 size at high resolution (300 DPI)
+            tempCanvas.width = 2480;
             tempCanvas.height = 3508;
             
-            // Efek kertas yang kompleks
-            function createPaperTexture(ctx) {
-                // Gradien latar belakang
-                const gradient = ctx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
-                gradient.addColorStop(0, 'rgba(255, 253, 208, 0.7)');
-                gradient.addColorStop(1, 'rgba(255, 249, 196, 0.5)');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            // Completely clean white background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-                // Efek kertas kusut
-                for (let i = 0; i < 500; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(Math.random() * tempCanvas.width, 0);
-                    ctx.quadraticCurveTo(
-                        Math.random() * tempCanvas.width, 
-                        Math.random() * tempCanvas.height, 
-                        Math.random() * tempCanvas.width, 
-                        tempCanvas.height
-                    );
-                    ctx.strokeStyle = `rgba(0,0,0,${Math.random() * 0.02})`;
-                    ctx.lineWidth = Math.random() * 2;
-                    ctx.stroke();
+            // Add subtle watermark or texture (optional)
+            function addWatermark(ctx) {
+                ctx.save();
+                ctx.globalAlpha = 0.03;
+                ctx.font = '50px Arial';
+                ctx.fillStyle = 'gray';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Diagonal watermark
+                for (let x = -tempCanvas.width; x < tempCanvas.width * 2; x += 300) {
+                    for (let y = -tempCanvas.height; y < tempCanvas.height * 2; y += 300) {
+                        ctx.fillText('DOKUMEN RESMI', x, y);
+                    }
                 }
+                ctx.restore();
             }
+            addWatermark(tempCtx);
 
-            // Buat tekstur kertas
-            createPaperTexture(tempCtx);
-
-            // Efek lipatan/kerutan
-            tempCtx.save();
-            tempCtx.shadowColor = 'rgba(0,0,0,0.2)';
-            tempCtx.shadowBlur = 20;
-            tempCtx.shadowOffsetX = 5;
-            tempCtx.shadowOffsetY = 5;
-
-            // Gambar tanda tangan di tengah
+            // Prepare signature
             const signatureImage = new Image();
             signatureImage.onload = function() {
-                // Skala dan posisi tanda tangan
-                const scale = Math.min(
-                    (tempCanvas.width * 0.7) / signatureImage.width,
+                // Calculate signature size (larger, taking up 50% of document width)
+                const signatureScale = Math.min(
+                    (tempCanvas.width * 0.5) / signatureImage.width,
                     (tempCanvas.height * 0.3) / signatureImage.height
                 );
                 
-                const scaledWidth = signatureImage.width * scale;
-                const scaledHeight = signatureImage.height * scale;
+                const scaledWidth = signatureImage.width * signatureScale;
+                const scaledHeight = signatureImage.height * signatureScale;
                 
+                // Position signature centrally, slightly below center
                 const x = (tempCanvas.width - scaledWidth) / 2;
-                const y = (tempCanvas.height * 0.7);  // Posisi 70% dari atas
+                const y = tempCanvas.height * 0.6;  // 60% down the page
+                
+                // Add drop shadow for depth
+                tempCtx.shadowColor = 'rgba(0,0,0,0.2)';
+                tempCtx.shadowBlur = 20;
+                tempCtx.shadowOffsetX = 10;
+                tempCtx.shadowOffsetY = 10;
                 
                 tempCtx.drawImage(signatureImage, x, y, scaledWidth, scaledHeight);
                 
-                // Unduh dokumen
+                // Reset shadow
+                tempCtx.shadowColor = 'transparent';
+
+                // Optional: Add border or frame
+                tempCtx.strokeStyle = '#4a90e2';
+                tempCtx.lineWidth = 5;
+                tempCtx.strokeRect(50, 50, tempCanvas.width - 100, tempCanvas.height - 100);
+
+                // Download document
                 const link = document.createElement('a');
-                link.download = 'signature_dokumen.png';
+                link.download = 'dokumen_tanda_tangan.png';
                 link.href = tempCanvas.toDataURL('image/png', 1.0);
                 link.click();
             };
             signatureImage.src = canvas.toDataURL('image/png', 1.0);
-
-            tempCtx.restore();
         });
     </script>
 </body>

@@ -1,107 +1,271 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRIS Custom Generator</title>
+    <title>Generator QRIS Custom</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f9f9f9;
+            --text-primary: #1a1a1a;
+            --accent-color: #3498db;
+            --border-color: #222;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--border-color);
+            border-radius: 2px;
+        }
+
+        input[type="file"], 
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:focus, 
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+        }
+
+        #generatedQR {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        #customForm {
+            display: none;
+        }
+
+        .error {
+            color: #e74c3c;
+            background-color: #fff0f0;
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            input[type="file"], 
+            input[type="number"] {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <h1>Generator QRIS Custom</h1>
 
-<h1>Upload QRIS, Edit Nominal, and Generate New QRIS</h1>
+    <div class="container">
+        <h2>Unggah Gambar QRIS</h2>
+        <input type="file" id="uploadImage" accept="image/*">
+    </div>
 
-<!-- Form to upload QRIS image -->
-<input type="file" id="uploadImage" accept="image/*">
-<br><br>
+    <div class="container" id="scannedDataContainer">
+        <h2>Data QRIS yang Dipindai</h2>
+        <p id="scannedData">Belum ada data QRIS yang dipindai.</p>
+    </div>
 
-<!-- Display scanned QRIS data -->
-<p id="scannedData"></p>
+    <div class="container" id="customForm">
+        <h2>Sesuaikan QRIS</h2>
+        <label for="customNominal">Masukkan Nominal (IDR): </label>
+        <input type="number" id="customNominal" placeholder="Masukkan jumlah dalam Rupiah">
+        <button onclick="generateCustomQR()">Buat QRIS</button>
+    </div>
 
-<!-- Form to input custom nominal -->
-<div id="customForm" style="display: none;">
-    <label for="customNominal">Enter Nominal: </label>
-    <input type="number" id="customNominal" placeholder="Enter nominal in IDR">
-    <button onclick="generateCustomQR()">Generate QRIS</button>
-</div>
+    <div class="container" id="generatedQRContainer">
+        <h2>QRIS yang Dibuat</h2>
+        <div id="generatedQR"></div>
+    </div>
 
-<!-- Display generated QR code -->
-<h2>Generated QRIS</h2>
-<div id="generatedQR"></div>
-
-<script>
-    // Function to read QR code from uploaded image
-    function readQRImage(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const qr = jsQR(imageData.data, canvas.width, canvas.height);
-                if (qr) {
-                    document.getElementById("scannedData").innerText = "QRIS Data: " + qr.data;
-                    document.getElementById("customForm").style.display = "block";
-                    window.scannedData = qr.data; // Save scanned QRIS data
-                } else {
-                    alert("QR code not detected.");
+    <script>
+        // Fungsi untuk membaca QR code dari gambar yang diunggah
+        function readQRImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const qr = jsQR(imageData.data, canvas.width, canvas.height);
+                    
+                    const scannedDataEl = document.getElementById("scannedData");
+                    const customFormEl = document.getElementById("customForm");
+                    
+                    if (qr) {
+                        scannedDataEl.innerHTML = `<strong>Data QRIS:</strong> ${qr.data}`;
+                        customFormEl.style.display = "block";
+                        window.scannedData = qr.data; // Simpan data QRIS yang dipindai
+                    } else {
+                        scannedDataEl.innerHTML = '<div class="error">❌ QR code tidak terdeteksi. Silakan unggah gambar QRIS yang valid.</div>';
+                        customFormEl.style.display = "none";
+                    }
                 }
+                img.src = e.target.result;
             }
-            img.src = e.target.result;
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
-    }
 
-    // Event listener for uploading image
-    document.getElementById('uploadImage').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            readQRImage(file);
-        }
-    });
-
-    // Function to generate custom QRIS based on user input
-    function generateCustomQR() {
-        const nominal = document.getElementById("customNominal").value;
-        if (nominal && !isNaN(nominal)) {
-            const newQRIS = createCustomQRIS(nominal);
-            generateQRCode(newQRIS);
-        } else {
-            alert("Please enter a valid nominal.");
-        }
-    }
-
-    // Function to create custom QRIS with user-defined nominal
-    function createCustomQRIS(nominal) {
-        // Example QRIS data structure, replace with actual QRIS format
-        const qrCodeString = `00020101021226710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI52045999530336054${padNominal(nominal)}5802ID5914MITRABL5007216006JEPARA61055941162120708M00605716304A5C1`;
-
-        return qrCodeString;
-    }
-
-    // Helper function to pad nominal value (ensuring it fits the format)
-    function padNominal(nominal) {
-        const nominalStr = nominal.toString();
-        const paddedNominal = nominalStr.padStart(12, '0'); // Ensure 12 digits for nominal
-        return paddedNominal;
-    }
-
-    // Function to generate QR code from QRIS string
-    function generateQRCode(data) {
-        const qrCodeContainer = document.getElementById("generatedQR");
-        qrCodeContainer.innerHTML = ''; // Clear previous QR code
-        const qrCode = new QRCode(qrCodeContainer, {
-            text: data,
-            width: 128,
-            height: 128,
+        // Pendengar acara untuk mengunggah gambar
+        document.getElementById('uploadImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                readQRImage(file);
+            }
         });
-    }
-</script>
 
+        // Fungsi untuk membuat QRIS khusus berdasarkan input pengguna
+        function generateCustomQR() {
+            const nominalInput = document.getElementById("customNominal");
+            const nominal = nominalInput.value;
+            
+            if (nominal && !isNaN(nominal) && nominal > 0) {
+                const newQRIS = createCustomQRIS(nominal);
+                generateQRCode(newQRIS);
+            } else {
+                alert("Silakan masukkan nominal yang valid.");
+                nominalInput.focus();
+            }
+        }
+
+        // Fungsi untuk membuat QRIS khusus dengan nominal yang ditentukan pengguna
+        function createCustomQRIS(nominal) {
+            const qrCodeString = `00020101021226710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI52045999530336054${padNominal(nominal)}5802ID5914MITRABL5007216006JEPARA61055941162120708M00605716304A5C1`;
+            return qrCodeString;
+        }
+
+        // Fungsi pembantu untuk mengisi nominal (memastikan sesuai format)
+        function padNominal(nominal) {
+            const nominalStr = nominal.toString();
+            const paddedNominal = nominalStr.padStart(12, '0');
+            return paddedNominal;
+        }
+
+        // Fungsi untuk membuat QR code dari string QRIS
+        function generateQRCode(data) {
+            const qrCodeContainer = document.getElementById("generatedQR");
+            qrCodeContainer.innerHTML = ''; // Bersihkan QR code sebelumnya
+            
+            // Buat elemen canvas baru untuk QR code
+            const canvas = document.createElement('canvas');
+            qrCodeContainer.appendChild(canvas);
+
+            // Buat QR code menggunakan library qrcode.js
+            QRCode.toCanvas(canvas, data, {
+                width: 256,
+                height: 256,
+                colorDark: "#1a1a1a",
+                colorLight: "#ffffff",
+            }, function (error) {
+                if (error) {
+                    console.error('Gagal membuat QR code', error);
+                    alert('Terjadi kesalahan saat membuat QR code');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

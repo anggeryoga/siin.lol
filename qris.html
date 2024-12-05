@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRIS Custom Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js"></script>
+</head>
+<body>
+
+<h1>Upload QRIS, Edit Nominal, and Generate New QRIS</h1>
+
+<!-- Form to upload QRIS image -->
+<input type="file" id="uploadImage" accept="image/*">
+<br><br>
+
+<!-- Display scanned QRIS data -->
+<p id="scannedData"></p>
+
+<!-- Form to input custom nominal -->
+<div id="customForm" style="display: none;">
+    <label for="customNominal">Enter Nominal: </label>
+    <input type="number" id="customNominal" placeholder="Enter nominal in IDR">
+    <button onclick="generateCustomQR()">Generate QRIS</button>
+</div>
+
+<!-- Display generated QR code -->
+<h2>Generated QRIS</h2>
+<div id="generatedQR"></div>
+
+<script>
+    // Function to read QR code from uploaded image
+    function readQRImage(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const qr = jsQR(imageData.data, canvas.width, canvas.height);
+                if (qr) {
+                    document.getElementById("scannedData").innerText = "QRIS Data: " + qr.data;
+                    document.getElementById("customForm").style.display = "block";
+                    window.scannedData = qr.data; // Save scanned QRIS data
+                } else {
+                    alert("QR code not detected.");
+                }
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    // Event listener for uploading image
+    document.getElementById('uploadImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            readQRImage(file);
+        }
+    });
+
+    // Function to generate custom QRIS based on user input
+    function generateCustomQR() {
+        const nominal = document.getElementById("customNominal").value;
+        if (nominal && !isNaN(nominal)) {
+            const newQRIS = createCustomQRIS(nominal);
+            generateQRCode(newQRIS);
+        } else {
+            alert("Please enter a valid nominal.");
+        }
+    }
+
+    // Function to create custom QRIS with user-defined nominal
+    function createCustomQRIS(nominal) {
+        // Example QRIS data structure, replace with actual QRIS format
+        const qrCodeString = `00020101021226710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI52045999530336054${padNominal(nominal)}5802ID5914MITRABL5007216006JEPARA61055941162120708M00605716304A5C1`;
+
+        return qrCodeString;
+    }
+
+    // Helper function to pad nominal value (ensuring it fits the format)
+    function padNominal(nominal) {
+        const nominalStr = nominal.toString();
+        const paddedNominal = nominalStr.padStart(12, '0'); // Ensure 12 digits for nominal
+        return paddedNominal;
+    }
+
+    // Function to generate QR code from QRIS string
+    function generateQRCode(data) {
+        const qrCodeContainer = document.getElementById("generatedQR");
+        qrCodeContainer.innerHTML = ''; // Clear previous QR code
+        const qrCode = new QRCode(qrCodeContainer, {
+            text: data,
+            width: 128,
+            height: 128,
+        });
+    }
+</script>
+
+</body>
+</html>

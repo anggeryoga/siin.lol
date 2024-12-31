@@ -11,6 +11,7 @@
         :root {
             --warning-red: #ff0000;
             --dark-bg: #000000;
+            --accent-color: #ff1744;
             --glow-color: rgba(255, 0, 0, 0.3);
         }
 
@@ -25,32 +26,195 @@
             background: var(--dark-bg);
             color: var(--warning-red);
             min-height: 100vh;
+            line-height: 1.6;
             overflow-x: hidden;
             position: relative;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0,0,0,0.92), rgba(0,0,0,0.92)),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.1) 2px, rgba(255,0,0,0.1) 4px);
+            pointer-events: none;
+            z-index: -1;
+            animation: scanline 10s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100vh; }
+        }
+
+        .glitch {
+            animation: glitch 1s linear infinite;
+            position: relative;
+            text-shadow: 
+                2px 2px var(--glow-color),
+                -2px -2px var(--glow-color),
+                0 0 20px var(--warning-red);
+        }
+
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 68% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+
         .header {
-            padding: 2rem;
-            text-align: center;
+            padding: 2rem 1rem;
             background: rgba(255, 0, 0, 0.1);
             border-bottom: 4px solid var(--warning-red);
-            box-shadow: 0 0 20px var(--glow-color);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px var(--glow-color);
         }
 
         .title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1rem;
             text-shadow: 
                 0 0 10px var(--warning-red),
                 0 0 20px var(--warning-red),
                 0 0 40px var(--warning-red);
+            letter-spacing: 2px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px) rotate(-0.5deg); }
+            75% { transform: translateX(2px) rotate(0.5deg); }
         }
 
         .clock {
             font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            margin-top: 1rem;
-            text-shadow: 0 0 20px var(--warning-red);
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            text-align: center;
+            margin: 1rem 0;
+            text-shadow: 
+                0 0 20px var(--warning-red),
+                0 0 40px var(--warning-red);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+
+        .warning-box {
+            background: rgba(255, 0, 0, 0.05);
+            border: 2px solid var(--warning-red);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px var(--glow-color),
+                0 0 30px var(--glow-color);
+            transform: perspective(1000px) rotateX(1deg);
+            transition: transform 0.3s ease;
+        }
+
+        .warning-box:hover {
+            transform: perspective(1000px) rotateX(1deg) scale(1.02);
+            animation: warning-shake 0.5s ease-in-out;
+        }
+
+        @keyframes warning-shake {
+            0%, 100% { transform: perspective(1000px) rotateX(1deg) translateX(0); }
+            25% { transform: perspective(1000px) rotateX(1deg) translateX(-5px); }
+            75% { transform: perspective(1000px) rotateX(1deg) translateX(5px); }
+        }
+
+        .warning-header {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .warning-header i {
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 0, 0, 0.15);
+            border-radius: 4px;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            background: var(--warning-red);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--warning-red);
+            animation: blink 0.5s infinite;
+        }
+
+        .impact-list li {
+            margin: 1.2rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            animation: slide-in 0.5s ease-out;
+        }
+
+        @keyframes slide-in {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .impact-list li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: var(--warning-red);
+            animation: warning-flash 2s infinite;
+        }
+
+        .counter {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid var(--warning-red);
+            text-shadow: 0 0 10px var(--warning-red);
+            box-shadow: 
+                inset 0 0 20px var(--glow-color),
+                0 0 30px var(--glow-color);
+            animation: counter-pulse 2s infinite;
         }
 
         #toggleSirine {
@@ -60,119 +224,293 @@
             background: var(--warning-red);
             color: white;
             border: none;
-            padding: 1rem 2rem;
+            padding: clamp(0.8rem, 2vw, 1.2rem) clamp(1.5rem, 3vw, 2rem);
             cursor: pointer;
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
+            font-size: clamp(0.8rem, 2vw, 1.1rem);
+            z-index: 1000;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
             box-shadow: 
                 0 0 20px var(--warning-red),
                 inset 0 0 10px rgba(255,255,255,0.5);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            animation: button-pulse 2s infinite;
+        }
+
+        @keyframes button-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         #toggleSirine:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--warning-red);
-        }
-
-        .container {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .warning-box {
-            margin: 2rem auto;
-            padding: 1.5rem;
-            max-width: 600px;
-            background: rgba(255, 0, 0, 0.1);
-            border: 2px solid var(--warning-red);
+            transform: scale(1.1);
             box-shadow: 
-                inset 0 0 10px var(--glow-color),
-                0 0 20px var(--glow-color);
+                0 0 30px var(--warning-red),
+                inset 0 0 15px rgba(255,255,255,0.6);
         }
 
-        .warning-box h2 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px var(--warning-red);
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .warning-box {
+                margin: 1rem 0;
+                padding: 1rem;
+            }
+
+            #toggleSirine {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .impact-list li {
+                margin: 1rem 0;
+            }
         }
 
-        .warning-box p {
-            line-height: 1.6;
-            font-size: 1.1rem;
+        /* Tambahan: Efek hujan angka untuk background */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .matrix-digit {
+            position: absolute;
+            color: var(--warning-red);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="matrix-rain" id="matrixRain"></div>
+    
     <header class="header">
-        <h1 class="title">⚠️ DAMPAK PPN 12% ⚠️</h1>
+        <h1 class="title glitch">⚠️ DAMPAK PPN 12% ⚠️</h1>
         <div class="clock" id="clock">00:00:00</div>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span id="sirenStatus">SIRINE AKTIF</span>
+        </div>
     </header>
 
     <div class="container">
         <div class="warning-box">
-            <h2>Peringatan Ekonomi Level Kritis</h2>
-            <p>Sistem peringatan dini dampak kenaikan PPN telah memasuki fase DARURAT.</p>
+            <h2 class="warning-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                PERINGATAN EKONOMI LEVEL KRITIS
+            </h2>
+            <p>Sistem peringatan dini dampak kenaikan PPN telah memasuki fase DARURAT</p>
+        </div>
+
+        <div class="counter" id="counter">
+            MENUNGGU HARI KIAMAT EKONOMI
+        </div>
+
+        <div class="warning-box">
+            <h2 class="warning-header">
+                <i class="fas fa-skull-crossbones"></i>
+                DAMPAK TERHADAP MASYARAKAT
+            </h2>
+            <ul class="impact-list">
+                <li>Penurunan daya beli masyarakat secara drastis dan berkelanjutan</li>
+                <li>Kenaikan harga kebutuhan pokok yang signifikan di seluruh sektor</li>
+                <li>Tekanan ekonomi meningkat pada semua lapisan masyarakat</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h2 class="warning-header">
+                <i class="fas fa-radiation"></i>
+                PROTOKOL PENYELAMATAN
+            </h2>
+            <ul class="impact-list">
+                <li>Implementasi sistem pengelolaan keuangan darurat</li>
+                <li>Diversifikasi sumber pendapatan untuk bertahan hidup</li>
+                <li>Evaluasi dan pembatasan pengeluaran hingga batas minimal</li>
+            </ul>
         </div>
     </div>
 
     <button id="toggleSirine">
         <i class="fas fa-volume-up"></i>
-        Matikan Sirine
+        MATIKAN SIRINE
     </button>
 
-    <audio id="sirenAudio" src="src/mp3.mp3" loop autoplay muted></audio>
+    <audio id="sirenAudio" src="src/mp3.mp3" loop></audio>
 
     <script>
         const audio = document.getElementById('sirenAudio');
         const toggleButton = document.getElementById('toggleSirine');
         let isPlaying = true;
 
-        // Coba autoplay audio dengan muted
-        audio.play().catch(error => {
-            console.log("Autoplay dicegah. Menunggu interaksi pengguna.", error);
+        // Matrix Rain Effect
+        function createMatrixRain() {
+            const container = document.getElementById('matrixRain');
+            const columns = Math.floor(window.innerWidth / 20);
+            
+            for (let i = 0; i < columns; i++) {
+                const digit = document.createElement('div');
+                digit.className = 'matrix-digit';
+                digit.style.left = (i * 20) + 'px';
+                digit.style.animationDuration = (Math.random() * 3 + 1) + 's';
+                digit.style.animationDelay = (Math.random() * 2) + 's';
+                digit.textContent = Math.floor(Math.random() * 10);
+                container.appendChild(digit);
+            }
+        }
+
+        // Fungsi untuk memulai sirine
+        function playSiren() {
+            audio.play().then(() => {
+                isPlaying = true;
+                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
+            }).catch((error) => {
+                console.log("Memerlukan interaksi pengguna:", error);
+                isPlaying = false;
+                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
+            });
+        }
+
+        // Auto-restart audio when it ends
+        audio.addEventListener('ended', () => {
+            if (isPlaying) {</antArtifact>
+                            audio.play();
+            }
         });
 
-        // Aktifkan audio setelah interaksi pengguna pertama
-        document.addEventListener('click', () => {
-            if (audio.muted) {
-                audio.muted = false;
-                audio.play().catch(error => {
-                    console.log("Gagal memutar audio:", error);
-                });
-            }
-        }, { once: true });
-
-        // Fungsi untuk memutar atau menghentikan sirine
-        function toggleSiren() {
+        // Toggle sirine
+        toggleButton.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
                 isPlaying = false;
-                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> Aktifkan Sirine';
+                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
+                toggleButton.style.animation = 'none';
             } else {
-                audio.play().catch(error => {
-                    console.log("Gagal memutar audio:", error);
-                });
+                audio.play();
                 isPlaying = true;
-                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> Matikan Sirine';
+                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
+                toggleButton.style.animation = 'button-pulse 2s infinite';
+            }
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            
+            const diff = midnight - now;
+            
+            if (diff > 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('clock').textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                document.getElementById('counter').textContent = 
+                    `MENUJU KIAMAT EKONOMI: ${hours}J ${minutes}M ${seconds}D`;
+                
+                // Tambahkan efek getaran saat mendekati tengah malam
+                if (hours === 0 && minutes < 30) {
+                    document.body.style.animation = 'warning-shake 0.5s infinite';
+                }
+            } else {
+                const elapsedDiff = Math.abs(diff);
+                const hours = Math.floor(elapsedDiff / (1000 * 60 * 60));
+                const minutes = Math.floor((elapsedDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((elapsedDiff % (1000 * 60)) / 1000);
+                
+                document.getElementById('clock').textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                document.getElementById('counter').textContent = 
+                    `KIAMAT EKONOMI TELAH DIMULAI: ${hours}J ${minutes}M ${seconds}D`;
+                
+                // Tambahkan efek getaran permanen setelah tengah malam
+                document.body.style.animation = 'warning-shake 0.8s infinite';
             }
         }
 
-        toggleButton.addEventListener('click', toggleSiren);
-
-        // Update jam real-time
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        // Update Matrix Rain
+        function updateMatrixRain() {
+            const digits = document.querySelectorAll('.matrix-digit');
+            digits.forEach(digit => {
+                if (parseFloat(getComputedStyle(digit).top) > window.innerHeight) {
+                    digit.style.top = '-20px';
+                    digit.textContent = Math.floor(Math.random() * 10);
+                    digit.style.left = (Math.random() * window.innerWidth) + 'px';
+                }
+            });
+            requestAnimationFrame(updateMatrixRain);
         }
 
-        setInterval(updateClock, 1000);
-        updateClock();
+        // Fungsi untuk menambahkan efek glitch acak pada teks
+        function addRandomGlitch() {
+            const warningTexts = document.querySelectorAll('.warning-box p, .impact-list li');
+            setInterval(() => {
+                const randomText = warningTexts[Math.floor(Math.random() * warningTexts.length)];
+                randomText.style.textShadow = '2px 0 var(--warning-red), -2px 0 var(--warning-red)';
+                setTimeout(() => {
+                    randomText.style.textShadow = 'none';
+                }, 100);
+            }, 3000);
+        }
+
+        function initializeAll() {
+            setInterval(updateClock, 1000);
+            updateClock();
+            playSiren();
+            createMatrixRain();
+            updateMatrixRain();
+            addRandomGlitch();
+
+            // Tambahkan efek hover pada warning boxes
+            const warningBoxes = document.querySelectorAll('.warning-box');
+            warningBoxes.forEach(box => {
+                box.addEventListener('mouseenter', () => {
+                    box.style.transform = 'perspective(1000px) rotateX(1deg) scale(1.02)';
+                });
+                box.addEventListener('mouseleave', () => {
+                    box.style.transform = 'perspective(1000px) rotateX(1deg)';
+                });
+            });
+
+            // Add listener for user interaction
+            document.addEventListener('click', () => {
+                if (!isPlaying) {
+                    playSiren();
+                }
+            }, { once: true });
+        }
+
+        // Tambahkan event listener untuk resize window
+        window.addEventListener('resize', () => {
+            const matrixRain = document.getElementById('matrixRain');
+            matrixRain.innerHTML = ''; // Clear existing rain
+            createMatrixRain(); // Recreate with new window size
+        });
+
+        document.addEventListener('DOMContentLoaded', initializeAll);
     </script>
 </body>
 </html>

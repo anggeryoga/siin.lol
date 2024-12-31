@@ -274,7 +274,6 @@
             }
         }
 
-        /* Tambahan: Efek hujan angka untuk background */
         .matrix-rain {
             position: fixed;
             top: 0;
@@ -324,7 +323,7 @@
         </div>
 
         <div class="counter" id="counter">
-            MENUNGGU HARI KIAMAT EKONOMI
+            KIAMAT EKONOMI TELAH DIMULAI
         </div>
 
         <div class="warning-box">
@@ -361,155 +360,140 @@
 
     <script>
         const audio = document.getElementById('sirenAudio');
-        const toggleButton = document.getElementById('toggleSirine');
-        let isPlaying = true;
+const toggleButton = document.getElementById('toggleSirine');
+let isPlaying = true;
 
-        // Matrix Rain Effect
-        function createMatrixRain() {
-            const container = document.getElementById('matrixRain');
-            const columns = Math.floor(window.innerWidth / 20);
-            
-            for (let i = 0; i < columns; i++) {
-                const digit = document.createElement('div');
-                digit.className = 'matrix-digit';
-                digit.style.left = (i * 20) + 'px';
-                digit.style.animationDuration = (Math.random() * 3 + 1) + 's';
-                digit.style.animationDelay = (Math.random() * 2) + 's';
-                digit.textContent = Math.floor(Math.random() * 10);
-                container.appendChild(digit);
-            }
+// Matrix Rain Effect
+function createMatrixRain() {
+    const container = document.getElementById('matrixRain');
+    const columns = Math.floor(window.innerWidth / 20);
+    
+    for (let i = 0; i < columns; i++) {
+        const digit = document.createElement('div');
+        digit.className = 'matrix-digit';
+        digit.style.left = (i * 20) + 'px';
+        digit.style.animationDuration = (Math.random() * 3 + 1) + 's';
+        digit.style.animationDelay = (Math.random() * 2) + 's';
+        digit.textContent = Math.floor(Math.random() * 10);
+        container.appendChild(digit);
+    }
+}
+
+function playSiren() {
+    audio.play().then(() => {
+        isPlaying = true;
+        toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
+    }).catch((error) => {
+        console.log("Memerlukan interaksi pengguna:", error);
+        isPlaying = false;
+        toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
+    });
+}
+
+audio.addEventListener('ended', () => {
+    if (isPlaying) {
+        audio.play();
+    }
+});
+
+toggleButton.addEventListener('click', () => {
+    if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
+        toggleButton.style.animation = 'none';
+    } else {
+        audio.play();
+        isPlaying = true;
+        toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
+        toggleButton.style.animation = 'button-pulse 2s infinite';
+    }
+});
+
+function updateClock() {
+    const startDate = new Date(2025, 0, 1); // January 1, 2025 00:00:00
+    const now = new Date();
+    
+    const diff = now - startDate;
+    
+    // Calculate elapsed time
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    // Update clock display
+    document.getElementById('clock').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    // Update counter display with days included
+    document.getElementById('counter').textContent = 
+        `KIAMAT EKONOMI TELAH BERJALAN: ${days}H ${hours}J ${minutes}M ${seconds}D`;
+    
+    // Keep the shaking effect
+    document.body.style.animation = 'warning-shake 0.8s infinite';
+}
+
+// Fungsi untuk memperbarui hujan Matrix
+function updateMatrixRain() {
+    const digits = document.querySelectorAll('.matrix-digit');
+    digits.forEach(digit => {
+        if (parseFloat(getComputedStyle(digit).top) > window.innerHeight) {
+            digit.style.top = '-20px';
+            digit.textContent = Math.floor(Math.random() * 10);
+            digit.style.left = (Math.random() * window.innerWidth) + 'px';
         }
+    });
+    requestAnimationFrame(updateMatrixRain);
+}
 
-        // Fungsi untuk memulai sirine
-        function playSiren() {
-            audio.play().then(() => {
-                isPlaying = true;
-                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
-            }).catch((error) => {
-                console.log("Memerlukan interaksi pengguna:", error);
-                isPlaying = false;
-                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
-            });
-        }
+// Fungsi untuk menambahkan efek glitch acak pada teks
+function addRandomGlitch() {
+    const warningTexts = document.querySelectorAll('.warning-box p, .impact-list li');
+    setInterval(() => {
+        const randomText = warningTexts[Math.floor(Math.random() * warningTexts.length)];
+        randomText.style.textShadow = '2px 0 var(--warning-red), -2px 0 var(--warning-red)';
+        setTimeout(() => {
+            randomText.style.textShadow = 'none';
+        }, 100);
+    }, 3000);
+}
 
-        // Auto-restart audio when it ends
-        audio.addEventListener('ended', () => {
-            if (isPlaying) {audio.play();
-            }
+function initializeAll() {
+    setInterval(updateClock, 1000);
+    updateClock();
+    playSiren();
+    createMatrixRain();
+    updateMatrixRain();
+    addRandomGlitch();
+
+    // Tambahkan efek hover pada warning boxes
+    const warningBoxes = document.querySelectorAll('.warning-box');
+    warningBoxes.forEach(box => {
+        box.addEventListener('mouseenter', () => {
+            box.style.transform = 'perspective(1000px) rotateX(1deg) scale(1.02)';
         });
-
-        // Toggle sirine
-        toggleButton.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
-                toggleButton.style.animation = 'none';
-            } else {
-                audio.play();
-                isPlaying = true;
-                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
-                toggleButton.style.animation = 'button-pulse 2s infinite';
-            }
+        box.addEventListener('mouseleave', () => {
+            box.style.transform = 'perspective(1000px) rotateX(1deg)';
         });
+    });
 
-        function updateClock() {
-            const now = new Date();
-            const midnight = new Date();
-            midnight.setHours(24, 0, 0, 0);
-            
-            const diff = midnight - now;
-            
-            if (diff > 0) {
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                
-                document.getElementById('clock').textContent = 
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('counter').textContent = 
-                    `MENUJU KIAMAT EKONOMI: ${hours}J ${minutes}M ${seconds}D`;
-                
-                // Tambahkan efek getaran saat mendekati tengah malam
-                if (hours === 0 && minutes < 30) {
-                    document.body.style.animation = 'warning-shake 0.5s infinite';
-                }
-            } else {
-                const elapsedDiff = Math.abs(diff);
-                const hours = Math.floor(elapsedDiff / (1000 * 60 * 60));
-                const minutes = Math.floor((elapsedDiff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((elapsedDiff % (1000 * 60)) / 1000);
-                
-                document.getElementById('clock').textContent = 
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('counter').textContent = 
-                    `KIAMAT EKONOMI TELAH DIMULAI: ${hours}J ${minutes}M ${seconds}D`;
-                
-                // Tambahkan efek getaran permanen setelah tengah malam
-                document.body.style.animation = 'warning-shake 0.8s infinite';
-            }
-        }
-
-        // Update Matrix Rain
-        function updateMatrixRain() {
-            const digits = document.querySelectorAll('.matrix-digit');
-            digits.forEach(digit => {
-                if (parseFloat(getComputedStyle(digit).top) > window.innerHeight) {
-                    digit.style.top = '-20px';
-                    digit.textContent = Math.floor(Math.random() * 10);
-                    digit.style.left = (Math.random() * window.innerWidth) + 'px';
-                }
-            });
-            requestAnimationFrame(updateMatrixRain);
-        }
-
-        // Fungsi untuk menambahkan efek glitch acak pada teks
-        function addRandomGlitch() {
-            const warningTexts = document.querySelectorAll('.warning-box p, .impact-list li');
-            setInterval(() => {
-                const randomText = warningTexts[Math.floor(Math.random() * warningTexts.length)];
-                randomText.style.textShadow = '2px 0 var(--warning-red), -2px 0 var(--warning-red)';
-                setTimeout(() => {
-                    randomText.style.textShadow = 'none';
-                }, 100);
-            }, 3000);
-        }
-
-        function initializeAll() {
-            setInterval(updateClock, 1000);
-            updateClock();
+    // Add listener for user interaction
+    document.addEventListener('click', () => {
+        if (!isPlaying) {
             playSiren();
-            createMatrixRain();
-            updateMatrixRain();
-            addRandomGlitch();
-
-            // Tambahkan efek hover pada warning boxes
-            const warningBoxes = document.querySelectorAll('.warning-box');
-            warningBoxes.forEach(box => {
-                box.addEventListener('mouseenter', () => {
-                    box.style.transform = 'perspective(1000px) rotateX(1deg) scale(1.02)';
-                });
-                box.addEventListener('mouseleave', () => {
-                    box.style.transform = 'perspective(1000px) rotateX(1deg)';
-                });
-            });
-
-            // Add listener for user interaction
-            document.addEventListener('click', () => {
-                if (!isPlaying) {
-                    playSiren();
-                }
-            }, { once: true });
         }
+    }, { once: true });
+}
 
-        // Tambahkan event listener untuk resize window
-        window.addEventListener('resize', () => {
-            const matrixRain = document.getElementById('matrixRain');
-            matrixRain.innerHTML = ''; // Clear existing rain
-            createMatrixRain(); // Recreate with new window size
-        });
+// Tambahkan event listener untuk resize window
+window.addEventListener('resize', () => {
+    const matrixRain = document.getElementById('matrixRain');
+    matrixRain.innerHTML = ''; // Clear existing rain
+    createMatrixRain(); // Recreate with new window size
+});
 
-        document.addEventListener('DOMContentLoaded', initializeAll);
+document.addEventListener('DOMContentLoaded', initializeAll);
     </script>
 </body>
 </html>

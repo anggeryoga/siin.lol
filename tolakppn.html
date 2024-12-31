@@ -60,21 +60,6 @@
                 0 0 20px var(--warning-red);
         }
 
-        @keyframes glitch {
-            2%, 64% { transform: translate(2px,0) skew(0deg); }
-            4%, 68% { transform: translate(-2px,0) skew(0deg); }
-            62% { transform: translate(0,0) skew(5deg); }
-        }
-
-        .header {
-            padding: 2rem 1rem;
-            background: rgba(255, 0, 0, 0.1);
-            border-bottom: 4px solid var(--warning-red);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 30px var(--glow-color);
-        }
-
         .title {
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(1.5rem, 5vw, 3rem);
@@ -105,9 +90,24 @@
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(0.98); }
+        .warning-box {
+            background: rgba(255, 0, 0, 0.05);
+            border: 2px solid var(--warning-red);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px var(--glow-color),
+                0 0 30px var(--glow-color);
+            transform: perspective(1000px) rotateX(1deg);
+        }
+
+        .impact-list li {
+            margin: 1.2rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
         }
 
         #toggleSirine {
@@ -131,20 +131,6 @@
             box-shadow: 
                 0 0 20px var(--warning-red),
                 inset 0 0 10px rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
-            animation: button-pulse 2s infinite;
-        }
-
-        @keyframes button-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        #toggleSirine:hover {
-            transform: scale(1.1);
-            box-shadow: 
-                0 0 30px var(--warning-red),
-                inset 0 0 15px rgba(255,255,255,0.6);
         }
     </style>
 </head>
@@ -154,9 +140,15 @@
         <div class="clock" id="clock">00:00:00</div>
     </header>
 
+    <div class="warning-box">
+        <h2 class="warning-header">
+            <i class="fas fa-exclamation-triangle"></i> PERINGATAN EKONOMI LEVEL KRITIS
+        </h2>
+        <p>Sistem peringatan dini dampak kenaikan PPN telah memasuki fase DARURAT</p>
+    </div>
+
     <button id="toggleSirine">
-        <i class="fas fa-volume-up"></i>
-        MATIKAN SIRINE
+        <i class="fas fa-volume-up"></i> MATIKAN SIRINE
     </button>
 
     <audio id="sirenAudio" src="src/mp3.mp3" loop></audio>
@@ -188,7 +180,6 @@
 
         toggleButton.addEventListener('click', toggleSiren);
 
-        // Pastikan audio dapat dimainkan setelah interaksi pertama
         document.addEventListener('click', () => {
             if (!isPlaying) {
                 playSiren();

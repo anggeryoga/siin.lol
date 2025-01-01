@@ -219,30 +219,6 @@
             50% { transform: scale(0.98); }
         }
 
-        .siren-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--warning-red);
-            padding: 2rem;
-            z-index: 1000;
-            text-align: center;
-            box-shadow: 0 0 30px var(--glow-color);
-            display: none;
-        }
-
-        .siren-popup.active {
-            display: block;
-            animation: popup 0.3s ease-out;
-        }
-
-        @keyframes popup {
-            from { transform: translate(-50%, -60%); opacity: 0; }
-            to { transform: translate(-50%, -50%); opacity: 1; }
-        }
-
         #toggleSirine {
             position: fixed;
             bottom: 30px;
@@ -308,19 +284,12 @@
 <body>
     <div class="matrix-rain" id="matrixRain"></div>
     
-    <div class="siren-popup" id="sirenPopup">
-        <h2 style="margin-bottom: 1rem;">⚠️ PERINGATAN SIRINE ⚠️</h2>
-        <p style="margin-bottom: 1rem;">Sirine akan diaktifkan. Apakah Anda yakin?</p>
-        <button onclick="confirmSiren(true)" style="margin-right: 1rem; padding: 0.5rem 1rem; background: var(--warning-red); border: none; color: white; cursor: pointer;">Ya</button>
-        <button onclick="confirmSiren(false)" style="padding: 0.5rem 1rem; background: #333; border: none; color: white; cursor: pointer;">Tidak</button>
-    </div>
-    
     <header class="header">
         <h1 class="title glitch">⚠️ DAMPAK PPN 12% ⚠️</h1>
         <div class="clock" id="clock">00:00:00</div>
         <div class="status-indicator">
             <div class="status-dot"></div>
-            <span id="sirenStatus">SIRINE AKTIF</span>
+            <span id="sirenStatus">SIRINE NONAKTIF</span>
         </div>
     </header>
 
@@ -364,7 +333,7 @@
 
     <button id="toggleSirine">
         <i class="fas fa-volume-up"></i>
-        MATIKAN SIRINE
+        AKTIFKAN SIRINE
     </button>
 
     <audio id="sirenAudio" src="src/mp31.mp3" loop></audio>
@@ -372,7 +341,7 @@
     <script>
         const audio = document.getElementById('sirenAudio');
         const toggleButton = document.getElementById('toggleSirine');
-        const sirenPopup = document.getElementById('sirenPopup');
+        const sirenStatus = document.getElementById('sirenStatus');
         let isPlaying = false;
 
         function createMatrixRain() {
@@ -390,49 +359,42 @@
             }
         }
 
-        function confirmSiren(confirmed) {
-            sirenPopup.classList.remove('active');
-            if (confirmed) {
-                playSiren();
-            }
-        }
-
-        function playSiren() {
-            audio.play().then(() => {
-                isPlaying = true;
-                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
-            }).catch((error) => {
-                console.log("Memerlukan interaksi pengguna:", error);
-                isPlaying = false;
-                toggleButton.innerHTML = '<i class="fas fa-volume-mute"></i> AKTIFKAN SIRINE';
-            });
-        }
-
-        audio.addEventListener('ended', () => {
-            if (isPlaying) {
-                audio.play();
-            }
-        });
-
         toggleButton.addEventListener('click', () => {
-            sirenPopup.classList.add('active');
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> MATIKAN SIRINE';
+                    sirenStatus.textContent = 'SIRINE AKTIF';
+                }).catch((error) => {
+                    console.log("Error memutar audio:", error);
+                });
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                isPlaying = false;
+                toggleButton.innerHTML = '<i class="fas fa-volume-up"></i> AKTIFKAN SIRINE';
+                sirenStatus.textContent = 'SIRINE NONAKTIF';
+            }
         });
 
         function updateClock() {
-            const startDate = new Date(2025, 0, 1); // 1 Januari 2025
             const now = new Date();
-            const diff = now - startDate;
+            const startDate = new Date(2025, 0, 1); // 1 Januari 2025
+            const timeDiff = now - startDate;
             
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
-            document.getElementById('clock').textContent = 
-                `${String(days).padStart(2, '0')}H ${String(hours).padStart(2, '0')}J ${String(minutes).padStart(2, '0')}M ${String(seconds).padStart(2, '0')}D`;
+            const clockDisplay = `${String(days).padStart(2, '0')}H ${String(hours).padStart(2, '0')}J ${String(minutes).padStart(2, '0')}M ${String(seconds).padStart(2, '0')}D`;
+            document.getElementById('clock').textContent = clockDisplay;
             
-            document.getElementById('counter').textContent = 
-                `KIAMAT EKONOMI TELAH BERJALAN: ${days} HARI ${hours} JAM ${minutes} MENIT ${seconds} DETIK`;
+            const counterDisplay = `KIAMAT EKONOMI TELAH BERJALAN: ${days} HARI ${hours} JAM ${minutes} MENIT ${seconds} DETIK`;
+            document.getElementById('counter').textContent = counterDisplay;
+
+            // Request the next update
+            requestAnimationFrame(updateClock);
         }
 
         function updateMatrixRain() {
@@ -468,8 +430,7 @@
         // Initialize all components
         function initializeAll() {
             createMatrixRain();
-            setInterval(updateClock, 1000);
-            updateClock();
+            requestAnimationFrame(updateClock); // Start the clock immediately
             addRandomGlitch();
             
             // Soft shake effect for warning boxes
@@ -492,22 +453,9 @@
 
             // Start matrix rain animation
             requestAnimationFrame(updateMatrixRain);
-
-            // Close popup when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === sirenPopup) {
-                    sirenPopup.classList.remove('active');
-                }
-            });
-
-            // Add keyboard support for closing popup
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    sirenPopup.classList.remove('active');
-                }
-            });
         }
 
+        // Start everything when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', initializeAll);
     </script>
 </body>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Usaha Dashboard</title>
+    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* Modern Header styles with enhanced gradient */
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 1.5rem 0;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        /* Enhanced Search box styles */
+        .search-container {
+            max-width: 1280px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            padding-right: 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        /* Modern Table container styles */
+        .table-container {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem auto;
+            max-width: 1280px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* Enhanced Table styles */
+        .dataTables_wrapper {
+            padding: 1.5rem;
+        }
+
+        table.dataTable {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100% !important;
+        }
+
+        table.dataTable thead th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            padding: 1rem !important;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        table.dataTable tbody td {
+            padding: 1rem !important;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.925rem;
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+
+        table.dataTable tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #f1f5f9;
+            cursor: pointer;
+        }
+
+        /* Enhanced Popup styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .popup-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .popup-close {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f3f4f6;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .popup-close:hover {
+            background: #e5e7eb;
+        }
+
+        .popup-body {
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+
+        .popup-body p {
+            margin: 0.75rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .popup-body strong {
+            color: #374151;
+            min-width: 120px;
+        }
+
+        .popup-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.5rem;
+        }
+
+        .popup-button:hover {
+            background-color: #2563eb;
+        }
+
+        /* Enhanced Loading spinner */
+        #loading-spinner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+
+            .dataTables_wrapper {
+                padding: 1rem;
+            }
+
+            .popup-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <i class="bi bi-building fs-4"></i>
+            <h1 class="header-title">Data Usaha Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-container">
+        <div class="search-box">
+            <input
+                type="text"
+                id="global-search"
+                class="search-input"
+                placeholder="Cari data...">
+            <i class="bi bi-search search-icon"></i>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container">
+        <!-- Loading Spinner -->
+        <div id="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Memuat data...</div>
+        </div>
+
+        <!-- Table -->
+        <table id="data-table" class="display responsive nowrap" width="100%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Waktu</th>
+                    <th>Nama Usaha</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>No HP</th>
+                    <th>Usia</th>
+                    <th>Opening</th>
+                    <th>Pekerjaan</th>
+                    <th>Alamat Usaha</th>
+                    <th>Dana Usaha</th>
+                    <th>Sumber Informasi</th>
+                    <th>Admin</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2>Detail Data Usaha</h2>
+                <div class="popup-close" id="popup-close">&times;</div>
+            </div>
+            <div class="popup-body" id="popup-body"></div>
+            <button class="popup-button" id="copy-button">
+                <i class="bi bi-clipboard"></i>
+                Salin Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script>
+        let dataTable;
+        let searchTimeout;
+
+        $(document).ready(function() {
+            initializeWithDebounce();
+            
+            // Close popup when clicking outside
+            $(document).on('click', function(e) {
+                if ($(e.target).closest('.popup-content').length === 0 && 
+                    $(e.target).closest('tr').length === 0) {
+                    $('#popup-overlay').fadeOut();
+                }
+            });
+        });
+
+        function initializeWithDebounce() {
+            const searchInput = $('#global-search');
+            
+            searchInput.on('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (dataTable) {
+                        dataTable.search(this.value).draw();
+                    }
+                }, 300);
+            });
+
+            // Add focus animation
+            searchInput.on('focus', function() {
+                $(this).parent().addClass('focused');
+            }).on('blur', function() {
+                $(this).parent().removeClass('focused');
+            });
+
+            fetchDataWithCache();
+        }
+
+        function fetchDataWithCache() {
+            const cachedData = localStorage.getItem('dashboardData');
+            const cacheTimestamp = localStorage.getItem('dashboardDataTimestamp');
+            const cacheExpiry = 5 * 60 * 1000; // 5 minutes
+
+            if (cachedData && cacheTimestamp && (Date.now() - cacheTimestamp) < cacheExpiry) {
+                initializeDataTable(JSON.parse(cachedData));
+                $('#loading-spinner').hide();
+            } else {
+                fetch('https://script.google.com/macros/s/AKfycbz3mEsBEWTjSgIMcPFIAyC9_whSgANs3mTYiuEAFIZorrL37V6Y0W9qA7OYvbvnvLOz/exec')
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem('dashboardData', JSON.stringify(data));
+                        localStorage.setItem('dashboardDataTimestamp', Date.now());
+                        initializeDataTable(data);
+                        $('#loading-spinner').hide();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $('#loading-spinner').html(`
+                            <div class="loading-text">
+                                <i class="bi bi-exclamation-circle text-red-500"></i>
+                                Gagal memuat data. Silakan coba lagi.
+                            </div>
+                        `);
+                    });
+            }
+        }
+
+        function initializeDataTable(data) {
+            dataTable = $('#data-table').DataTable({
+                data: data,
+                columns: [
+                    { data: null, render: (data, type, row, meta) => meta.row + 1 },
+                    { data: '0' },
+                    { data: '1' },
+                    { data: '2' },
+                    { data: '3' },
+                    { data: '4' },
+                    { data: '5' },
+                    { data: '6' },
+                    { data: '7' },
+                    { data: '8' },
+                    { data: '9' },
+                    { data: '10' },
+                    { data: '11' }
+                ],
+                responsive: true,
+                pageLength: 25,
+                deferRender: true,
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoEmpty: "Menampilkan 0 </antArtifact>
+infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    zeroRecords: "Tidak ada data yang cocok",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
+                },
+                dom: '<"top"lf>rt<"bottom"ip><"clear">',
+                drawCallback: function() {
+                    // Add hover effect to rows
+                    $('#data-table tbody tr').hover(
+                        function() { $(this).addClass('hover'); },
+                        function() { $(this).removeClass('hover'); }
+                    );
+                }
+            });
+
+            $('#data-table tbody').on('click', 'tr', function () {
+                const rowData = dataTable.row(this).data();
+                const content = `
+                    <p><strong>Waktu:</strong> <span>${rowData[0]}</span></p>
+                    <p><strong>Nama Usaha:</strong> <span>${rowData[1]}</span></p>
+                    <p><strong>Nama:</strong> <span>${rowData[2]}</span></p>
+                    <p><strong>Alamat:</strong> <span>${rowData[3]}</span></p>
+                    <p><strong>No HP:</strong> <span>${rowData[4]}</span></p>
+                    <p><strong>Usia:</strong> <span>${rowData[5]}</span></p>
+                    <p><strong>Opening:</strong> <span>${rowData[6]}</span></p>
+                    <p><strong>Pekerjaan:</strong> <span>${rowData[7]}</span></p>
+                    <p><strong>Alamat Usaha:</strong> <span>${rowData[8]}</span></p>
+                    <p><strong>Dana Usaha:</strong> <span>${rowData[9]}</span></p>
+                    <p><strong>Sumber Info:</strong> <span>${rowData[10]}</span></p>
+                    <p><strong>Admin:</strong> <span>${rowData[11]}</span></p>
+                `;
+                $('#popup-body').html(content);
+                $('#popup-overlay').fadeIn(300).addClass('active');
+            });
+
+            $('#popup-close').click(function() {
+                closePopup();
+            });
+
+            $('#copy-button').click(function() {
+                const textToCopy = Array.from($('#popup-body p')).map(p => 
+                    p.textContent.trim()
+                ).join('\n');
+                
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    const originalText = $('#copy-button').html();
+                    $('#copy-button').html('<i class="bi bi-check2"></i> Tersalin!');
+                    setTimeout(() => {
+                        $('#copy-button').html(originalText);
+                    }, 2000);
+                }).catch(function() {
+                    alert('Gagal menyalin data. Silakan coba lagi.');
+                });
+            });
+
+            // Handle escape key
+            $(document).keyup(function(e) {
+                if (e.key === "Escape") {
+                    closePopup();
+                }
+            });
+        }
+
+        function closePopup() {
+            $('#popup-overlay').removeClass('active');
+            setTimeout(() => {
+                $('#popup-overlay').fadeOut(300);
+            }, 200);
+        }
+
+        // Add custom sorting for date columns if needed
+        $.fn.dataTable.ext.type.order['date-id-pre'] = function(data) {
+            const parts = data.split(',')[0].split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+        };
+    </script>
+</body>
+</html>

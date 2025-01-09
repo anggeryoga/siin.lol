@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qris Payment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #FFA500;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background-color: rgba(50, 50, 50, 0.9);
+            border-left: 3px solid #FFA500;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .nominal-section {
+            margin-bottom: 20px;
+        }
+
+        .nominal-section h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .best-seller {
+            margin-bottom: 20px;
+        }
+
+        .best-seller h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .amount-button {
+            background-color: #FFA500;
+            border: none;
+            padding: 10px;
+            color: black;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .process-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FFA500;
+            border: none;
+            color: black;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Qris Payment</h1>
+            <div>Minimal transaksi Rp. 495.000 dan Maksimal Rp. 749.000</div>
+        </div>
+
+        <div class="info-box">
+            <div>Cek berkala untuk ketersediaan stok Qris Aktif.</div>
+            <div>Setiap gambar Qris yang muncul sudah dipastikan aktif SPL karena terdapat fitur Auto-Check sebelum dipublish.</div>
+            <div>Coba dibawah 500k apabila diatas 500k tidak muncul pilihan SPL.</div>
+        </div>
+
+        <div class="nominal-section">
+            <h3>Nominal:</h3>
+            <input type="text" id="nominalInput" placeholder="Masukkan Nominal" oninput="formatNumber(this)">
+        </div>
+
+        <div class="best-seller">
+            <h3>Best Seller:</h3>
+            <div class="button-grid">
+                <button class="amount-button" onclick="setAmount(495000)">495.000</button>
+                <button class="amount-button" onclick="setAmount(500000)">500.000</button>
+                <button class="amount-button" onclick="setAmount(600000)">600.000</button>
+                <button class="amount-button" onclick="setAmount(700000)">700.000</button>
+                <button class="amount-button" onclick="setAmount(740000)">740.000</button>
+                <button class="amount-button" onclick="setAmount(749000)">749.000</button>
+            </div>
+        </div>
+
+        <button class="process-button" onclick="generateQRIS()">Proses</button>
+        <div id="qrcode"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        const defaultQRIS = "00020101021126580013ID.CO.BRI.WWW01189360000200700288640208700288640303UMI51440014ID.CO.QRIS.WWW0215ID10243570817680303UMI5204581253033605802ID5912mimi story 46006BANTUL61055518762070703A01630446FB";
+
+        function formatNumber(input) {
+            // Remove non-numeric characters
+            let value = input.value.replace(/\D/g, '');
+            
+            // Format with thousand separator
+            if (value !== '') {
+                value = parseInt(value).toLocaleString('id-ID');
+            }
+            
+            input.value = value;
+        }
+
+        function setAmount(amount) {
+            const input = document.getElementById('nominalInput');
+            input.value = amount.toLocaleString('id-ID');
+        }
+
+        function pad(number) {
+            return number < 10 ? '0' + number : number.toString();
+        }
+
+        function toCRC16(input) {
+            let crc = 0xFFFF;
+            for (let i = 0; i < input.length; i++) {
+                crc ^= input.charCodeAt(i) << 8;
+                for (let j = 0; j < 8; j++) {
+                    crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+                }
+            }
+            let hex = (crc & 0xFFFF).toString(16).toUpperCase();
+            return hex.length === 3 ? "0" + hex : hex;
+        }
+
+        function makeString(qris, { nominal } = {}) {
+            if (!qris) throw new Error('The parameter "qris" is required.');
+            if (!nominal) throw new Error('The parameter "nominal" is required.');
+
+            let qrisModified = qris.slice(0, -4).replace("010211", "010212");
+            let qrisParts = qrisModified.split("5802ID");
+
+            let amount = "54" + pad(nominal.toString().length) + nominal;
+            amount += "5802ID";
+
+            let output = qrisParts[0].trim() + amount + qrisParts[1].trim();
+            output += toCRC16(output);
+
+            return output;
+        }
+
+        function generateQRIS() {
+            const nominalStr = document.getElementById('nominalInput').value.replace(/\D/g, '');
+            const nominal = parseInt(nominalStr);
+            
+            if (!nominal) {
+                alert('Harap masukkan nominal pembayaran.');
+                return;
+            }
+
+            if (nominal < 495000 || nominal > 749000) {
+                alert('Nominal harus antara Rp. 495.000 dan Rp. 749.000');
+                return;
+            }
+
+            const qrisDinamis = makeString(defaultQRIS, { nominal: nominal });
+            
+            const qrcodeElement = document.getElementById('qrcode');
+            qrcodeElement.innerHTML = '';
+            QRCode.toCanvas(qrisDinamis, { margin: 2, width: 200 }, function (err, canvas) {
+                if (err) {
+                    console.error(err);
+                    alert('Gagal membuat QR Code');
+                    return;
+                }
+                qrcodeElement.appendChild(canvas);
+            });
+        }
+    </script>
+</body>
+</html>

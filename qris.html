@@ -1,34 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRIS Dinamis Generator</title>
-    <!-- Import Poppins font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dukung Creator - Pembayaran QRIS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4F46E5;
-            --primary-hover: #4338CA;
-            --secondary-color: #818CF8;
-            --background: #F5F7FF;
-            --card-bg: #ffffff;
-            --text-primary: #1F2937;
-            --text-secondary: #6B7280;
-            --border-color: #E5E7EB;
-            --success: #10B981;
-            --error: #EF4444;
+            --bg-main: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --text-placeholder: #999999;
+            --button-teal: #9CE3E3;
+            --button-blue: #2F9BFF;
+            --button-orange: #FFB340;
+            --button-purple: #A98CFF;
+            --border-color: #000000;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Space Mono', monospace;
         }
 
         body {
-            background: var(--background);
+            background: var(--bg-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -39,258 +37,213 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            max-width: 480px;
+            background: var(--bg-main);
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 32px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            font-weight: 400;
+        .header h1 {
+            font-size: 24px;
+            font-weight: normal;
+            margin-bottom: 8px;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 24px;
         }
 
-        label {
+        .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-weight: normal;
+            font-size: 14px;
         }
 
-        input {
+        .required {
+            color: #FF0000;
+            margin-left: 2px;
+        }
+
+        .form-group input {
             width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #F9FAFB;
-            color: var(--text-primary);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-            background: var(--card-bg);
-        }
-
-        input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .qris-input {
-            font-size: 0.9rem;
-            font-family: monospace;
-            letter-spacing: -0.5px;
-        }
-
-        .button-container {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        button {
-            background: var(--primary-color);
-            color: white;
+            padding: 12px;
             border: none;
-            padding: 1rem 2.5rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            background: transparent;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-placeholder);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--button-blue);
+        }
+
+        .amount-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .amount-info .min-amount {
+            color: #FF0000;
+        }
+
+        .amount-info .tts-amount {
+            color: #FF0000;
+            margin-left: 10px;
+        }
+
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .amount-button {
+            padding: 12px 8px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 200px;
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 var(--border-color);
         }
 
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        .amount-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--border-color);
         }
 
-        button:active {
-            transform: translateY(0);
+        .amount-button:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 var(--border-color);
+        }
+
+        .amount-button:nth-child(1) {
+            background: var(--button-teal);
+        }
+
+        .amount-button:nth-child(2) {
+            background: var(--button-blue);
+            color: white;
+        }
+
+        .amount-button:nth-child(3) {
+            background: var(--button-orange);
+        }
+
+        .amount-button:nth-child(4) {
+            background: var(--button-purple);
+            color: white;
+        }
+
+        .generate-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--button-blue);
+            color: white;
+            border: 2px solid var(--border-color);
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            margin-top: 16px;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .generate-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--border-color);
+        }
+
+        .generate-button:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 var(--border-color);
         }
 
         #qrcode {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: #F9FAFB;
-            border-radius: 16px;
+            margin-top: 24px;
+            padding: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 250px;
-            border: 2px dashed var(--border-color);
-        }
-
-        canvas {
-            max-width: 100%;
-            height: auto !important;
-        }
-
-        /* Loading Animation */
-        .loading {
+            min-height: 200px;
             position: relative;
+            box-shadow: 4px 4px 0 var(--border-color);
+            transition: box-shadow 0.3s ease;
         }
 
-        .loading::after {
-            content: '';
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            top: 50%;
-            left: 50%;
-            margin: -12.5px 0 0 -12.5px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Success Animation */
-        .success-checkmark {
-            color: var(--success);
-            font-size: 1.2rem;
-            margin-left: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .success .success-checkmark {
-            opacity: 1;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            button {
-                width: 100%;
-                padding: 0.875rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                padding: 1.25rem;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            input {
-                padding: 0.875rem 1rem;
-                font-size: 0.95rem;
-            }
-
-            .qris-input {
-                font-size: 0.8rem;
-            }
-
-            #qrcode {
-                padding: 1rem;
-                min-height: 200px;
-            }
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --background: #111827;
-                --card-bg: #1F2937;
-                --text-primary: #F9FAFB;
-                --text-secondary: #D1D5DB;
-                --border-color: #374151;
-            }
-
-            input {
-                background: #374151;
-            }
-
-            input:focus {
-                background: #374151;
-            }
-
-            #qrcode {
-                background: #374151;
-            }
+        #qrcode:hover {
+            box-shadow: 6px 6px 0 var(--border-color);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>QRIS Generator</h1>
-            <p class="subtitle">Generate QR Code pembayaran QRIS dengan mudah</p>
+            <h1>Dukung Creator</h1>
+            <p>Terimakasih yang sudah ikut berdonasi!</p>
         </div>
 
-        <div class="form-group">
-            <label for="qrisInput">QRIS Static Code</label>
-            <input type="text" 
-                   id="qrisInput" 
-                   class="qris-input"
-                   value="00020101021126710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI5204599953033605802ID5914MITRABL*5007216006JEPARA61055941162120708M006057163042A1F">
-        </div>
+        <input type="hidden" id="qrisInput" value="00020101021126710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI5204599953033605802ID5914MITRABL*5007216006JEPARA61055941162120708M006057163042A1F">
 
         <div class="form-group">
-            <label for="nominalInput">Nominal Pembayaran</label>
+            <label>Nominal<span class="required">*</span></label>
             <input type="number" 
                    id="nominalInput" 
-                   placeholder="Masukkan nominal pembayaran"
-                   min="1">
+                   placeholder="Ketik jumlah dukungan"
+                   min="1000"
+                   step="1000"
+                   onkeypress="return event.charCode >= 48 && event.charCode <= 57">
         </div>
 
-        <div class="button-container">
-            <button onclick="generateQRIS()">Generate QRIS</button>
+        <div class="amount-info">
+            <span class="min-amount">Minimum: Rp1.000</span>
+            <span class="tts-amount">TTS: Rp100.000</span>
         </div>
+
+        <div class="amount-grid">
+            <button class="amount-button" data-amount="10000">10k</button>
+            <button class="amount-button" data-amount="15000">15k</button>
+            <button class="amount-button" data-amount="25000">25k</button>
+            <button class="amount-button" data-amount="100000">100k</button>
+        </div>
+
+        <button class="generate-button" onclick="generateQRIS()">Buat QRIS</button>
 
         <div id="qrcode"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script>
-        // Helper functions
+    <script>
         function pad(number) {
             return number < 10 ? '0' + number : number.toString();
         }
@@ -308,9 +261,6 @@
         }
 
         function makeString(qris, { nominal } = {}) {
-            if (!qris) throw new Error('The parameter "qris" is required.');
-            if (!nominal) throw new Error('The parameter "nominal" is required.');
-
             let qrisModified = qris.slice(0, -4).replace("010211", "010212");
             let qrisParts = qrisModified.split("5802ID");
 
@@ -323,30 +273,54 @@
             return output;
         }
 
-        // Generate QRIS Function
+        const nominalInput = document.getElementById('nominalInput');
+        const amountButtons = document.querySelectorAll('.amount-button');
+
+        // Event listener untuk tombol nominal
+        amountButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                amountButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                nominalInput.value = button.dataset.amount;
+            });
+        });
+
+        // Validasi input nominal
+        nominalInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value && value < 1000) {
+                value = 1000;
+            }
+            this.value = value;
+        });
+
         function generateQRIS() {
             const qrisInput = document.getElementById('qrisInput').value.trim();
-            const nominalInput = document.getElementById('nominalInput').value.trim();
+            const nominal = parseInt(nominalInput.value.trim());
 
-            if (!qrisInput || !nominalInput) {
-                alert('Harap masukkan QRIS statis dan nominal.');
+            if (!nominal || nominal < 1000) {
+                alert('Minimal nominal adalah Rp1.000');
+                nominalInput.value = 1000;
                 return;
             }
 
-            const qrisDinamis = makeString(qrisInput, { nominal: nominalInput });
-            console.log('QRIS Dinamis:', qrisDinamis);
-
-            // Generate QR Code
+            const qrisDinamis = makeString(qrisInput, { nominal: nominal });
             const qrcodeElement = document.getElementById('qrcode');
-            qrcodeElement.innerHTML = ''; // Clear previous QR Code
-            QRCode.toCanvas(qrisDinamis, { margin: 2, width: 200 }, function (err, canvas) {
+            qrcodeElement.innerHTML = '';
+            
+            QRCode.toCanvas(qrisDinamis, { 
+                margin: 2, 
+                width: 200,
+                scale: 8
+            }, function (err, canvas) {
                 if (err) {
                     console.error(err);
                     alert('Gagal membuat QR Code');
-                    return;
+                } else {
+                    qrcodeElement.appendChild(canvas);
                 }
-                qrcodeElement.appendChild(canvas);
             });
         }
-    </script></body>
+    </script>
+</body>
 </html>

@@ -155,8 +155,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script>
-        const defaultQRIS = "00020101021126580013ID.CO.BRI.WWW01189360000200700483070208700483070303UMI51440014ID.CO.QRIS.WWW0215ID10253690192660303UMI5204581253033605802ID5916somay pak heri 56006BANTUL61055518862070703A0163040E84";
+        const QRIS_CODES = {
+            first: "00020101021126580013ID.CO.BRI.WWW01189360000200700483070208700483070303UMI51440014ID.CO.QRIS.WWW0215ID10253690192660303UMI5204581253033605802ID5916somay pak heri 56006BANTUL61055518862070703A0163040E84",
+            second: "00020101021126710019ID.CO.CIMBNIAGA.WWW011893600022000040943502150000083009010470303UMI51450015ID.OR.QRNPG.WWW0215ID10221659161000303UMI5204599953033605802ID5914MITRABL*5007216006JEPARA61055941162120708M006057163042A1F"
+        };
 
+        // Store generation count in localStorage
+        let generationCount = parseInt(localStorage.getItem('qrisGenerationCount') || '0');
+        
         function formatNumber(input) {
             let value = input.value.replace(/\D/g, '');
             if (value !== '') {
@@ -202,7 +208,18 @@
             return output;
         }
 
-        function generateQRIS() {
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+                return null;
+            }
+        }
+
+        async function generateQRIS() {
             const nominalStr = document.getElementById('nominalInput').value.replace(/\D/g, '');
             const nominal = parseInt(nominalStr);
             
@@ -220,7 +237,14 @@
             }
 
             try {
-                const qrisDinamis = makeString(defaultQRIS, { nominal: nominal });
+                // Increment generation count
+                generationCount++;
+                localStorage.setItem('qrisGenerationCount', generationCount.toString());
+
+                // Alternate between QRIS codes based on generation count
+                const selectedQRIS = generationCount % 2 === 1 ? QRIS_CODES.first : QRIS_CODES.second;
+                
+                const qrisDinamis = makeString(selectedQRIS, { nominal: nominal });
                 
                 const qrcodeElement = document.getElementById('qrcode');
                 qrcodeElement.innerHTML = '';

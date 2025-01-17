@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Hubungan Industrial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            /* Biru */
+            --secondary: #2c3e50;
+            /* Biru tua */
+            --accent: #e74c3c;
+            /* Merah */
+            --background: #ecf0f1;
+            /* Abu-abu muda */
+            --text-light: #ffffff;
+            /* Putih */
+            --shadow-offset: 4px;
+            --border-radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--secondary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 1rem auto;
+            background: var(--text-light);
+            border: 1px solid #ddd;
+            /* Lebih tipis */
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+            /* Lebih halus */
+            padding: 0;
+            /* Hilangkan padding */
+            transition: var(--transition);
+             overflow: hidden; /* Add this */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--primary);
+        }
+
+        .header h1 {
+            color: var(--text-light);
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            opacity: 0.9;
+        }
+
+        .quiz-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem; /* Add some horizontal padding */
+        }
+
+        .info-card {
+            background: var(--text-light);
+            padding: 1rem;
+           border: 1px solid #ddd;
+            border-radius: calc(var(--border-radius) - 5px);
+           box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px); /* Less transform on hover */
+             box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            /* Make progress a bit slimmer */
+            background: #ddd;
+            border-radius: 8px;
+            /* match the height */
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+             padding: 0 1.5rem; /* Add horizontal padding */
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-container {
+            background: var(--text-light);
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+              box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+             
+        }
+
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option {
+            padding: 1rem 1.25rem;
+            background: var(--text-light);
+            border: 1px solid #ddd;
+            border-radius: calc(var(--border-radius) - 5px);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: #f8f8f8;
+           transform: translate(-1px, -1px); /* Less Transform */
+               box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            background: var(--accent);
+            color: var(--text-light);
+           transform: translate(-1px, -1px); /* Less Transform */
+               box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .option.correct {
+            background: #2ecc71;
+            color: var(--text-light);
+        }
+
+        .option.wrong {
+            background: var(--accent);
+            color: var(--text-light);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+               padding: 0 1.5rem;
+        }
+
+        button {
+            padding: 0.8rem 1.75rem;
+             border: 1px solid #ddd;
+            border-radius: calc(var(--border-radius) - 5px);
+            background: var(--primary);
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+          box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translate(-1px, -1px);/* Less Transform */
+           box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 rgba(0, 0, 0, 0.1);
+            background: #2980b9;
+        }
+
+        button:disabled {
+            background: #e0e0e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .motivation-alert {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: calc(var(--border-radius) - 5px);
+            margin: 1rem 0;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+             border: 1px solid #ddd;
+            display: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .streak-badge {
+            display: inline-block;
+            padding: 0.6rem 1.25rem;
+            background: #2ecc71;
+            color: var(--text-light);
+            border-radius: 25px;
+            margin-top: 1rem;
+            animation: pulse 1s infinite;
+            display: none;
+            font-weight: 500;
+            font-size: 1rem;
+               box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1);
+            margin: 1rem auto;
+        }
+
+        .feedback-alert {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: calc(var(--border-radius) - 5px);
+            margin: 1rem 0;
+            text-align: center;
+             border: 1px solid #ddd;
+            display: none;
+            font-weight: 500;
+            font-size: 1rem;
+            animation: slideIn 0.5s ease;
+                padding: 0 1.5rem;
+        }
+
+        .feedback-alert.correct {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .feedback-alert.wrong {
+            background: #ffebee;
+            color: #c0392b;
+        }
+
+        #reportContainer {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--text-light);
+             border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+              box-shadow: var(--shadow-offset) var(--shadow-offset) 0 rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: none;
+             overflow: hidden;
+        }
+
+        #reportContainer h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        #reportContainer button {
+            margin-top: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quiz-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0; /* Remove padding kanan-kiri di mobile */
+            }
+
+            .quiz-info {
+                gap: 0.8rem;
+                padding: 0 1rem;
+            }
+
+            .info-card {
+                padding: 0.8rem;
+            }
+
+            .info-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .info-card p {
+                font-size: 1rem;
+            }
+
+            .question-container {
+                padding: 1rem;
+            }
+
+            .option {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.7rem 1.4rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kuis Hubungan Industrial</h1>
+            <p>Uji pemahaman Anda tentang konsep dan praktik Hubungan Industrial</p>
+        </div>
+
+        <div class="quiz-info">
+            <div class="info-card">
+                <h3>Skor</h3>
+                <p id="score">0</p>
+            </div>
+            <div class="info-card">
+                <h3>Soal</h3>
+                <p><span id="currentQuestion">0</span>/<span id="totalQuestions">0</span></p>
+            </div>
+            <div class="info-card">
+                <h3>Waktu</h3>
+                <p id="timer">30:00</p>
+            </div>
+            <div class="info-card">
+                <h3>Kategori</h3>
+                <p id="currentCategory">Dasar</p>
+            </div>
+        </div>
+
+        <div class="motivation-alert" id="motivationAlert"></div>
+        <div class="progress-container">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="feedback-alert" id="feedbackAlert"></div>
+        <div id="questionContainer" class="question-container">
+            <div id="question" class="question"></div>
+            <div id="options" class="options"></div>
+        </div>
+
+        <div class="controls">
+            <button id="prevBtn" disabled>Sebelumnya</button>
+            <button id="nextBtn">Selanjutnya</button>
+        </div>
+        <div class="streak-badge" id="streakBadge"></div>
+        <div id="reportContainer">
+            <h2>Laporan Analitik</h2>
+            <div id="reportContent"></div>
+            <button onclick="downloadReport('jpg')">Unduh JPG</button>
+            <button onclick="downloadReport('png')">Unduh PNG</button>
+        </div>
+    </div>
+
+    <script>
+        const questionsDatabase = [{
+                question: "Apa yang dimaksud dengan Hubungan Industrial?",
+                options: ["Hubungan antar individu dalam perusahaan", "Hubungan antara pengusaha dan pekerja", "Hubungan antara pemerintah dan masyarakat", "Hubungan antara perusahaan dan pemasok"],
+                correct: 1,
+                category: "Dasar"
+            },
+            {
+                question: "Apa peran serikat pekerja dalam hubungan industrial?",
+                options: ["Melindungi hak-hak pengusaha", "Mewakili pekerja dalam negosiasi", "Membuat kebijakan perusahaan", "Mengawasi kegiatan produksi"],
+                correct: 1,
+                category: "Dasar"
+            },
+            {
+                question: "Apa saja yang termasuk dalam aspek hukum hubungan industrial di Indonesia?",
+                options: ["Hanya UU Ketenagakerjaan", "UU Ketenagakerjaan, PKB, dan peraturan perusahaan", "Peraturan perusahaan saja", "Hanya PKB"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Mengapa dialog sosial penting dalam hubungan industrial?",
+                options: ["Untuk memperlambat pengambilan keputusan", "Untuk menghindari konflik dan mencapai kesepakatan", "Untuk meningkatkan persaingan antar pekerja", "Untuk memperkuat posisi pengusaha"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa yang dimaksud dengan pemutusan hubungan kerja (PHK)?",
+                options: ["Pemberian penghargaan kepada pekerja", "Pengakhiran hubungan kerja antara pengusaha dan pekerja", "Promosi jabatan", "Pengalihan tugas pekerja"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Bagaimana peran pemerintah dalam hubungan industrial?",
+                options: ["Mendukung sepenuhnya kepentingan pengusaha", "Menjadi mediator dan pengawas", "Mengambil alih perusahaan", "Mengatur upah pekerja saja"],
+                correct: 1,
+                category: "Peran"
+            },
+            {
+                question: "Apa yang dimaksud dengan mogok kerja?",
+                options: ["Aksi damai para pekerja", "Penghentian kerja sementara oleh pekerja", "Perundingan antara pengusaha dan pekerja", "Perayaan hari buruh"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa tujuan dari pembentukan LKS Bipartit?",
+                options: ["Memperkuat posisi pengusaha", "Meningkatkan komunikasi dan kerjasama", "Membuat peraturan yang menguntungkan pekerja", "Mengawasi kinerja pekerja"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa yang dimaksud dengan Perjanjian Kerja Bersama (PKB)?",
+                options: ["Perjanjian antara pekerja dan pengusaha", "Perjanjian antara perusahaan dan pemerintah", "Perjanjian antara serikat pekerja dan pengusaha", "Perjanjian antara perusahaan dan pemasok"],
+                correct: 2,
+                category: "Hukum"
+            },
+            {
+                question: "Apa yang dimaksud dengan outsourcing dalam hubungan industrial?",
+                options: ["Pekerja dipekerjakan secara langsung oleh perusahaan", "Pekerja dipekerjakan melalui pihak ketiga", "Pekerja memiliki saham di perusahaan", "Pekerja dipindahkan ke kantor cabang lain"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Bagaimana cara mengatasi diskriminasi di tempat kerja?",
+                options: ["Mendukung diskriminasi berdasarkan senioritas", "Menerapkan kebijakan anti-diskriminasi", "Mengabaikan perbedaan antar pekerja", "Memberlakukan peraturan yang tidak adil"],
+                correct: 1,
+                category: "Konsep"
+            },
+            {
+                question: "Apa saja faktor yang mempengaruhi upah pekerja?",
+                options: ["Hanya lama bekerja", "Keterampilan, pengalaman, dan tingkat pendidikan", "Hanya jenis kelamin", "Hanya lokasi tempat kerja"],
+                correct: 1,
+                category: "Ekonomi"
+            },
+            {
+                question: "Apa yang dimaksud dengan mediasi dalam penyelesaian perselisihan industrial?",
+                options: ["Penyelesaian melalui pengadilan", "Penyelesaian melalui pihak ketiga yang netral", "Penyelesaian melalui musyawarah internal", "Penyelesaian melalui kekerasan"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa perbedaan antara upah minimum regional (UMR) dan upah minimum sektoral (UMS)?",
+                options: ["UMR lebih tinggi dari UMS", "UMS berlaku untuk sektor tertentu, UMR berlaku umum", "Tidak ada perbedaan", "UMS berlaku untuk semua sektor, UMR untuk sektor tertentu"],
+                correct: 1,
+                category: "Ekonomi"
+            },
+            {
+                question: "Mengapa penting untuk memiliki lingkungan kerja yang aman dan sehat?",
+                options: ["Untuk meningkatkan keuntungan perusahaan", "Untuk melindungi pekerja dari risiko kerja", "Untuk menurunkan biaya produksi", "Untuk meningkatkan persaingan antar pekerja"],
+                correct: 1,
+                category: "Konsep"
+            },
+            {
+                question: "Apa yang dimaksud dengan hak cuti pekerja?",
+                options: ["Kewajiban pekerja untuk masuk kerja", "Hak pekerja untuk tidak masuk kerja dengan alasan tertentu", "Hak pekerja untuk lembur setiap hari", "Hak pekerja untuk menerima upah tambahan"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Apa saja jenis-jenis perselisihan industrial yang umum terjadi?",
+                options: ["Perselisihan antar departemen", "Perselisihan hak, kepentingan, PHK, dan antar serikat pekerja", "Perselisihan antar perusahaan", "Perselisihan antar pengusaha"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa yang dimaksud dengan hubungan kerja berdasarkan waktu tertentu?",
+                options: ["Hubungan kerja yang bersifat permanen", "Hubungan kerja yang memiliki batas waktu tertentu", "Hubungan kerja tanpa kontrak", "Hubungan kerja dengan masa percobaan"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Bagaimana cara membangun komunikasi yang efektif antara pengusaha dan pekerja?",
+                options: ["Melalui rapat tahunan saja", "Melalui dialog terbuka dan berkelanjutan", "Melalui ancaman dan paksaan", "Melalui media sosial saja"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa yang dimaksud dengan jaminan sosial tenaga kerja?",
+                options: ["Hanya tunjangan kesehatan", "Perlindungan ekonomi dan kesehatan bagi pekerja", "Hanya tunjangan pensiun", "Hanya asuransi kecelakaan kerja"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Apa dampak positif dari hubungan industrial yang harmonis?",
+                options: ["Meningkatkan konflik", "Meningkatkan produktivitas dan kesejahteraan", "Menurunkan keuntungan perusahaan", "Meningkatkan persaingan antar pekerja"],
+                correct: 1,
+                category: "Konsep"
+            },
+            {
+                question: "Apa perbedaan antara pengusaha dan pemberi kerja?",
+                options: ["Tidak ada perbedaan", "Pengusaha memiliki bisnis, pemberi kerja mempekerjakan", "Pemberi kerja memiliki bisnis, pengusaha mempekerjakan", "Pengusaha hanya ada di sektor formal"],
+                correct: 1,
+                category: "Dasar"
+            },
+            {
+                question: "Apa saja prinsip dasar dalam hubungan industrial Pancasila?",
+                options: ["Individualisme, liberalisme, dan kapitalisme", "Kemitraan, kekeluargaan, dan musyawarah", "Dominasi pengusaha, ketergantungan pekerja", "Konflik dan persaingan"],
+                correct: 1,
+                category: "Dasar"
+            },
+            {
+                question: "Apa yang dimaksud dengan norma kerja dalam hubungan industrial?",
+                options: ["Peraturan yang dibuat oleh perusahaan", "Standar jam kerja, upah, dan kondisi kerja yang layak", "Kebijakan pemerintah tentang tenaga kerja", "Ketentuan yang dibuat oleh serikat pekerja"],
+                correct: 1,
+                category: "Konsep"
+            },
+            {
+                question: "Apa saja hak-hak dasar pekerja?",
+                options: ["Hanya hak untuk mendapat upah", "Hak untuk mendapat upah, cuti, dan perlindungan hukum", "Hanya hak untuk lembur", "Hanya hak untuk mengkritik perusahaan"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Apa fungsi dari lembaga bipartit dan tripartit?",
+                options: ["Lembaga bipartit untuk perundingan antara pemerintah dan pekerja, tripartit untuk pengusaha", "Bipartit hanya untuk internal perusahaan, tripartit melibatkan pemerintah", "Bipartit dan tripartit tidak ada bedanya", "Bipartit hanya untuk serikat pekerja"],
+                correct: 1,
+                category: "Praktik"
+            },
+            {
+                question: "Apa saja yang termasuk dalam perlindungan kerja?",
+                options: ["Hanya perlindungan upah", "Perlindungan keselamatan, kesehatan kerja, dan upah", "Hanya perlindungan hukum", "Hanya perlindungan sosial"],
+                correct: 1,
+                category: "Hukum"
+            },
+            {
+                question: "Bagaimana cara meningkatkan kualitas SDM di tempat kerja?",
+                options: ["Melalui program pelatihan dan pengembangan", "Hanya dengan memberi bonus tinggi", "Melalui pemecatan karyawan lama", "Hanya dengan mengawasi kinerja karyawan"],
+                correct: 0,
+                category: "Pengembangan"
+            },
+            {
+                question: "Apa saja manfaat dari program kesejahteraan pekerja?",
+                options: ["Hanya mengurangi biaya perusahaan", "Meningkatkan motivasi, produktivitas, dan loyalitas", "Hanya meningkatkan persaingan antar pekerja", "Hanya meningkatkan keuntungan perusahaan"],
+                correct: 1,
+                category: "Konsep"
+            },
+            {
+                question: "Apa yang dimaksud dengan ILO (International Labour Organization)?",
+                options: ["Organisasi perdagangan dunia", "Organisasi buruh internasional", "Organisasi kesehatan dunia", "Organisasi lingkungan hidup"],
+                correct: 1,
+                category: "Internasional"
+            }
+        ];
+
+        // Shuffle questions array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let shuffledQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 1800; // 30 minutes in seconds
+        let timer;
+        let streak = 0;
+        let selectedAnswer = null;
+        let userIP = null;
+        let answeredQuestions = [];
+
+        const motivationalMessages = [
+            "Semangat! Kamu bisa! 🌟",
+            "Terus berjuang, jawabanmu semakin bagus! 💪",
+            "Keren! Pertahankan semangatmu! 🎯",
+            "Jangan menyerah, kamu hampir sampai! 🚀",
+            "Hebat! Teruskan perjuanganmu! ⭐"
+        ];
+
+        // Function to get user IP address
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error("Failed to get IP address:", error);
+                return 'unknown';
+            }
+        }
+
+        // Load saved state from localStorage
+        async function loadSavedState() {
+            userIP = await getUserIP();
+            const savedState = localStorage.getItem(`quizState_${userIP}`);
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                timeLeft = state.timeLeft;
+                streak = state.streak;
+                answeredQuestions = state.answeredQuestions;
+
+                // Filter out answered questions to prevent duplicates
+                shuffledQuestions = questionsDatabase.filter((question, index) => !answeredQuestions.includes(index));
+                if (shuffledQuestions.length === 0) {
+                    // If all questions have been answered, restart the quiz
+                    shuffledQuestions = shuffleArray([...questionsDatabase]);
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    timeLeft = 1800;
+                    streak = 0;
+                    answeredQuestions = [];
+
+                } else {
+                    shuffledQuestions = shuffleArray([...shuffledQuestions]);
+                }
+
+            } else {
+                shuffledQuestions = shuffleArray([...questionsDatabase]);
+            }
+        }
+
+
+        // Save state to localStorage
+        function saveState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                timeLeft,
+                streak,
+                answeredQuestions
+            };
+            localStorage.setItem(`quizState_${userIP}`, JSON.stringify(state));
+        }
+
+
+        // Initialize quiz
+        async function initQuiz() {
+            await loadSavedState();
+            document.getElementById('totalQuestions').textContent = shuffledQuestions.length;
+            updateQuestion();
+            startTimer();
+            updateProgress();
+        }
+
+        // Update question display
+        function updateQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                endQuiz();
+                return;
+            }
+            const question = shuffledQuestions[currentQuestionIndex];
+            document.getElementById('question').textContent = question.question;
+            document.getElementById('currentQuestion').textContent = answeredQuestions.length + 1;
+            document.getElementById('currentCategory').textContent = question.category;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            // Shuffle options
+            const shuffledOptions = shuffleArray([...question.options]);
+            shuffledOptions.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionElement);
+            });
+
+            updateNavigationButtons();
+            saveState();
+        }
+
+        // Handle option selection
+        function selectOption(index) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[index].classList.add('selected');
+            selectedAnswer = index;
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').disabled = selectedAnswer === null;
+        }
+
+        // Show streak badge
+        function updateStreakBadge() {
+            const streakBadge = document.getElementById('streakBadge');
+            if (streak >= 3) {
+                streakBadge.textContent = `${streak} Jawaban Benar Berturut-turut! 🔥`;
+                streakBadge.style.display = 'block';
+            } else {
+                streakBadge.style.display = 'none';
+            }
+        }
+
+        // Show Feedback Message
+        function showFeedbackMessage(isCorrect, correctAnswer) {
+            const feedbackAlert = document.getElementById('feedbackAlert');
+            feedbackAlert.textContent = isCorrect ? "Jawaban Anda Benar! ✅" : `Jawaban Anda Salah. Jawaban yang benar adalah: ${correctAnswer} ❌`;
+            feedbackAlert.className = `feedback-alert ${isCorrect ? 'correct' : 'wrong'}`;
+            feedbackAlert.style.display = 'block';
+        }
+
+        // Handle next button click
+        document.getElementById('nextBtn').onclick = () => {
+            if (selectedAnswer !== null) {
+                checkAnswer();
+                if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                    answeredQuestions.push(questionsDatabase.indexOf(shuffledQuestions[currentQuestionIndex]));
+                    currentQuestionIndex++;
+                    selectedAnswer = null;
+                    updateQuestion();
+                    updateProgress();
+                    showMotivationalMessage();
+                } else {
+                    answeredQuestions.push(questionsDatabase.indexOf(shuffledQuestions[currentQuestionIndex]));
+                    endQuiz();
+                }
+            }
+        };
+
+        // Handle previous button click
+        document.getElementById('prevBtn').onclick = () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                selectedAnswer = null;
+                updateQuestion();
+                updateProgress();
+            }
+        };
+
+        // Check answer
+        function checkAnswer() {
+            const correctAnswerIndex = shuffledQuestions[currentQuestionIndex].correct;
+            const correctAnswer = shuffledQuestions[currentQuestionIndex].options[correctAnswerIndex];
+            const selectedOptionText = document.querySelectorAll('.option')[selectedAnswer].textContent;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                if (index === correctAnswerIndex) {
+                    option.classList.add('correct');
+                } else if (selectedAnswer === index) {
+                    option.classList.add('wrong');
+                }
+            });
+            setTimeout(() => {
+                options.forEach(option => {
+                    option.classList.remove('correct', 'wrong');
+                });
+                if (selectedOptionText === correctAnswer) {
+                    score += 20;
+                    streak++;
+                    showFeedbackMessage(true, correctAnswer);
+                    document.getElementById('score').textContent = score;
+                    updateStreakBadge();
+                } else {
+                    streak = 0;
+                    showFeedbackMessage(false, correctAnswer);
+                    updateStreakBadge();
+                }
+            }, 100);
+
+
+            saveState();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+           const progress = ((answeredQuestions.length + 1) / questionsDatabase.length) * 100;
+           document.getElementById('progress').style.width = `${progress}%`;
+         }
+
+
+        // Timer functions
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                saveState();
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Show motivational message
+        function showMotivationalMessage() {
+            const motivationAlert = document.getElementById('motivationAlert');
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            motivationAlert.textContent = randomMessage;
+            motivationAlert.style.display = 'block';
+
+            setTimeout(() => {
+                motivationAlert.style.display = 'none';
+            }, 3000);
+        }
+
+        function generateReport() {
+            const reportContent = document.getElementById('reportContent');
+            let reportHTML = `
+               <p><b>Skor Akhir:</b> ${score} dari ${questionsDatabase.length * 20}</p>
+                <p><b>Streak Terpanjang:</b> ${streak} jawaban benar berturut-turut</p>
+                 <p><b>Total Waktu:</b> ${formatTime(1800-timeLeft)}</p>
+                 <p><b>IP Address:</b> ${userIP}</p>
+                 <p>${getFinalMotivationalMessage(score/(questionsDatabase.length * 20) * 100)}</p>
+            `;
+            reportContent.innerHTML = reportHTML;
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function downloadReport(format) {
+            const reportContainer = document.getElementById('reportContainer');
+            html2canvas(reportContainer).then(canvas => {
+                const image = canvas.toDataURL(`image/${format}`);
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `quiz_report.${format}`;
+                link.click();
+            });
+        }
+
+        // End quiz
+        function endQuiz() {
+            clearInterval(timer);
+            generateReport();
+            document.getElementById('reportContainer').style.display = 'block';
+            document.getElementById('questionContainer').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            localStorage.removeItem(`quizState_${userIP}`);
+        }
+
+
+        // Get final motivational message based on score percentage
+        function getFinalMotivationalMessage(percentage) {
+            if (percentage >= 80) {
+                return "Luar biasa! Kamu menguasai materi dengan sangat baik! 🌟";
+            } else if (percentage >= 60) {
+                return "Bagus! Terus tingkatkan pemahamanmu! 💪";
+            } else if (percentage >= 40) {
+                return "Semangat! Coba lagi dan tingkatkan nilaimu! 🎯";
+            } else {
+                return "Jangan menyerah! Setiap kesalahan adalah kesempatan untuk belajar! 📚";
+            }
+        }
+
+        // Restart quiz
+        function restartQuiz() {
+            shuffledQuestions = shuffleArray([...questionsDatabase]);
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 1800;
+            streak = 0;
+            answeredQuestions = [];
+            selectedAnswer = null;
+            document.querySelector('.controls').style.display = 'flex';
+            document.getElementById('score').textContent = '0';
+            document.getElementById('reportContainer').style.display = 'none';
+            document.getElementById('questionContainer').style.display = 'block';
+            initQuiz();
+        }
+        // Initialize quiz when page loads
+        window.onload = initQuiz;
+    </script>
+</body>
+
+</html>

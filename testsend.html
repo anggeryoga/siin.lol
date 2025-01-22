@@ -6,11 +6,12 @@
     <title>File QR System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
-            --primary: #29ABE2; /* Light blue */
+            --primary: #29ABE2;
             --secondary: #333;
-            --accent: #FFD700; /* Gold */
+            --accent: #FFD700;
             --background: #F0F0F0;
             --shadow-color: rgba(0, 0, 0, 0.15);
             --transition-duration: 0.3s;
@@ -24,18 +25,19 @@
         }
 
         body {
-             background-color: var(--background);
+            background-color: var(--background);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: background-color var(--transition-duration);
         }
-          .container {
+
+        .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 700px;
             margin: 20px;
-            background-color: white;
+             background-color: white;
              border-radius: 12px;
              box-shadow: 0 8px 20px var(--shadow-color);
             padding: 20px;
@@ -58,42 +60,46 @@
             padding: 1.8rem;
             border: 2px solid var(--primary);
             border-radius: 8px;
-            box-shadow: 0 4px 10px var(--shadow-color);
+             box-shadow: 0 4px 10px var(--shadow-color);
             transition: transform var(--transition-duration), box-shadow var(--transition-duration);
             margin-bottom: 1.5rem;
         }
 
-       .upload-box:hover {
+        .upload-box:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px var(--shadow-color);
         }
 
-
-        .file-input-wrapper {
-            position: relative;
-            margin-bottom: 1rem;
+      .file-input-wrapper {
+           margin-bottom: 1rem;
+           position: relative;
         }
-
-        .file-input {
-            width: 100%;
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+         .file-input-label {
+            display: flex;
+            align-items: center;
             padding: 0.8rem;
             border: 2px dashed var(--primary);
             border-radius: 6px;
             cursor: pointer;
-            margin-bottom: 0.8rem;
             transition: border-color var(--transition-duration);
-        }
-
-        .file-input:focus {
+             justify-content: center;
+         }
+          .file-input-label:hover {
             border-color: var(--accent);
-            outline: none;
         }
+           .file-input-label i {
+             margin-right: 0.5rem;
+           }
 
         .progress-container {
             display: none;
             width: 100%;
             margin-bottom: 1rem;
         }
+
         .progress-bar {
             width: 100%;
             height: 10px;
@@ -121,7 +127,7 @@
             cursor: pointer;
             transition: all var(--transition-duration);
             box-shadow: 0 2px 5px var(--shadow-color);
-            text-transform: uppercase;
+             text-transform: uppercase;
             letter-spacing: 0.02rem;
         }
 
@@ -135,13 +141,14 @@
             box-shadow: 0 1px 3px var(--shadow-color);
         }
 
-       .qr-container {
+
+         .qr-container {
             display: none;
             background: white;
             padding: 1.8rem;
             border: 2px solid var(--primary);
             border-radius: 8px;
-            box-shadow: 0 4px 10px var(--shadow-color);
+             box-shadow: 0 4px 10px var(--shadow-color);
             text-align: center;
              margin-top: 1.5rem;
         }
@@ -153,18 +160,27 @@
         }
 
         .file-info {
-            margin: 0.8rem 0;
+           margin: 0.8rem 0;
             padding: 0.8rem;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-         .file-info p {
-            margin: 0.4rem 0;
+           background-color: #f8f9fa;
+           border-radius: 6px;
+           font-size: 0.9rem;
+            display: flex;
+           justify-content: space-between;
+            align-items: center;
+           transition: background-color var(--transition-duration);
+          }
+          .file-info p {
+             margin: 0.4rem 0;
              color: var(--secondary);
+          }
+         .file-info.active {
+            background-color: var(--primary);
+            color: white;
         }
-
+       .file-info.active p {
+              color: white;
+        }
         .error {
             color: #dc3545;
             background: #ffe6e6;
@@ -173,12 +189,10 @@
             margin: 0.5rem 0;
             display: none;
         }
-
-        #downloadPage {
+      #downloadPage {
             display: none;
         }
-
-        .download-info {
+         .download-info {
             background: white;
             padding: 1.8rem;
             border-radius: 8px;
@@ -209,15 +223,18 @@
             </div>
 
             <div class="upload-box">
-                <div class="file-input-wrapper">
-                    <input type="file" id="fileInput" class="file-input" accept="*/*">
-                    <div class="error" id="error-message"></div>
-                </div>
+              <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept="*/*">
+                <label for="fileInput" class="file-input-label">
+                   <i class="fas fa-upload"></i>  Choose a file
+                 </label>
+                <div class="error" id="error-message"></div>
+              </div>
                 
-                <div class="file-info" id="fileInfo">
-                    <p>Selected file: <span id="fileName">None</span></p>
-                    <p>Size: <span id="fileSize">0 MB</span></p>
-                </div>
+              <div class="file-info" id="fileInfo">
+                  <p>Selected file: <span id="fileName">None</span></p>
+                  <p>Size: <span id="fileSize">0 MB</span></p>
+              </div>
                 
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar">
@@ -293,6 +310,7 @@
             const fileIdSpan = document.getElementById('fileId');
             const progressContainer = document.getElementById('progressContainer');
             const progressFill = document.getElementById('progressFill');
+            const fileInfoDiv = document.getElementById('fileInfo')
 
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
@@ -300,8 +318,12 @@
                     if (file.size > 200 * 1024 * 1024) {
                         showError('File size exceeds 200MB limit');
                         fileInput.value = '';
+                        fileInfoDiv.classList.remove('active')
+                         fileName.textContent = "None"
+                        fileSize.textContent = "0 MB"
                         return;
                     }
+                    fileInfoDiv.classList.add('active')
                     fileName.textContent = file.name;
                     fileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
                 }
@@ -336,12 +358,10 @@
                   showError('Please select a file first');
                   return;
                 }
-
                 progressContainer.style.display = 'block';
-                progressFill.style.width = '0%'; // Reset progress
-              // Display the qrContainer before generate the qr
-                 qrContainer.style.display = 'block';
-                 
+                progressFill.style.width = '0%';
+                qrContainer.style.display = 'block';
+
                 const reader = new FileReader();
                  reader.onprogress = function(event) {
                     if (event.lengthComputable) {
@@ -374,15 +394,14 @@
                         width: 256,
                         height: 256
                     });
-                     
-                     progressContainer.style.display = 'none';
-                    fileIdSpan.textContent = fileId;
-                   
+
+                    progressContainer.style.display = 'none';
+                     fileIdSpan.textContent = fileId;
                 };
                 reader.readAsDataURL(file);
             });
 
-           if (fileIdParam) {
+            if (fileIdParam) {
                 //download page logic
                 const fileData = localStorage.getItem(fileIdParam);
                  if (fileData) {

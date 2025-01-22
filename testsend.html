@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local File QR System</title>
+    <title>File QR System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -43,6 +43,7 @@
             text-transform: uppercase;
             margin-bottom: 1rem;
             text-shadow: 3px 3px var(--shadow-color);
+            letter-spacing: 0.05rem;
         }
 
         .upload-box {
@@ -72,7 +73,18 @@
             border-radius: 8px;
             cursor: pointer;
             margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
         }
+
+        .file-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        .progress-container {
+            display: none; /* Hidden by default */
+            width: 100%;
+            margin-bottom: 1rem;
+          }
 
         .progress-bar {
             width: 100%;
@@ -80,7 +92,7 @@
             background-color: #eee;
             border-radius: 10px;
             overflow: hidden;
-            margin: 1rem 0;
+            margin: 0 auto; /* Center the progress bar */
         }
 
         .progress-fill {
@@ -88,6 +100,7 @@
             background-color: var(--primary);
             width: 0%;
             transition: width 0.3s ease;
+            border-radius: 10px;
         }
 
         .btn {
@@ -151,6 +164,11 @@
             border-radius: 12px;
             margin-top: 2rem;
             text-align: center;
+            border: 3px solid var(--secondary);
+            box-shadow: 8px 8px var(--shadow-color);
+        }
+        .download-info .btn {
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -173,6 +191,12 @@
                     <p>Selected file: <span id="fileName">None</span></p>
                     <p>Size: <span id="fileSize">0 MB</span></p>
                 </div>
+                
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
 
                 <button class="btn" id="generateBtn">Generate QR Code</button>
             </div>
@@ -192,7 +216,7 @@
             <div class="download-info">
                 <h2 id="downloadFileName"></h2>
                 <p id="downloadFileSize"></p>
-                <button class="btn" id="downloadBtn" style="margin-top: 1rem;">Download File</button>
+                <button class="btn" id="downloadBtn">Download File</button>
             </div>
         </div>
     </div>
@@ -201,20 +225,20 @@
         // Check if we're on the download page
         const urlParams = new URLSearchParams(window.location.search);
         const fileIdParam = urlParams.get('fileId');
-
+    
         if (fileIdParam) {
             // Show download page
             document.getElementById('uploadPage').style.display = 'none';
             document.getElementById('downloadPage').style.display = 'block';
-            
+    
             // Get file from localStorage
             const fileData = localStorage.getItem(fileIdParam);
             if (fileData) {
                 const fileInfo = JSON.parse(fileData);
                 document.getElementById('downloadFileName').textContent = fileInfo.name;
-                document.getElementById('downloadFileSize').textContent = 
+                document.getElementById('downloadFileSize').textContent =
                     `Size: ${(fileInfo.size / (1024 * 1024)).toFixed(2)} MB`;
-                
+    
                 document.getElementById('downloadBtn').addEventListener('click', () => {
                     const link = document.createElement('a');
                     link.href = fileInfo.dataUrl;
@@ -223,6 +247,13 @@
                     link.click();
                     document.body.removeChild(link);
                 });
+            } else {
+                // Handle if file is not found
+                document.getElementById('downloadPage').innerHTML = `
+                    <div class="download-info">
+                        <h2>File Not Found</h2>
+                        <p>The file you are looking for does not exist or has been expired.</p>
+                    </div>`;
             }
         } else {
             // Upload page functionality
@@ -233,7 +264,9 @@
             const qrContainer = document.getElementById('qrContainer');
             const errorMessage = document.getElementById('error-message');
             const fileIdSpan = document.getElementById('fileId');
-
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+    
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -242,12 +275,11 @@
                         fileInput.value = '';
                         return;
                     }
-
                     fileName.textContent = file.name;
                     fileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
                 }
             });
-
+    
             function showError(message) {
                 errorMessage.textContent = message;
                 errorMessage.style.display = 'block';
@@ -255,27 +287,56 @@
                     errorMessage.style.display = 'none';
                 }, 3000);
             }
-
+    
+            function encryptData(data) {
+                // Enkripsi sederhana: base64 encode
+                return btoa(data);
+            }
+    
+            function decryptData(encryptedData) {
+                // Dekripsi sederhana: base64 decode
+                try {
+                   return atob(encryptedData)
+                } catch (e) {
+                  console.error('Error decoding base64', e);
+                  return null; // Handle the case where decoding fails
+                }
+            }
+    
             generateBtn.addEventListener('click', () => {
                 const file = fileInput.files[0];
                 if (!file) {
-                    showError('Please select a file first');
-                    return;
+                  showError('Please select a file first');
+                  return;
                 }
 
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%'; // Reset progress
+                
+    
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                 reader.onprogress = function(event) {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        progressFill.style.width = percentComplete + '%';
+                    }
+                };
+                
+                reader.onload = function (e) {
                     // Generate unique ID for the file
                     const fileId = 'file_' + Math.random().toString(36).substr(2, 9);
-                    
+    
+                    // Encrypt the data URL
+                    const encryptedData = encryptData(e.target.result);
+    
                     // Store file data in localStorage
                     const fileData = {
                         name: file.name,
                         size: file.size,
-                        dataUrl: e.target.result
+                        dataUrl: encryptedData
                     };
                     localStorage.setItem(fileId, JSON.stringify(fileData));
-
+    
                     // Generate QR Code with the download URL
                     const downloadUrl = `${window.location.href}?fileId=${fileId}`;
                     const qrcodeElement = document.getElementById('qrcode');
@@ -285,12 +346,48 @@
                         width: 256,
                         height: 256
                     });
-
+    
                     fileIdSpan.textContent = fileId;
                     qrContainer.style.display = 'block';
+                    progressContainer.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             });
+    
+            if (fileIdParam) {
+                //download page logic
+                const fileData = localStorage.getItem(fileIdParam);
+                 if (fileData) {
+                    const fileInfo = JSON.parse(fileData);
+                    document.getElementById('downloadFileName').textContent = fileInfo.name;
+                     document.getElementById('downloadFileSize').textContent = `Size: ${(fileInfo.size / (1024 * 1024)).toFixed(2)} MB`;
+                    
+                      const decryptedData = decryptData(fileInfo.dataUrl);
+                       if (decryptedData) {
+                        document.getElementById('downloadBtn').addEventListener('click', () => {
+                             const link = document.createElement('a');
+                             link.href = decryptedData;
+                             link.download = fileInfo.name;
+                             document.body.appendChild(link);
+                             link.click();
+                              document.body.removeChild(link);
+                         });
+                      }else{
+                           // Handle the case where decryption fails
+                             document.getElementById('downloadPage').innerHTML = `
+                            <div class="download-info">
+                                <h2>Error Decoding File</h2>
+                                <p>The file cannot be downloaded due to an error</p>
+                            </div>`;
+                     }
+                  }else {
+                document.getElementById('downloadPage').innerHTML = `
+                    <div class="download-info">
+                        <h2>File Not Found</h2>
+                        <p>The file you are looking for does not exist or has been expired.</p>
+                    </div>`;
+                   }
+            }
         }
     </script>
 </body>

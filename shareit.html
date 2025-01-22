@@ -6,9 +6,7 @@
     <title>ShareFlow - Simple PIN Sharing</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-     <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -157,13 +155,6 @@
             border-color: #4299e1;
             background: #ebf8ff;
         }
-        .file-preview{
-            max-width: 100px;
-             max-height: 100px;
-             margin-bottom: 0.5rem;
-             border: 1px solid #e2e8f0;
-             border-radius: 4px;
-        }
 
         .file-info {
             display: flex;
@@ -282,13 +273,6 @@
         .notification.show {
             transform: translateY(0);
         }
-
-        #qrCodeContainer{
-             display: flex;
-             justify-content: center;
-              margin-bottom: 1rem;
-        }
-
     </style>
 </head>
 <body>
@@ -300,7 +284,6 @@
 
         <div class="card">
             <h2>PIN Anda</h2>
-             <div id="qrCodeContainer"></div>
             <div class="pin-display" id="pinDisplay"></div>
             <button class="button copy-btn" id="copyBtn">Salin PIN</button>
         </div>
@@ -311,7 +294,6 @@
                 <p>Drag & drop file di sini atau klik untuk memilih</p>
                 <input type="file" id="fileInput" hidden>
             </div>
-              <img src="" alt="File Preview" id="filePreview" class="file-preview" style="display: none;">
             <div id="fileInfo" style="display: none"></div>
             <div class="pin-input" id="receiverPinInput">
                 <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
@@ -321,12 +303,6 @@
                 <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
                 <input type="text" maxlength="1" pattern="\d" inputmode="numeric">
             </div>
-             <div>
-                 <label>
-                     <input type="checkbox" id="encryptionCheckbox">
-                     Enkripsi File
-                 </label>
-             </div>
             
             <button class="button" id="sendBtn" disabled>Kirim File</button>
             <div class="status" id="sendStatus" style="display: none">
@@ -385,23 +361,6 @@ const myPIN = generatePIN();
 displayPIN(myPIN);
 const peer = new Peer(myPIN);
 
-
-// Generate QR Code
-function generateQRCode(pin) {
-    const qrCodeContainer = document.getElementById('qrCodeContainer');
-    qrCodeContainer.innerHTML = ''; // Clear any previous QR codes
-    const qrCode = new QRCode(qrCodeContainer, {
-        text: pin,
-        width: 128,
-        height: 128,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
-}
-
-generateQRCode(myPIN);
-
 let conn = null;
 let selectedFile = null;
 let receivedChunks = [];
@@ -446,7 +405,6 @@ pinInputs.forEach((input, index) => {
 // File handling
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
-const filePreview = document.getElementById('filePreview');
 
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', (e) => {
@@ -479,20 +437,6 @@ function handleFileSelect(file) {
             </div>
         </div>
     `;
-    
-    // Display image preview
-     if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-             reader.onload = (e) => {
-               filePreview.src = e.target.result;
-               filePreview.style.display = 'block';
-           };
-            reader.readAsDataURL(file);
-        } else {
-             filePreview.style.display = 'none';
-            filePreview.src = '';
-        }
-    
     validateSendButton();
 }
 
@@ -501,36 +445,11 @@ function validateSendButton() {
     document.getElementById('sendBtn').disabled = !selectedFile || pin.length !== 6;
 }
 
-
-// Encryption function
-function encryptData(data, key) {
-    try {
-         const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
-        return encrypted;
-    } catch (error){
-        console.error("Encryption Error:", error)
-        return null;
-    }
-}
-
-function decryptData(encrypted, key) {
-  try {
-     const decrypted = CryptoJS.AES.decrypt(encrypted, key).toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decrypted);
-  } catch(error){
-      console.error("Decryption Error:", error)
-      return null;
-  }
-
-}
-
-
 // Send file
 document.getElementById('sendBtn').addEventListener('click', async () => {
     const receiverPIN = Array.from(pinInputs).map(input => input.value).join('');
     if (!selectedFile || receiverPIN.length !== 6) return;
-     const encryptionKey = receiverPIN;
-    const encrypt = document.getElementById('encryptionCheckbox').checked;
+
     try {
         conn = peer.connect(receiverPIN);
         conn.on('open', async () => {
@@ -541,17 +460,11 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
             sendStatus.style.display = 'block';
 
             // Send file info
-           let fileInfo = {
+            conn.send({
                 type: 'file-info',
                 name: selectedFile.name,
                 size: selectedFile.size
-            }
-             if(encrypt){
-                   fileInfo = encryptData(fileInfo, encryptionKey)
-                 }
-
-            conn.send(fileInfo);
-
+            });
 
             // Read and send file in chunks
             const CHUNK_SIZE = 16384;
@@ -559,15 +472,10 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
             let offset = 0;
 
             reader.onload = (e) => {
-                  let chunkData = {
-                       type: 'file-chunk',
-                       data: e.target.result
-                   }
-                
-                  if(encrypt){
-                       chunkData = encryptData(chunkData,encryptionKey);
-                  }
-                conn.send(chunkData);
+                conn.send({
+                    type: 'file-chunk',
+                    data: e.target.result
+                });
 
                 offset += e.target.result.byteLength;
                 const progress = (offset / selectedFile.size) * 100;
@@ -580,11 +488,7 @@ document.getElementById('sendBtn').addEventListener('click', async () => {
                 if (offset < selectedFile.size) {
                     readNextChunk();
                 } else {
-                      let completeData = { type: 'file-complete' }
-                      if (encrypt) {
-                           completeData = encryptData(completeData, encryptionKey)
-                      }
-                    conn.send(completeData);
+                    conn.send({ type: 'file-complete' });
                     showNotification('File berhasil dikirim!');
                     setTimeout(() => {
                         sendStatus.style.display = 'none';
@@ -614,25 +518,15 @@ function handleIncomingData(data) {
     const receiveProgressBar = document.getElementById('receiveProgressBar');
     const receiveProgressText = document.getElementById('receiveProgressText');
     const receiveProgressSize = document.getElementById('receiveProgressSize');
-     const encryptionKey = myPIN;
-       const encrypt = document.getElementById('encryptionCheckbox').checked;
-     let receivedData = data;
-     if (encrypt){
-         receivedData = decryptData(data, encryptionKey)
-           if (!receivedData){
-               console.error("Failed to decrypt data:", data)
-               return;
-           }
-     }
 
-    if (receivedData.type === 'file-info') {
-        currentFileInfo = receivedData;
+    if (data.type === 'file-info') {
+        currentFileInfo = data;
         receivedChunks = [];
-        receiveStatus.innerText = `Menerima: ${receivedData.name}`;
+        receiveStatus.innerText = `Menerima: ${data.name}`;
         receiveProgress.style.display = 'block';
-        receiveProgressSize.textContent = `0 KB / ${formatFileSize(receivedData.size)}`;
-    } else if (receivedData.type === 'file-chunk') {
-        receivedChunks.push(receivedData.data);
+        receiveProgressSize.textContent = `0 KB / ${formatFileSize(data.size)}`;
+    } else if (data.type === 'file-chunk') {
+        receivedChunks.push(data.data);
         
         // Calculate progress
         const receivedSize = receivedChunks.reduce((total, chunk) => total + chunk.byteLength, 0);
@@ -642,7 +536,7 @@ function handleIncomingData(data) {
         receiveProgressBar.style.width = `${progress}%`;
         receiveProgressText.textContent = `${Math.round(progress)}%`;
         receiveProgressSize.textContent = `${formatFileSize(receivedSize)} / ${formatFileSize(currentFileInfo.size)}`;
-    } else if (receivedData.type === 'file-complete') {
+    } else if (data.type === 'file-complete') {
         const blob = new Blob(receivedChunks);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);

@@ -1,282 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Matematika</title>
+    <style>
+        /* Import Poppins font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+        :root {
+            --primary: #000;
+            --secondary: #000;
+            --accent: #ff4500;
+            --background: #000;
+            --text-light: #fff;
+            --shadow-offset: 4px;
+            --border-radius: 15px;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-light);
+             overscroll-behavior-y: contain;
+        }
+
+        .container {
+            background-color: var(--text-light);
+             padding: 20px; /* Reduce padding for mobile view */
+            border: 4px solid var(--primary);
+             border-radius: 0; /* No border radius for full view */
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--accent);
+            max-width: 100%; /* Make container full width */
+            width: 100%;
+            text-align: left;
+            overflow-y: auto; /* Enable scrolling */
+            position: relative;
+            min-height: 100vh; /* Make container full height */
+             overscroll-behavior-y: contain;
+        }
+
+        .container:hover {
+            box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--accent);
+        }
+
+
+        h1 {
+            color: var(--accent);
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        #start-section {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #start-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        #start-section input,
+        #start-section button {
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 3px solid var(--primary);
+            border-radius: calc(var(--border-radius) - 5px);
+            background-color: transparent;
+            color: var(--primary);
+            font-size: 1.1em;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+
+        #start-section input:focus {
+            outline: none;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+
+        #start-section button {
+            cursor: pointer;
+            background-color: var(--primary);
+            color: var(--text-light);
+            font-weight: 700;
+            transition: all 0.3s;
+            text-transform: uppercase;
+             border: 3px solid var(--primary);
+             box-shadow: 4px 4px 0 var(--accent);
+
+        }
+
+
+        #start-section button:hover {
+            background-color: var(--accent);
+              box-shadow: 6px 6px 0 var(--primary);
+        }
+
+
+        #quiz {
+            position: relative;
+            height: auto; /* Allow quiz section to grow vertically */
+        }
+
+        #timer {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: right;
+        }
+
+
+        .question {
+            margin-bottom: 20px;
+            padding: 25px;
+           border: 3px solid var(--primary);
+            border-radius: calc(var(--border-radius) - 5px);
+            position: relative;
+            background-color: transparent;
+            box-shadow: 4px 4px 0 var(--accent);
+            color: var(--primary);
+        }
+
+          .question p {
+            font-weight: 700;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .options label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 15px;
+              border: 3px solid var(--primary);
+            border-radius: calc(var(--border-radius) - 5px);
+            transition: background-color 0.3s;
+            background-color: transparent;
+           color: var(--primary);
+        }
+
+
+
+        .options label:hover {
+            background-color: rgba(255, 69, 0, 0.1);
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 15px 30px;
+             background-color: var(--primary);
+            color: var(--text-light);
+             border: 3px solid var(--primary);
+             border-radius: calc(var(--border-radius) - 5px);
+             cursor: pointer;
+             font-size: 1.1em;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            white-space: nowrap;
+            box-shadow: 4px 4px 0 var(--accent);
+        }
+
+        .btn:hover {
+            background-color: var(--accent);
+            box-shadow: 6px 6px 0 var(--primary);
+        }
+
+
+        #result {
+            margin-top: 20px;
+            padding: 25px;
+               border-top: 3px solid var(--primary);
+            text-align: left;
+             color: var(--primary);
+        }
+
+        #result h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+         #result p {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        #analytics li {
+            margin-bottom: 10px;
+            padding: 15px;
+               border-bottom: 3px solid var(--primary);
+               color: var(--primary);
+        }
+
+
+        #analytics li:last-child {
+             border-bottom: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+             .container {
+                padding: 15px;
+                border-radius: 0;
+
+            }
+             h1 {
+                font-size: 2em;
+                margin-bottom: 20px;
+            }
+            #start-section label {
+                margin-bottom: 5px;
+            }
+            #start-section input,
+            #start-section button {
+                padding: 10px;
+                margin-bottom: 5px;
+                font-size: 1em;
+            }
+            .question {
+                 padding: 15px;
+            }
+            .question p {
+                font-size: 1em;
+                margin-bottom: 5px;
+            }
+             .options label {
+                padding: 10px;
+                margin-bottom: 5px;
+            }
+             .btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+             #result {
+                padding: 15px;
+                margin-top: 15px;
+            }
+             #result h2 {
+                margin-bottom: 10px;
+            }
+            #result p {
+                margin-bottom: 10px;
+            }
+             #analytics li {
+                margin-bottom: 5px;
+                padding: 10px;
+            }
+        }
+        /* Scrollbar Styling for Webkit browsers */
+         .container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .container::-webkit-scrollbar-track {
+            background: var(--text-light);
+        }
+        .container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+         .container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
 </head>
-<style>
-/* Import Poppins font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: #333; /* Teks abu-abu gelap */
-}
-
-.container {
-    background-color: #fff;
-    padding: 40px;
-    border: 2px solid #a0a0a0;
-    border-radius: 0;
-    box-shadow: 5px 5px 0 #d0d0d0;
-    max-width: 800px;
-    width: 95%;
-    text-align: left;
-    overflow: hidden;
-    position: relative;
-}
-
-h1 {
-    color: #a020f0;
-    font-size: 2.5em;
-    font-weight: 700;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-#start-section {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-#start-section label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 700;
-    color: #a020f0;
-    text-transform: uppercase;
-}
-
-#start-section input,
-#start-section button {
-    margin-bottom: 10px;
-    padding: 15px;
-    border: 2px solid #a0a0a0;
-    border-radius: 0;
-    background-color: transparent;
-    color: #333;
-    font-size: 1.1em;
-    width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.3s, color 0.3s;
-}
-
-
-#start-section input:focus {
-   outline: none;
-    border-color: #a020f0;
-    color: #a020f0;
-}
-
-
-#start-section button {
-     cursor: pointer;
-    background-color: #a020f0;
-    color: #fff;
-    font-weight: 700;
-    transition: all 0.3s;
-    text-transform: uppercase;
-     border: 2px solid #a0a0a0;
-}
-
-
-#start-section button:hover {
-    background-color: transparent;
-    color: #a020f0;
-}
-
-
-#quiz {
-    position: relative;
-}
-
-#timer {
-    font-size: 1.3em;
-    margin-bottom: 20px;
-    color: #333;
-    font-weight: 700;
-    text-transform: uppercase;
-    text-align: right;
-}
-
-
-.question {
-    margin-bottom: 20px;
-    padding: 25px;
-    border: 2px solid #a0a0a0;
-    border-radius: 0;
-    position: relative;
-    background-color: transparent;
-    box-shadow: 2px 2px 0 #a020f0;
-}
-
-.question p {
-    font-weight: 700;
-    font-size: 1.2em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-}
-
-.options {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-
-.options label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    cursor: pointer;
-    padding: 15px;
-    border: 2px solid #a0a0a0;
-    border-radius: 0;
-    transition: background-color 0.3s;
-    background-color: transparent;
-}
-
-.options label:hover {
-    background-color: rgba(160, 32, 240, 0.1);
-}
-
-
-.options input[type="radio"] {
-    margin-right: 10px;
-    transform: scale(1.2);
-}
-
-
-.btn { /* Styling untuk tombol dengan class .btn */
-    display: inline-block;
-    margin: 20px auto;
-    padding: 15px 30px;
-     background-color: #a020f0; /* Button ungu */
-    color: #fff;
-    border: 2px solid #a0a0a0;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: 700;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-}
-
-.btn:hover {
-     background-color: transparent;
-    color: #a020f0;
-}
-
-
-
-#result {
-    margin-top: 20px;
-    padding: 25px;
-    border-top: 2px solid #a0a0a0;
-    text-align: left;
-}
-
-#result h2 {
-    color: #a020f0;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    font-weight: 700;
-}
-
-#result p {
-    font-weight: 700;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-}
-
-#analytics li {
-    margin-bottom: 10px;
-    padding: 15px;
-    border-bottom: 2px solid #a0a0a0;
-}
-
-
-#analytics li:last-child {
-    border-bottom: none;
-}
-
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        width: 95%;
-        padding: 20px;
-    }
-
-
-  h1 {
-      font-size: 2em;
-        margin-bottom: 20px;
-  }
-
-    #start-section label{
-    margin-bottom: 5px;
-  }
-
-  #start-section input,
-  #start-section button {
-    padding: 10px;
-        margin-bottom: 5px;
-        font-size: 1em;
-}
-
-
-    .question {
-        padding: 15px;
-    }
-
-  .question p {
-    font-size: 1em;
-    margin-bottom: 5px;
-  }
-
-  .options label {
-        padding: 10px;
-        margin-bottom: 5px;
-    }
-
-    .btn {
-        padding: 10px 20px;
-        font-size: 1em;
-    }
-
-    #result {
-      padding: 15px;
-    margin-top: 15px;
-    }
-
-    #result h2 {
-        margin-bottom: 10px;
-    }
-
-
-     #result p {
-        margin-bottom: 10px;
-    }
-
-  #analytics li{
-        margin-bottom: 5px;
-        padding: 10px;
-    }
-}</style>
 <body>
     <div class="container">
         <h1>Quiz Matematika</h1>
@@ -288,7 +317,7 @@ h1 {
         <div id="quiz" style="display: none;">
             <div id="timer">Waktu: <span id="time-left"></span></div>
             <div id="quiz-area">
-            <!-- Soal-soal akan ditampilkan di sini -->
+                <!-- Soal-soal akan ditampilkan di sini -->
             </div>
         </div>
         <button id="submit-btn" class="btn" style="display: none;">Kumpulkan Jawaban</button>
@@ -300,307 +329,307 @@ h1 {
         </div>
     </div>
     <script>
-const startSection = document.getElementById('start-section');
-const startButton = document.getElementById('start-btn');
-const quizContainer = document.getElementById('quiz');
-const submitButton = document.getElementById('submit-btn');
-const resultContainer = document.getElementById('result');
-const scoreDisplay = document.getElementById('score');
-const analyticsList = document.getElementById('analytics');
-const restartButton = document.getElementById('restart-btn');
-const timeLeftDisplay = document.getElementById('time-left');
-const usernameInput = document.getElementById('username');
+        const startSection = document.getElementById('start-section');
+        const startButton = document.getElementById('start-btn');
+        const quizContainer = document.getElementById('quiz');
+        const submitButton = document.getElementById('submit-btn');
+        const resultContainer = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score');
+        const analyticsList = document.getElementById('analytics');
+        const restartButton = document.getElementById('restart-btn');
+        const timeLeftDisplay = document.getElementById('time-left');
+        const usernameInput = document.getElementById('username');
 
-let currentQuestion = 0;
-let score = 0;
-let userAnswers = [];
-let timeLeft = 600; // Waktu dalam detik (10 menit)
-let timerInterval;
-let startTime;
-let username = '';
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timeLeft = 600; // Waktu dalam detik (10 menit)
+        let timerInterval;
+        let startTime;
+        let username = '';
 
-const questions = [
-    // Daftar Soal
-     {
-        question: "Hasil dari (3x + 2)(x - 4) adalah...",
-        options: ["3x² - 10x - 8", "3x² + 10x - 8", "3x² - 10x + 8", "3x² + 10x + 8"],
-        answer: "3x² - 10x - 8",
-    },
-     {
-        question: "Berapakah nilai dari sin 30°?",
-        options: ["1/2", "√2/2", "√3/2", "1"],
-        answer: "1/2",
-    },
-    {
-        question: "Sederhanakan bentuk akar √72",
-        options: ["6√2", "3√8", "4√9", "2√18"],
-        answer: "6√2",
-    },
-    {
-        question: "Sebuah tabung memiliki jari-jari 7 cm dan tinggi 10 cm. Berapa volumenya? (π = 22/7)",
-        options: ["1540 cm³", "1760 cm³", "1980 cm³", "2120 cm³"],
-        answer: "1540 cm³",
-    },
-     {
-        question: "Jika log 2 = 0.3010 dan log 3 = 0.4771, maka log 12 adalah...",
-        options: ["0.7781", "1.0791", "1.3801", "1.5811"],
-        answer: "1.0791",
-    },
-    {
-        question: "Persamaan garis yang melalui titik (2,3) dan bergradien 2 adalah...",
-        options: ["y = 2x - 1", "y = 2x + 1", "y = -2x + 1", "y = 2x + 7"],
-        answer: "y = 2x - 1",
-    },
-    {
-         question: "Nilai dari cos 60° adalah...",
-         options: ["1/2", "√2/2", "√3/2", "1"],
-         answer: "1/2",
-    },
-    {
-         question: "Berapakah turunan dari f(x) = 2x³ + 4x² - 5x + 6",
-         options: ["6x² + 8x - 5", "6x² + 8x + 5", "6x² - 8x - 5", "6x² - 8x + 5"],
-          answer: "6x² + 8x - 5",
-    },
-    {
-         question: "Berapakah hasil dari  ∫2x dx?",
-        options: ["x² + C", "2x + C", "2x² + C", "x + C"],
-         answer: "x² + C",
-    },
-    {
-        question: "Berapa luas lingkaran dengan jari-jari 14 cm? (π = 22/7)",
-        options: ["416 cm²", "616 cm²", "816 cm²", "1016 cm²"],
-        answer: "616 cm²",
-    },
-    {
-         question: "Diketahui suatu barisan aritmatika dengan U1=5 dan U5=25, berapakah beda barisan tersebut?",
-         options: ["4", "5", "6", "7"],
-         answer: "5",
-    },
-    {
-         question: "Jika x² - 5x + 6 = 0, nilai x yang memenuhi adalah...",
-         options: ["x=2 atau x=3", "x=-2 atau x=3", "x=2 atau x=-3", "x=-2 atau x=-3"],
-         answer: "x=2 atau x=3",
-    },
-    {
-         question: "Bentuk sederhana dari 8^2/3 adalah...",
-         options: ["2", "4", "6", "8"],
-         answer: "4",
-    },
-     {
-          question: "Berapakah nilai dari tan 45°?",
-         options: ["0", "1/2", "1", "√3/2"],
-         answer: "1",
-    },
-    {
-        question: "Sebuah kubus memiliki panjang rusuk 8 cm, berapakah volumenya?",
-         options: ["512 cm³", "256 cm³", "384 cm³", "624 cm³"],
-         answer: "512 cm³",
-    },
-    {
-        question: "Berapakah hasil dari 5! (5 faktorial)?",
-         options: ["100", "120", "140", "160"],
-         answer: "120",
-    },
-    {
-        question: "Jika diketahui cos A = 3/5, maka nilai dari sin A adalah...",
-         options: ["3/4", "4/5", "5/3", "5/4"],
-         answer: "4/5",
-    },
-    {
-        question: "Berapakah nilai diskriminan dari persamaan kuadrat x² - 4x + 3 = 0?",
-        options: ["2", "4", "6", "8"],
-         answer: "4",
-    },
-    {
-         question: "Hasil dari (2x+3)² adalah...",
-         options: ["4x²+9", "4x²+12x+9", "4x²+6x+9", "4x²+12x-9"],
-          answer: "4x²+12x+9",
-    },
-     {
-        question: "Jika P = {1, 2, 3, 4} dan Q = {2, 4, 5}, maka P ∪ Q (gabungan P dan Q) adalah...",
-         options: ["{2, 4}", "{1, 2, 3, 4}", "{1, 2, 3, 4, 5}", "{1, 3, 5}"],
-         answer: "{1, 2, 3, 4, 5}",
-    },
-    {
-         question: "Berapakah nilai dari  ∫(3x² + 2x - 1) dx?",
-        options: ["x³ + x² - x + C", "x³ + 2x² - x + C", "x³ + x² + x + C", "x² + 2x - 1 + C"],
-         answer: "x³ + x² - x + C",
-    },
-     {
-         question: "Berapakah panjang sisi miring segitiga siku-siku dengan sisi siku-siku 6 cm dan 8 cm?",
-         options: ["9 cm", "10 cm", "12 cm", "14 cm"],
-         answer: "10 cm",
-    },
-    {
-          question: "Berapakah nilai dari  ∫(2x+5) dx?",
-        options: ["x²+5x + C", "x²+2x + C", "2x+5x + C", "2x²+5 + C"],
-          answer: "x²+5x + C",
-    },
-    {
-         question: "Berapakah hasil dari log 1000?",
-         options: ["1", "2", "3", "4"],
-         answer: "3",
-    },
-    {
-         question: "Berapakah hasil dari  ∫(4x³ + 2x²) dx?",
-        options: ["x⁴ + (2/3)x³ + C", "x³ + (2/3)x² + C", "x⁴ + (1/3)x³ + C", "x⁴ + x³ + C"],
-         answer: "x⁴ + (2/3)x³ + C",
-    },
-    {
-         question: "Berapakah nilai dari sin 60°?",
-         options: ["1/2", "√2/2", "√3/2", "1"],
-         answer: "√3/2",
-    },
-    {
-         question: "Berapakah turunan dari f(x) = 3x⁴ + 2x³ - 6x + 1",
-         options: ["12x³ + 6x² - 6", "12x³ + 6x² + 6", "12x³ - 6x² - 6", "12x³ - 6x² + 6"],
-          answer: "12x³ + 6x² - 6",
-    },
-    {
-        question: "Jika 2^x = 8, maka nilai x adalah...",
-        options: ["1", "2", "3", "4"],
-        answer: "3",
-    },
-    {
-         question: "Nilai dari tan 30° adalah...",
-         options: ["1/√3", "1/√2", "1", "√3"],
-         answer: "1/√3",
-    },
-    {
-        question: "Berapakah hasil dari 6! (6 faktorial)?",
-         options: ["720", "540", "480", "360"],
-         answer: "720",
-    },
-    {
-         question: "Berapakah nilai dari cos 30°?",
-         options: ["1/2", "√2/2", "√3/2", "1"],
-         answer: "√3/2",
-    },
-    {
-         question: "Berapakah turunan dari f(x) = 4x³ + 5x² - 7x + 8",
-         options: ["12x² + 10x - 7", "12x² + 10x + 7", "12x² - 10x - 7", "12x² - 10x + 7"],
-          answer: "12x² + 10x - 7",
-    },
-    {
-         question: "Berapakah hasil dari  ∫3x² dx?",
-        options: ["x³ + C", "x² + C", "3x + C", "2x + C"],
-         answer: "x³ + C",
-    },
-    {
-        question: "Sebuah balok memiliki panjang 10 cm, lebar 5 cm, dan tinggi 4 cm. Berapa volumenya?",
-        options: ["200 cm³", "100 cm³", "150 cm³", "220 cm³"],
-         answer: "200 cm³",
-    },
-     {
-        question: "Jika log 5 = 0.6990, maka log 25 adalah...",
-        options: ["1.3980", "1.5980", "1.7980", "1.9980"],
-         answer: "1.3980",
-    },
-    {
-       question: "Persamaan garis yang melalui titik (-1,4) dan bergradien -2 adalah...",
-        options: ["y = -2x + 2", "y = -2x - 2", "y = 2x + 2", "y = 2x - 2"],
-        answer: "y = -2x + 2",
-    },
-    {
-        question: "Nilai dari sin 45° adalah...",
-        options: ["1/2", "√2/2", "√3/2", "1"],
-        answer: "√2/2",
-    },
-    {
-         question: "Berapakah nilai dari cos 45°?",
-         options: ["1/2", "√2/2", "√3/2", "1"],
-         answer: "√2/2",
-    },
-    {
-         question: "Berapakah turunan dari f(x) = 5x³ + 3x² - 8x + 9",
-         options: ["15x² + 6x - 8", "15x² + 6x + 8", "15x² - 6x - 8", "15x² - 6x + 8"],
-          answer: "15x² + 6x - 8",
-    },
-     {
-        question: "Bentuk sederhana dari 27^1/3 adalah...",
-        options: ["2", "3", "4", "5"],
-         answer: "3",
-    },
-     {
-        question: "Berapakah hasil dari 7! (7 faktorial)?",
-         options: ["5040", "4050", "5400", "4500"],
-         answer: "5040",
-    },
-    {
-        question: "Sebuah kerucut memiliki jari-jari 7 cm dan tinggi 12 cm. Berapa volumenya? (π = 22/7)",
-        options: ["616 cm³", "650 cm³", "600 cm³", "620 cm³"],
-         answer: "616 cm³",
-    },
-     {
-          question: "Berapakah nilai dari tan 60°?",
-         options: ["1/√3", "1/√2", "1", "√3"],
-         answer: "√3",
-    },
-     {
-          question: "Berapakah hasil dari (x+5)(x-5)?",
-         options: ["x²-10", "x²-25", "x²+25", "x²+10"],
-        answer: "x²-25",
-    },
-    {
-          question: "Berapakah nilai dari log 100?",
-         options: ["1", "2", "3", "4"],
-         answer: "2",
-    },
-    {
-          question: "Berapakah nilai dari log 1000?",
-         options: ["1", "2", "3", "4"],
-         answer: "3",
-    },
-    {
-          question: "Berapakah hasil dari log 10000?",
-         options: ["2", "3", "4", "5"],
-         answer: "4",
-    },
-    {
-         question: "Berapakah hasil dari (3x+4)(2x+1)?",
-         options: ["6x²+11x+4", "6x²+11x+5", "6x²+10x+4", "6x²+10x+5"],
-          answer: "6x²+11x+4",
-    },
-];
+        const questions = [
+            // Daftar Soal
+            {
+                question: "Hasil dari (3x + 2)(x - 4) adalah...",
+                options: ["3x² - 10x - 8", "3x² + 10x - 8", "3x² - 10x + 8", "3x² + 10x + 8"],
+                answer: "3x² - 10x - 8",
+            },
+            {
+                question: "Berapakah nilai dari sin 30°?",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                answer: "1/2",
+            },
+            {
+                question: "Sederhanakan bentuk akar √72",
+                options: ["6√2", "3√8", "4√9", "2√18"],
+                answer: "6√2",
+            },
+            {
+                question: "Sebuah tabung memiliki jari-jari 7 cm dan tinggi 10 cm. Berapa volumenya? (π = 22/7)",
+                options: ["1540 cm³", "1760 cm³", "1980 cm³", "2120 cm³"],
+                answer: "1540 cm³",
+            },
+            {
+                question: "Jika log 2 = 0.3010 dan log 3 = 0.4771, maka log 12 adalah...",
+                options: ["0.7781", "1.0791", "1.3801", "1.5811"],
+                answer: "1.0791",
+            },
+            {
+                question: "Persamaan garis yang melalui titik (2,3) dan bergradien 2 adalah...",
+                options: ["y = 2x - 1", "y = 2x + 1", "y = -2x + 1", "y = 2x + 7"],
+                answer: "y = 2x - 1",
+            },
+            {
+                question: "Nilai dari cos 60° adalah...",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                answer: "1/2",
+            },
+            {
+                question: "Berapakah turunan dari f(x) = 2x³ + 4x² - 5x + 6",
+                options: ["6x² + 8x - 5", "6x² + 8x + 5", "6x² - 8x - 5", "6x² - 8x + 5"],
+                answer: "6x² + 8x - 5",
+            },
+            {
+                question: "Berapakah hasil dari  ∫2x dx?",
+                options: ["x² + C", "2x + C", "2x² + C", "x + C"],
+                answer: "x² + C",
+            },
+            {
+                question: "Berapa luas lingkaran dengan jari-jari 14 cm? (π = 22/7)",
+                options: ["416 cm²", "616 cm²", "816 cm²", "1016 cm²"],
+                answer: "616 cm²",
+            },
+            {
+                question: "Diketahui suatu barisan aritmatika dengan U1=5 dan U5=25, berapakah beda barisan tersebut?",
+                options: ["4", "5", "6", "7"],
+                answer: "5",
+            },
+            {
+                question: "Jika x² - 5x + 6 = 0, nilai x yang memenuhi adalah...",
+                options: ["x=2 atau x=3", "x=-2 atau x=3", "x=2 atau x=-3", "x=-2 atau x=-3"],
+                answer: "x=2 atau x=3",
+            },
+            {
+                question: "Bentuk sederhana dari 8^2/3 adalah...",
+                options: ["2", "4", "6", "8"],
+                answer: "4",
+            },
+            {
+                question: "Berapakah nilai dari tan 45°?",
+                options: ["0", "1/2", "1", "√3/2"],
+                answer: "1",
+            },
+            {
+                question: "Sebuah kubus memiliki panjang rusuk 8 cm, berapakah volumenya?",
+                options: ["512 cm³", "256 cm³", "384 cm³", "624 cm³"],
+                answer: "512 cm³",
+            },
+            {
+                question: "Berapakah hasil dari 5! (5 faktorial)?",
+                options: ["100", "120", "140", "160"],
+                answer: "120",
+            },
+            {
+                question: "Jika diketahui cos A = 3/5, maka nilai dari sin A adalah...",
+                options: ["3/4", "4/5", "5/3", "5/4"],
+                answer: "4/5",
+            },
+            {
+                question: "Berapakah nilai diskriminan dari persamaan kuadrat x² - 4x + 3 = 0?",
+                options: ["2", "4", "6", "8"],
+                answer: "4",
+            },
+            {
+                question: "Hasil dari (2x+3)² adalah...",
+                options: ["4x²+9", "4x²+12x+9", "4x²+6x+9", "4x²+12x-9"],
+                answer: "4x²+12x+9",
+            },
+            {
+                question: "Jika P = {1, 2, 3, 4} dan Q = {2, 4, 5}, maka P ∪ Q (gabungan P dan Q) adalah...",
+                options: ["{2, 4}", "{1, 2, 3, 4}", "{1, 2, 3, 4, 5}", "{1, 3, 5}"],
+                answer: "{1, 2, 3, 4, 5}",
+            },
+            {
+                question: "Berapakah nilai dari  ∫(3x² + 2x - 1) dx?",
+                options: ["x³ + x² - x + C", "x³ + 2x² - x + C", "x³ + x² + x + C", "x² + 2x - 1 + C"],
+                answer: "x³ + x² - x + C",
+            },
+            {
+                question: "Berapakah panjang sisi miring segitiga siku-siku dengan sisi siku-siku 6 cm dan 8 cm?",
+                options: ["9 cm", "10 cm", "12 cm", "14 cm"],
+                answer: "10 cm",
+            },
+           {
+                question: "Berapakah nilai dari  ∫(2x+5) dx?",
+                options: ["x²+5x + C", "x²+2x + C", "2x+5x + C", "2x²+5 + C"],
+                answer: "x²+5x + C",
+           },
+            {
+                question: "Berapakah hasil dari log 1000?",
+                options: ["1", "2", "3", "4"],
+                answer: "3",
+            },
+             {
+                question: "Berapakah hasil dari  ∫(4x³ + 2x²) dx?",
+                 options: ["x⁴ + (2/3)x³ + C", "x³ + (2/3)x² + C", "x⁴ + (1/3)x³ + C", "x⁴ + x³ + C"],
+                 answer: "x⁴ + (2/3)x³ + C",
+             },
+             {
+                question: "Berapakah nilai dari sin 60°?",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                answer: "√3/2",
+            },
+            {
+                question: "Berapakah turunan dari f(x) = 3x⁴ + 2x³ - 6x + 1",
+                 options: ["12x³ + 6x² - 6", "12x³ + 6x² + 6", "12x³ - 6x² - 6", "12x³ - 6x² + 6"],
+                answer: "12x³ + 6x² - 6",
+            },
+            {
+                question: "Jika 2^x = 8, maka nilai x adalah...",
+                options: ["1", "2", "3", "4"],
+                answer: "3",
+            },
+            {
+                question: "Nilai dari tan 30° adalah...",
+                 options: ["1/√3", "1/√2", "1", "√3"],
+                answer: "1/√3",
+            },
+             {
+                question: "Berapakah hasil dari 6! (6 faktorial)?",
+                 options: ["720", "540", "480", "360"],
+                 answer: "720",
+             },
+              {
+                question: "Berapakah nilai dari cos 30°?",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                answer: "√3/2",
+            },
+           {
+               question: "Berapakah turunan dari f(x) = 4x³ + 5x² - 7x + 8",
+                 options: ["12x² + 10x - 7", "12x² + 10x + 7", "12x² - 10x - 7", "12x² - 10x + 7"],
+                answer: "12x² + 10x - 7",
+           },
+            {
+                question: "Berapakah hasil dari  ∫3x² dx?",
+                options: ["x³ + C", "x² + C", "3x + C", "2x + C"],
+                answer: "x³ + C",
+            },
+            {
+                question: "Sebuah balok memiliki panjang 10 cm, lebar 5 cm, dan tinggi 4 cm. Berapa volumenya?",
+                 options: ["200 cm³", "100 cm³", "150 cm³", "220 cm³"],
+                answer: "200 cm³",
+            },
+           {
+                question: "Jika log 5 = 0.6990, maka log 25 adalah...",
+                 options: ["1.3980", "1.5980", "1.7980", "1.9980"],
+                 answer: "1.3980",
+            },
+            {
+                 question: "Persamaan garis yang melalui titik (-1,4) dan bergradien -2 adalah...",
+                 options: ["y = -2x + 2", "y = -2x - 2", "y = 2x + 2", "y = 2x - 2"],
+                answer: "y = -2x + 2",
+            },
+             {
+                question: "Nilai dari sin 45° adalah...",
+                options: ["1/2", "√2/2", "√3/2", "1"],
+                 answer: "√2/2",
+            },
+            {
+                  question: "Berapakah nilai dari cos 45°?",
+                   options: ["1/2", "√2/2", "√3/2", "1"],
+                answer: "√2/2",
+            },
+            {
+                question: "Berapakah turunan dari f(x) = 5x³ + 3x² - 8x + 9",
+                  options: ["15x² + 6x - 8", "15x² + 6x + 8", "15x² - 6x - 8", "15x² - 6x + 8"],
+                 answer: "15x² + 6x - 8",
+           },
+            {
+                 question: "Bentuk sederhana dari 27^1/3 adalah...",
+                options: ["2", "3", "4", "5"],
+                answer: "3",
+            },
+             {
+                question: "Berapakah hasil dari 7! (7 faktorial)?",
+                options: ["5040", "4050", "5400", "4500"],
+                 answer: "5040",
+            },
+            {
+                question: "Sebuah kerucut memiliki jari-jari 7 cm dan tinggi 12 cm. Berapa volumenya? (π = 22/7)",
+                options: ["616 cm³", "650 cm³", "600 cm³", "620 cm³"],
+                 answer: "616 cm³",
+            },
+             {
+                   question: "Berapakah nilai dari tan 60°?",
+                   options: ["1/√3", "1/√2", "1", "√3"],
+                   answer: "√3",
+              },
+            {
+                   question: "Berapakah hasil dari (x+5)(x-5)?",
+                    options: ["x²-10", "x²-25", "x²+25", "x²+10"],
+                    answer: "x²-25",
+            },
+             {
+                   question: "Berapakah nilai dari log 100?",
+                   options: ["1", "2", "3", "4"],
+                    answer: "2",
+            },
+           {
+                  question: "Berapakah nilai dari log 1000?",
+                   options: ["1", "2", "3", "4"],
+                    answer: "3",
+            },
+             {
+                  question: "Berapakah hasil dari log 10000?",
+                    options: ["2", "3", "4", "5"],
+                    answer: "4",
+            },
+             {
+                question: "Berapakah hasil dari (3x+4)(2x+1)?",
+                options: ["6x²+11x+4", "6x²+11x+5", "6x²+10x+4", "6x²+10x+5"],
+                  answer: "6x²+11x+4",
+            },
+        ];
 
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
-shuffleArray(questions);
+        shuffleArray(questions);
 
-function startQuiz() {
-    username = usernameInput.value.trim();
-    if (!username) {
-        alert('Masukkan nama Anda!');
-        return;
-    }
+        function startQuiz() {
+            username = usernameInput.value.trim();
+            if (!username) {
+                alert('Masukkan nama Anda!');
+                return;
+            }
 
-    startSection.style.display = 'none';
-    quizContainer.style.display = 'block';
-    submitButton.style.display = 'block';
-    loadQuestion();
-    startTimer();
-}
+            startSection.style.display = 'none';
+            quizContainer.style.display = 'block';
+            submitButton.style.display = 'block';
+            loadQuestion();
+            startTimer();
+        }
 
-function loadQuestion() {
-    const currentQ = questions[currentQuestion];
-    let optionsHTML = '';
+        function loadQuestion() {
+            const currentQ = questions[currentQuestion];
+            let optionsHTML = '';
 
-    currentQ.options.forEach((option, index) => {
-        optionsHTML += `
+            currentQ.options.forEach((option, index) => {
+                optionsHTML += `
             <label>
                 <input type="radio" name="question-${currentQuestion}" value="${option}">
                  ${option}
             </label>
         `;
-    });
+            });
 
-    quizContainer.innerHTML = `
+            quizContainer.innerHTML = `
         <div class="question">
             <p>Soal ${currentQuestion + 1}: ${currentQ.question}</p>
             <div class="options">
@@ -608,58 +637,58 @@ function loadQuestion() {
             </div>
         </div>
     `;
-}
-
-function checkAnswer() {
-    const selectedOption = document.querySelector(`input[name="question-${currentQuestion}"]:checked`);
-    const currentQ = questions[currentQuestion];
-
-    if (selectedOption) {
-        const userAnswer = selectedOption.value;
-         const endTime = new Date();
-        const timeTaken = (endTime - startTime) / 1000;
-
-        userAnswers.push({
-            question: currentQ.question,
-            userAnswer: userAnswer,
-            correctAnswer: currentQ.answer,
-            timeTaken: timeTaken
-        });
-
-        if (userAnswer === currentQ.answer) {
-            score++;
-        } else{
-            alert(`Jawaban Anda Salah!\nJawaban yang benar adalah: ${currentQ.answer}`);
         }
-        
-          currentQuestion++;
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector(`input[name="question-${currentQuestion}"]:checked`);
+            const currentQ = questions[currentQuestion];
+
+            if (selectedOption) {
+                const userAnswer = selectedOption.value;
+                const endTime = new Date();
+                const timeTaken = (endTime - startTime) / 1000;
+
+                userAnswers.push({
+                    question: currentQ.question,
+                    userAnswer: userAnswer,
+                    correctAnswer: currentQ.answer,
+                    timeTaken: timeTaken
+                });
+
+                if (userAnswer === currentQ.answer) {
+                    score++;
+                } else {
+                    alert(`Jawaban Anda Salah!\nJawaban yang benar adalah: ${currentQ.answer}`);
+                }
+
+                currentQuestion++;
 
 
-            if (currentQuestion < questions.length) {
-                loadQuestion();
-               startTime = new Date();
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                    startTime = new Date();
+
+                } else {
+                    stopTimer();
+                    showResult();
+                }
+
 
             } else {
-                stopTimer();
-                showResult();
+                alert("Pilih salah satu jawaban dulu")
             }
+        }
 
+        function showResult() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            resultContainer.style.display = 'block';
+            scoreDisplay.textContent = `Skor Anda, ${username}: ${score} dari ${questions.length}`;
 
-    } else{
-      alert("Pilih salah satu jawaban dulu")
-    }
-}
-
-function showResult() {
-    quizContainer.style.display = 'none';
-    submitButton.style.display = 'none';
-    resultContainer.style.display = 'block';
-    scoreDisplay.textContent = `Skor Anda, ${username}: ${score} dari ${questions.length}`;
-
-    analyticsList.innerHTML = '';
-    userAnswers.forEach((answer, index) => {
-        const isCorrect = answer.userAnswer === answer.correctAnswer;
-        analyticsList.innerHTML += `
+            analyticsList.innerHTML = '';
+            userAnswers.forEach((answer, index) => {
+                const isCorrect = answer.userAnswer === answer.correctAnswer;
+                analyticsList.innerHTML += `
             <li>
                 Soal ${index + 1}: ${answer.question} <br>
                 Jawaban Anda: ${answer.userAnswer}, Jawaban Benar: ${answer.correctAnswer} <br>
@@ -667,45 +696,47 @@ function showResult() {
                 <span style="color: ${isCorrect ? 'green' : 'red'}">${isCorrect ? 'Benar' : 'Salah'}</span>
             </li>
         `;
-    });
-}
-
-function restartQuiz() {
-    currentQuestion = 0;
-    score = 0;
-    userAnswers = [];
-    timeLeft = 600;
-    shuffleArray(questions);
-    startSection.style.display = 'block';
-    quizContainer.style.display = 'none';
-    submitButton.style.display = 'none';
-    resultContainer.style.display = 'none';
-    timeLeftDisplay.textContent = '';
-    usernameInput.value = '';
-     clearInterval(timerInterval);
-}
-
-function startTimer() {
-  startTime = new Date();
-    timerInterval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timeLeftDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        if (timeLeft <= 0) {
-            stopTimer();
-            showResult();
+            });
         }
-        timeLeft--;
-    }, 1000);
-}
 
-function stopTimer() {
-    clearInterval(timerInterval);
-}
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            timeLeft = 600;
+            shuffleArray(questions);
+            startSection.style.display = 'block';
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            resultContainer.style.display = 'none';
+            timeLeftDisplay.textContent = '';
+            usernameInput.value = '';
+            clearInterval(timerInterval);
+        }
 
-submitButton.addEventListener('click', checkAnswer);
-restartButton.addEventListener('click', restartQuiz);
-startButton.addEventListener('click', startQuiz);</script>
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timeLeftDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    stopTimer();
+                    showResult();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        submitButton.addEventListener('click', checkAnswer);
+        restartButton.addEventListener('click', restartQuiz);
+        startButton.addEventListener('click', startQuiz);
+    </script>
 </body>
+
 </html>

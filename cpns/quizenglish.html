@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Verb Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+body {
+    font-family: 'Inter', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000; /* Stark black background */
+    color: #fff; /* White text for high contrast */
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 700px;
+    padding: 40px;
+    background-color: #fff;
+    border: 4px solid #000; /* Hard black border */
+    color: #000;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s ease;
+    border-radius: 20px; /* Soft edges */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+/* Removed hover translation for desktop */
+.container:hover {
+    box-shadow: -6px -6px 0 #ff4500; /* Offset shadow in bright orange */
+}
+
+.dark-theme {
+    background-color: #fff; /* Bright white background */
+    color: #000;
+}
+
+.dark-theme .container {
+    background-color: #000;
+    color: #fff;
+    border: 4px solid #fff; /* White border */
+}
+
+.dark-theme .container:hover {
+    box-shadow: -6px -6px 0 #00ff00; /* Neon green offset shadow */
+}
+
+.main-title {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    color: #000;
+    border-bottom: 4px solid #000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.dark-theme .main-title {
+    color: #fff;
+    border-bottom: 4px solid #fff;
+}
+
+.quiz-question {
+    border-bottom: 4px solid #000;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.dark-theme .quiz-question {
+    border-bottom: 4px solid #fff;
+}
+
+.quiz-question p {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.quiz-options label {
+    border: 3px solid #000;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: left;
+    transition: all 0.2s ease;
+    border-radius: 15px;
+}
+
+/* Removed hover translation */
+.quiz-options label:hover {
+    background-color: #ff4500;
+    color: #fff;
+}
+
+.dark-theme .quiz-options label {
+    border: 3px solid #fff;
+}
+
+.dark-theme .quiz-options label:hover {
+    background-color: #00ff00;
+    color: #000;
+}
+
+.btn {
+    background-color: #000;
+    color: #fff;
+    border: 3px solid #fff;
+    padding: 15px 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 15px;
+}
+
+/* Removed hover translation */
+.btn:hover {
+    background-color: #ff4500;
+}
+
+.dark-theme .btn {
+    background-color: #fff;
+    color: #000;
+    border: 3px solid #000;
+}
+
+.dark-theme .btn:hover {
+    background-color: #00ff00;
+}
+
+.feedback {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+.correct {
+    color: #00ff00; /* Bright green for correct */
+}
+
+.incorrect {
+    color: #ff4500; /* Bright orange for incorrect */
+}
+
+.timer {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+.progress-container {
+    background-color: #000;
+    height: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background-color: #ff4500;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.dark-theme .progress-container {
+    background-color: #fff;
+}
+
+.dark-theme .progress-bar {
+    background-color: #00ff00;
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        align-items: flex-start;
+    }
+
+    .container {
+        width: 100%;
+        height: 100vh;
+        max-width: none;
+        border-radius: 0; /* Full width on mobile */
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 30px 20px;
+        overflow-y: auto; /* Enable scrolling if content is long */
+        box-shadow: none; /* Remove box shadow on mobile */
+    }
+
+    /* Ensure no translation on mobile elements */
+    .container:hover,
+    .quiz-options label:hover,
+    .btn:hover {
+        transform: none;
+    }
+
+    .main-title {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .quiz-question p {
+        font-size: 1.1rem;
+    }
+
+    .quiz-options label {
+        padding: 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+
+    .feedback, .timer {
+        font-size: 1.1rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 400px) {
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .quiz-question p {
+        font-size: 1rem;
+    }
+
+    .quiz-options label {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+</style>
+<body class="light-theme">
+    <div class="container">
+        <div class="quiz-header">
+            <div class="progress-container" id="progress-container" style="display:block">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="quiz-header-top">
+                 <h1 class="main-title">English Verb Quiz</h1>
+                  <div class="music-control">
+                     <button id="music-btn" class="btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"
+                            style="fill:#fdf2f8;">
+                            <path
+                                d="M361 215C375.3 223.8 384 239.3 384 256c0 16.7-8.7 32.2-23 40.9l-104 62.4c-10.1 6-20.7 9-31.3 9H64c-35.3 0-64-28.7-64-64V64C0 28.7 28.7 0 64 0H256c10.6 0 21.2 3 31.3 9l104 62.4c14.3 8.7 23 24.2 23 40.9c0 16.7-8.7 32.2-23 40.9L288 284V193l73 43.8zM160 128c0-17.7-14.3-32-32-32s-32 14.3-32 32s14.3 32 32 32s32-14.3 32-32zm0 256c0-17.7-14.3-32-32-32s-32 14.3-32 32s14.3 32 32 32s32-14.3 32-32z" />
+                        </svg>
+                    </button>
+                 </div>
+            </div>
+
+        </div>
+
+        <div class="timer" id="timer" style="display:block">Time: 00:00</div>
+        <div id="quiz-container">
+            <!-- Soal akan dimasukkan oleh JavaScript di sini -->
+        </div>
+         <div class="hint-container" id="hint-container" style="display:none">
+             <p>Hint: </p>
+              <p id="hint-text"></p>
+        </div>
+        <button id="show-hint-btn" class="btn" style="display: none;">Show Hint</button>
+         <div class="feedback" id="feedback"></div>
+        <button id="submit-btn" class="btn">Submit</button>
+
+
+        <div class="result" id="result"></div>
+        <div id="analytics" style="display: none;"></div>
+          <div class="achievement-container" id="achievement-container" style="display: none;">
+            <h2>Achievement</h2>
+            <p id="achievement-text"></p>
+             <button id="share-btn" class="btn">Share Result</button>
+           </div>
+        <button id="download-btn" class="btn" style="display: none;">Download Result</button>
+
+        <div id="youtube-background">
+            <div id="player"></div>
+        </div>
+       <audio id="audio" >
+           <source id="audioSource" type="audio/mpeg">
+        </audio>
+        <audio id="correctSound">
+            <source src="correct.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="incorrectSound">
+            <source src="incorrect.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+const quizContainer = document.getElementById('quiz-container');
+const submitBtn = document.getElementById('submit-btn');
+const feedbackDiv = document.getElementById('feedback');
+const timerDisplay = document.getElementById('timer');
+const resultDiv = document.getElementById('result');
+const analyticsDiv = document.getElementById('analytics');
+const downloadBtn = document.getElementById('download-btn');
+const correctSound = document.getElementById('correctSound');
+const incorrectSound = document.getElementById('incorrectSound');
+const musicBtn = document.getElementById('music-btn');
+const progressContainer = document.getElementById('progress-container');
+const progressBar = document.getElementById('progress-bar');
+const hintContainer = document.getElementById('hint-container');
+const hintText = document.getElementById('hint-text');
+const showHintBtn = document.getElementById('show-hint-btn');
+const achievementContainer = document.getElementById('achievement-container');
+const achievementText = document.getElementById('achievement-text');
+const shareBtn = document.getElementById('share-btn');
+const audio = document.getElementById('audio');
+const audioSource = document.getElementById('audioSource');
+
+
+let currentQuestion = 0;
+let score = 0;
+let timeLeft = 0;
+let timerInterval;
+let startTime;
+let player;
+let isMusicPlaying = false;
+let countdownInterval;
+let timePerQuestion = 20;
+let hintsUsed = 0;
+let questionsAnswered = 0;
+let totalTimeTaken = 0;
+let firstLoad = true;
+
+const questions = [
+      {
+        text: 'The cat ____ (sleep) on the rug.',
+        options: ['sleeps', 'sleeping', 'slept', 'is sleep'],
+        correctAnswer: 'sleeps',
+        difficulty: 'easy',
+        hint: 'Think about the simple present tense.'
+    },
+     {
+        text: 'They ____ (play) soccer in the park now.',
+        options: ['play', 'are playing', 'played', 'will play'],
+        correctAnswer: 'are playing',
+        difficulty: 'easy',
+        hint: 'Consider the present continuous tense.'
+    },
+    {
+        text: 'She ____ (read) a book before bed last night.',
+        options: ['read', 'reads', 'reading', 'will read'],
+        correctAnswer: 'read',
+        difficulty: 'easy',
+        hint: 'This is in the simple past tense.'
+    },
+    {
+        text: 'He ____ (finish) his project by next week.',
+        options: ['finishes', 'will finish', 'finished', 'is finish'],
+        correctAnswer: 'will finish',
+        difficulty: 'easy',
+        hint: 'Think about the future simple tense.'
+    },
+       {
+        text: 'If I ____ (know) the answer, I would tell you.',
+        options: ['know', 'knew', 'known', 'will know'],
+         correctAnswer: 'knew',
+        difficulty: 'easy',
+        hint: 'Use the correct form in a conditional sentence'
+    },
+      {
+        text: 'They ____ (travel) to Europe next summer.',
+         options: ['travel', 'travels','will have traveled','are traveling'],
+        correctAnswer: 'are traveling',
+          difficulty: 'easy',
+        hint: 'Consider the present continuous tense for future plans.'
+    },
+     {
+        text: 'The bird ____ (fly) away when I approached.',
+        options: ['fly', 'flew', 'flying', 'will fly'],
+        correctAnswer: 'flew',
+         difficulty: 'easy',
+        hint: 'This is a completed action in the past.'
+    },
+    {
+        text: 'She ____ (speak) English fluently.',
+        options: ['speak', 'speaks', 'spoken', 'is speaking'],
+         correctAnswer: 'speaks',
+        difficulty: 'easy',
+        hint: 'This is a simple present fact.'
+    },
+    {
+        text: 'We ____ (watch) a movie last night.',
+        options: ['watch', 'watched', 'watching', 'will watch'],
+         correctAnswer: 'watched',
+        difficulty: 'easy',
+        hint: 'Use the correct past tense form.'
+    },
+    {
+        text: 'He ____ (work) at the company since 2010.',
+        options: ['works', 'has been working', 'worked', 'will work'],
+         correctAnswer: 'has been working',
+        difficulty: 'easy',
+        hint: 'Use present perfect continuous for an action started in the past that continues to now.'
+    },
+     {
+        text: 'By the time she arrives, they ____ (leave).',
+        options: ['leave', 'will leave', 'had left', 'will have left'],
+         correctAnswer: 'will have left',
+        difficulty: 'medium',
+        hint: 'This action will be completed before another action in the future.'
+    },
+    {
+        text: 'She ____ (practice) the piano every day.',
+        options: ['practice', 'practices', 'practiced', 'will practice'],
+         correctAnswer: 'practices',
+        difficulty: 'medium',
+        hint: 'This is a habit done regularly'
+    },
+     {
+        text: 'If it ____ (rain), we will stay inside.',
+         options: ['rain', 'rains', 'rained', 'will rain'],
+         correctAnswer: 'rains',
+        difficulty: 'medium',
+        hint: 'Use the correct present form for a conditional sentence'
+    },
+      {
+        text: 'They ____ (visit) us if they had time.',
+         options: ['visit','will visit', 'would visit', 'visited'],
+        correctAnswer: 'would visit',
+        difficulty: 'medium',
+        hint: 'Use the correct form in a second conditional sentence.'
+    },
+       {
+        text: 'He ____ (be) very tired after the marathon.',
+        options: ['is','will be', 'would be','had been'],
+        correctAnswer: 'would be',
+        difficulty: 'medium',
+        hint: 'Use the correct form to describe a hypothetical past condition.'
+    },
+      {
+        text: 'She ____ (write) a letter to her friend yesterday.',
+         options: ['write', 'writes','wrote', 'writing'],
+        correctAnswer: 'wrote',
+        difficulty: 'medium',
+        hint: 'This is a completed action in the past.'
+    },
+       {
+        text: 'I ____ (see) that movie before.',
+       options: ['see', 'saw','have seen', 'seeing'],
+        correctAnswer: 'have seen',
+        difficulty: 'medium',
+        hint: 'Use the correct present perfect form.'
+    },
+        {
+        text: 'They ____ (live) in this city for ten years.',
+         options: ['live','are living','have been living','lived'],
+         correctAnswer: 'have been living',
+        difficulty: 'medium',
+         hint: 'Use the present perfect continuous for an action started in the past that continues to now.'
+    },
+     {
+        text: 'The cake ____ (bake) by my grandmother.',
+          options: ['bakes','is baking','was baked','baked'],
+        correctAnswer: 'was baked',
+        difficulty: 'medium',
+        hint: 'This action was done in the past and the focus is on the object'
+    },
+       {
+        text: 'She ____ (sing) beautifully at the concert last night.',
+         options: ['sing','sings','sang', 'will sing'],
+        correctAnswer: 'sang',
+        difficulty: 'medium',
+          hint: 'Use the correct simple past form.'
+    },
+        {
+        text: 'If I ____ (be) a bird, I could fly anywhere.',
+         options: ['am','was', 'were', 'will be'],
+        correctAnswer: 'were',
+        difficulty: 'hard',
+         hint: 'Use the correct form for a hypothetical situation.'
+    },
+     {
+        text: 'They ____ (study) all night for the exam.',
+        options: ['study','are studying', 'had studied', 'will have studied'],
+        correctAnswer: 'had studied',
+        difficulty: 'hard',
+        hint: 'Use the past perfect tense'
+    },
+      {
+        text: 'He ____ (speak) to the manager before making his decision.',
+         options: ['speaks', 'spoke', 'has spoken', 'was spoken'],
+         correctAnswer: 'had spoken',
+        difficulty: 'hard',
+        hint: 'Use the past perfect tense for an action that occurred before another action in the past'
+    },
+    {
+        text: 'The letter ____ (write) by her before she left.',
+       options: ['writes','is writing', 'was written','had been written'],
+        correctAnswer: 'had been written',
+        difficulty: 'hard',
+        hint: 'Use the correct passive past perfect form'
+    },
+       {
+       text: 'She ____ (understand) the lesson if she had paid attention.',
+        options: ['understand','understands', 'would understand','would have understood'],
+       correctAnswer: 'would have understood',
+         difficulty: 'hard',
+          hint: 'Use the correct form in a third conditional sentence'
+    },
+     {
+        text: 'I wish I ____ (go) to that party last week.',
+         options: ['go','went', 'had gone','would go'],
+        correctAnswer: 'had gone',
+         difficulty: 'hard',
+          hint: 'Use the past perfect tense to express a wish about a past event'
+    },
+     {
+         text: 'He ____ (work) there for five years before moving.',
+         options:['work', 'has worked', 'had been working','worked'],
+        correctAnswer: 'had been working',
+        difficulty: 'hard',
+        hint: 'Use the past perfect continuous tense for an action that continued for a period of time in the past, before another action'
+    },
+         {
+        text: 'If the weather ____ (be) better, we would have gone hiking.',
+          options: ['be','is','was','had been'],
+        correctAnswer: 'had been',
+        difficulty: 'hard',
+          hint: 'Use the correct form in a third conditional sentence'
+    },
+    {
+        text: 'The books ____ (arrange) on the shelf by the librarian.',
+         options:['arrange','are arranged','were arranged','had been arranged'],
+         correctAnswer: 'were arranged',
+          difficulty: 'hard',
+           hint: 'This action was done in the past and the focus is on the object'
+    },
+    {
+        text: 'The concert ____ (begin) by the time we got there.',
+        options:['begin', 'begins', 'had begun','began'],
+        correctAnswer: 'had begun',
+        difficulty: 'hard',
+         hint: 'Use past perfect tense for an action before another action in the past'
+    },
+    {
+        text: 'By tomorrow, the project ____ (complete).',
+        options:['complete','will be complete', 'will have completed','had completed'],
+        correctAnswer: 'will have completed',
+         difficulty: 'medium',
+         hint: 'Use future perfect for a completed action before a specific time in the future'
+    },
+    {
+        text: 'I ____ (travel) for two weeks by the time I reach home.',
+        options: ['travel', 'will travel', 'will be traveling', 'will have been traveling'],
+        correctAnswer: 'will have been traveling',
+        difficulty: 'medium',
+        hint: 'Use future perfect continuous for an ongoing action up to a point in the future'
+      },
+       {
+        text: 'She ____ (plan) the party before he offered to help.',
+        options: ['plan', 'has planned', 'was planning', 'had been planning'],
+         correctAnswer: 'had been planning',
+         difficulty: 'medium',
+         hint: 'Use past perfect continuous for a long past action before another past action'
+    },
+     {
+        text: 'If I ____ (eat) that cake, I would feel sick.',
+        options: ['eat', 'ate', 'would eat', 'had eaten'],
+        correctAnswer: 'ate',
+        difficulty: 'hard',
+        hint: 'Use the correct form in a second conditional sentence'
+    },
+         {
+        text: 'She ____ (not/finish) her homework when the phone rang.',
+        options: ['does not finish', 'did not finish', 'had not finished', 'will not finish'],
+        correctAnswer: 'had not finished',
+          difficulty: 'medium',
+          hint: 'Use the past perfect tense for an action that was not completed before another action in the past'
+    }
+];
+
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        timeLeft = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const seconds = String(timeLeft % 60).padStart(2, '0');
+        timerDisplay.textContent = `Time: ${minutes}:${seconds}`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+function startCountdownTimer() {
+    let remainingTime = timePerQuestion;
+    timerDisplay.textContent = `Time: ${remainingTime}`;
+    countdownInterval = setInterval(() => {
+        remainingTime--;
+        timerDisplay.textContent = `Time: ${remainingTime}`;
+        if (remainingTime <= 0) {
+            clearInterval(countdownInterval);
+           checkAnswer(true);
+            handleQuizFlow();
+        }
+    }, 1000);
+}
+function stopCountdownTimer() {
+     clearInterval(countdownInterval);
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function getShuffledQuestions() {
+    let shuffledQuestions = sessionStorage.getItem('shuffledQuestions');
+    if (!shuffledQuestions) {
+        shuffledQuestions = JSON.stringify(shuffleArray([...questions]));
+        sessionStorage.setItem('shuffledQuestions', shuffledQuestions);
+    }
+    return JSON.parse(shuffledQuestions);
+}
+
+function displayQuestion() {
+      const shuffledQuestions = getShuffledQuestions();
+    const question = shuffledQuestions[currentQuestion];
+     let optionsHTML = '';
+    question.options.forEach((option, index) => {
+        optionsHTML += `
+            <label>
+                <input type="radio" name="answer" value="${option}" id="option${index}">
+                ${option}
+            </label>
+        `;
+    });
+   quizContainer.innerHTML = `
+        <div class="quiz-question">
+            <p>${question.text}</p>
+             <div class="quiz-options">
+             ${optionsHTML}
+             </div>
+        </div>
+    `;
+   showHintBtn.style.display = question.hint ? 'block' : 'none';
+   hintContainer.style.display = 'none';
+   startCountdownTimer();
+    feedbackDiv.textContent = '';
+    updateProgressBar();
+}
+
+function loadQuestion(){
+      if (firstLoad){
+        alert('Semangat! Kerjakan soal dengan teliti dan jangan menyerah!')
+         firstLoad = false;
+        }
+       displayQuestion();
+}
+function updateProgressBar() {
+    const progress = ((currentQuestion + 1) / getShuffledQuestions().length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+function checkAnswer(isTimeOut = false) {
+    stopCountdownTimer();
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+      questionsAnswered++;
+    if (!selectedAnswer && !isTimeOut) {
+         const correctAnswer = getShuffledQuestions()[currentQuestion].correctAnswer.toLowerCase();
+       feedbackDiv.textContent = `Please select an answer. The correct answer is "${correctAnswer}"`;
+        feedbackDiv.className = 'feedback incorrect';
+         return false;
+    }
+    const userAnswer =  isTimeOut ? '' : selectedAnswer.value.toLowerCase();
+    const correctAnswer = getShuffledQuestions()[currentQuestion].correctAnswer.toLowerCase();
+
+    if (userAnswer === correctAnswer || isTimeOut) {
+        if (!isTimeOut){
+         feedbackDiv.textContent = 'Correct!';
+         feedbackDiv.className = 'feedback correct';
+            score++;
+            correctSound.play();
+          }
+        totalTimeTaken += timePerQuestion - (parseInt(timerDisplay.textContent.split(": ")[1]));
+        if (isTimeOut){
+              totalTimeTaken += timePerQuestion;
+             feedbackDiv.textContent = `Time Out! The correct answer is "${correctAnswer}"`;
+             feedbackDiv.className = 'feedback incorrect';
+             incorrectSound.play();
+        }
+    } else {
+        feedbackDiv.textContent = `Incorrect! The correct answer is "${correctAnswer}"`;
+        feedbackDiv.className = 'feedback incorrect';
+        incorrectSound.play();
+         totalTimeTaken += timePerQuestion;
+    }
+
+    return true;
+}
+
+function showResult() {
+    stopTimer();
+     const userName = prompt('Please enter your name', 'User');
+    resultDiv.textContent = `Your score: ${score} out of ${getShuffledQuestions().length}`;
+     const accuracy =  ((score / getShuffledQuestions().length) * 100).toFixed(2)
+    analyticsDiv.innerHTML = `
+      <h3>Analytics</h3>
+        <p>Name: ${userName}</p>
+      <p>Time taken: ${Math.floor(totalTimeTaken / 60)} minutes ${totalTimeTaken % 60} seconds</p>
+      <p>Score: ${score}/${getShuffledQuestions().length}</p>
+       <p>Accuracy: ${accuracy}%</p>
+        <p>Hints Used: ${hintsUsed}</p>
+    `;
+    analyticsDiv.style.display = 'block';
+    downloadBtn.style.display = 'block';
+      if (accuracy >= 80) {
+            achievementText.textContent = 'Congratulations! You have achieved an excellent score!';
+        } else if (accuracy >= 50) {
+            achievementText.textContent = 'Good job! You have done quite well!';
+        } else {
+             achievementText.textContent = 'Keep practicing! You can improve your score!';
+        }
+         achievementContainer.style.display = 'block';
+}
+
+function downloadResult() {
+    const container = document.querySelector('.container');
+    const analytics = document.getElementById('analytics');
+
+    html2canvas(analytics).then(canvas => {
+        const dataURL = canvas.toDataURL('image/jpeg');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        const userName = prompt('Please enter your name', 'User');
+        link.download = `${userName}_result.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+function handleQuizFlow() {
+    if (checkAnswer()) {
+        currentQuestion++;
+        if (currentQuestion < getShuffledQuestions().length) {
+            setTimeout(loadQuestion, 2000);
+        } else {
+            setTimeout(showResult, 2000)
+        }
+    }
+}
+
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '0',
+        width: '0',
+       videoId: 'osdoLjUNFnA',
+        playerVars: {
+            'playsinline': 1,
+            'autoplay': 0,
+            'loop': 1,
+            'controls': 0,
+            'mute': 1,
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+}
+function togglePlay() {
+    if (isMusicPlaying) {
+        player.pauseVideo();
+        musicBtn.classList.remove('playing');
+          audio.pause();
+    } else {
+        player.playVideo();
+          audio.play();
+        musicBtn.classList.add('playing');
+    }
+    isMusicPlaying = !isMusicPlaying;
+}
+
+function onPlayerReady(event) {
+    document.getElementById('player').classList.add('hide-video');
+}
+function showHint() {
+    const currentQ = getShuffledQuestions()[currentQuestion];
+    hintText.textContent = currentQ.hint;
+    hintContainer.style.display = 'block';
+    hintsUsed++;
+     showHintBtn.style.display = 'none';
+}
+function playAudio(){
+    audioSource.src = 'assets/mp3/tylor.mp3'
+        audio.load();
+        audio.play();
+         audio.volume = 0.1;
+         audio.loop = true;
+}
+function shareResult(){
+     const userName = prompt('Please enter your name', 'User');
+   const accuracy =  ((score / getShuffledQuestions().length) * 100).toFixed(2)
+    const message = `I just finished the quiz with name: ${userName} and score ${score} / ${getShuffledQuestions().length} , Accuracy : ${accuracy} %`
+     navigator.share({
+            title: 'Quiz Result',
+            text: message
+        })
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
+}
+
+musicBtn.addEventListener('click', togglePlay);
+submitBtn.addEventListener('click', handleQuizFlow);
+downloadBtn.addEventListener('click', downloadResult);
+showHintBtn.addEventListener('click', showHint);
+shareBtn.addEventListener('click',shareResult)
+loadQuestion();
+startTimer();
+window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+document.addEventListener('DOMContentLoaded', function() {
+    onYouTubeIframeAPIReady();
+   playAudio()
+});
+</script>
+</body>
+
+</html>

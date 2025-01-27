@@ -1,211 +1,316 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuis Bahasa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      body {
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    line-height: 1.6;
-}
+        :root {
+            --primary: #000;
+            --secondary: #000;
+            --accent: #ff4500;
+            --background: #000;
+            --text-light: #fff;
+            --shadow-offset: 4px;
+            --border-radius: 15px;
+            --transition: all 0.2s ease;
+        }
 
-.container {
-    width: 100%;
-    max-width: 800px;
-    padding: 20px;
-}
+        body {
+           background: var(--background);
+             font-family: 'Poppins', sans-serif;
+            margin: 0;
+             padding: 0;
+            display: flex;
+            justify-content: center;
+           align-items: center;
+            min-height: 100vh;
+             line-height: 1.6;
+            color: var(--text-light);
+              overscroll-behavior-y: contain;
+        }
 
-.quiz-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    transition: all 0.3s ease;
-}
+        .container {
+            width: 100%;
+            max-width: 800px;
+             padding: 1rem;
+        }
 
-.quiz-container:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-    transform: translateY(-5px);
-}
+        .quiz-container {
+            background-color: var(--text-light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--accent);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+             border: 4px solid var(--primary);
+               overscroll-behavior-y: contain;
+        }
 
-.timer {
-    font-size: 24px;
-    color: #ff6b6b;
-    text-align: right;
-    font-weight: bold;
-    margin-bottom: 20px;
-    background-color: rgba(255, 107, 107, 0.1);
-    padding: 10px;
-    border-radius: 10px;
-}
+         .quiz-container:hover {
+            box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--accent);
+         }
 
-.question {
-    margin-bottom: 30px;
-}
+         .timer {
+            font-size: 1.5rem;
+             color: var(--primary);
+            text-align: right;
+            font-weight: 900;
+             margin-bottom: 1.2rem;
+             background-color: rgba(255, 107, 107, 0.1);
+             padding: 0.8rem;
+            border-radius: calc(var(--border-radius) - 5px);
+        }
 
-.question h3 {
-    color: #2c3e50;
-    font-size: 22px;
-    margin-bottom: 20px;
-    text-align: center;
-}
+        .question {
+            margin-bottom: 2rem;
+        }
 
-.answer-btn {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    text-align: left;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
+        .question h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+             font-weight: 900;
+             text-transform: uppercase;
+              letter-spacing: 1.5px;
+        }
 
-.answer-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
+          .answer-btn {
+            width: 100%;
+           margin-bottom: 1rem;
+            padding: 1.2rem 1.5rem;
+             border-radius: calc(var(--border-radius) - 5px);
+             font-size: 1rem;
+            text-align: left;
+            transition: all 0.3s ease;
+             position: relative;
+             overflow: hidden;
+            border: 3px solid var(--primary);
+            background-color: var(--text-light);
+            color: var(--primary);
+            font-weight: 900;
+            cursor: pointer;
+        }
 
-.answer-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s ease;
-    z-index: 1;
-}
 
-.answer-btn:hover::before {
-    transform: scaleX(1);
-    transform-origin: left;
-}
+       .answer-btn:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--accent);
+             background-color: rgba(255, 69, 0, 0.1);
+          }
 
-.btn-outline-primary {
-    border-color: #3498db;
-    color: #3498db;
-}
 
-.btn-success {
-    background-color: #2ecc71 !important;
-    color: white !important;
-    border-color: #2ecc71 !important;
-}
+         .answer-btn::before {
+             content: '';
+            position: absolute;
+             top: 0;
+            left: 0;
+             width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: scaleX(0);
+           transform-origin: right;
+           transition: transform 0.3s ease;
+           z-index: 1;
+          }
 
-.btn-danger {
-    background-color: #e74c3c !important;
-    color: white !important;
-    border-color: #e74c3c !important;
-}
 
-.feedback {
-    margin-top: 20px;
-    text-align: center;
-}
+        .answer-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
 
-.feedback .alert {
-    border-radius: 10px;
-    padding: 15px;
-    font-weight: 500;
-}
 
-#next-btn {
-    margin-top: 20px;
-    padding: 12px;
-    font-size: 18px;
-    background-color: #3498db;
-    border-color: #3498db;
-    transition: all 0.3s ease;
-}
+       .btn-success {
+           background-color: #00ff00 !important;
+            color: var(--primary) !important;
+             border-color: #00ff00 !important;
+        }
 
-#next-btn:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-}
+        .btn-danger {
+            background-color: var(--accent) !important;
+            color: var(--text-light) !important;
+           border-color: var(--accent) !important;
+        }
 
-#result-modal .modal-content {
-    border-radius: 15px;
-    overflow: hidden;
-}
 
-#result-modal .modal-header {
-    background-color: #3498db;
-    color: white;
-    border-bottom: none;
-}
+        .feedback {
+            margin-top: 1.5rem;
+             text-align: center;
+        }
 
-#result-modal .modal-body {
-    text-align: center;
-    padding: 30px;
-}
+         .feedback .alert {
+            border-radius: calc(var(--border-radius) - 5px);
+            padding: 1rem;
+           font-weight: 900;
+        }
 
-#score-result {
-    color: #2c3e50;
-    font-size: 36px;
-    margin-bottom: 20px;
-}
+         #next-btn {
+            margin-top: 1.5rem;
+             padding: 1rem;
+            font-size: 1.2rem;
+             background-color: var(--primary);
+              color: var(--text-light);
+             border-color: var(--primary);
+            transition: all 0.3s ease;
+             text-transform: uppercase;
+              font-weight: 900;
+              letter-spacing: 1.5px;
+                box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--accent);
+         }
 
-#score-details {
-    background-color: #f1f3f5;
-    border-radius: 10px;
-    padding: 20px;
-}
+         #next-btn:hover {
+            background-color: var(--accent);
+               transform: translateY(-2px);
+                box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--primary);
+        }
 
-@media (max-width: 768px) {
-    .quiz-container {
-        margin: 20px;
-        padding: 20px;
-    }
+        #result-modal .modal-content {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
 
-    .timer {
-        font-size: 20px;
-    }
+         #result-modal .modal-header {
+            background-color: var(--primary);
+             color: var(--text-light);
+            border-bottom: none;
+        }
 
-    .question h3 {
-        font-size: 18px;
-    }
+        #result-modal .modal-body {
+            text-align: center;
+             padding: 1.5rem;
+         }
 
-    .answer-btn {
-        font-size: 14px;
-        padding: 10px 15px;
-    }
-}
+        #score-result {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+              font-weight: 900;
+        }
 
-@media (max-width: 480px) {
-    .quiz-container {
-        margin: 10px;
-        padding: 15px;
-    }
+         #score-details {
+            background-color: #f1f3f5;
+             border-radius: calc(var(--border-radius) - 5px);
+           padding: 1.2rem;
+        }
 
-    .timer {
-        font-size: 18px;
-    }
+       #result-modal .modal-footer button{
+                padding: 0.8rem 1.75rem;
+              border: 3px solid var(--primary);
+                border-radius: calc(var(--border-radius) - 5px);
+               background: var(--primary);
+                color: var(--text-light);
+                font-weight: 900;
+             cursor: pointer;
+                transition: var(--transition);
+                text-transform: uppercase;
+             letter-spacing: 1.5px;
+                box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--accent);
 
-    .question h3 {
-        font-size: 16px;
-    }
+         }
 
-    .answer-btn {
-        font-size: 13px;
-        padding: 8px 12px;
-    }
-}
+         #result-modal .modal-footer button:hover{
+           background: var(--accent);
+           box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--primary);
+         }
+
+
+          @media (max-width: 768px) {
+            .quiz-container {
+                margin: 1.2rem;
+                 padding: 1.5rem;
+            }
+
+            .timer {
+                font-size: 1.2rem;
+            }
+
+            .question h3 {
+               font-size: 1.2rem;
+            }
+
+            .answer-btn {
+              font-size: 0.9rem;
+                padding: 1rem 1.2rem;
+           }
+
+           #next-btn{
+               font-size: 1rem;
+              padding: 0.8rem;
+           }
+
+             #score-result {
+                   font-size: 1.8rem;
+            }
+
+
+            #score-details {
+               padding: 1rem;
+            }
+
+            #result-modal .modal-body{
+                 padding: 1.2rem;
+            }
+         }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+               margin: 0.5rem;
+              padding: 1rem;
+             }
+
+            .timer {
+                font-size: 1rem;
+           }
+
+             .question h3 {
+                font-size: 1rem;
+            }
+
+            .answer-btn {
+                 font-size: 0.9rem;
+              padding: 0.8rem 1rem;
+            }
+
+            #next-btn{
+                 font-size: 0.9rem;
+               padding: 0.8rem;
+           }
+
+          #score-result {
+                font-size: 1.5rem;
+            }
+            #score-details {
+                 padding: 0.8rem;
+            }
+              #result-modal .modal-body{
+                 padding: 1rem;
+            }
+
+        }
+           /* Scrollbar Styling for Webkit browsers */
+        .quiz-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+         .quiz-container::-webkit-scrollbar-track {
+            background: var(--text-light);
+         }
+
+        .quiz-container::-webkit-scrollbar-thumb {
+           background: var(--accent);
+             border-radius: 10px;
+        }
+
+          .quiz-container::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="quiz-container">
@@ -238,10 +343,8 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const quizData = [
+       const quizData = [
     {
         id: 1,
         soal: "1. Apa sinonim dari 'panjang'?",
@@ -266,7 +369,7 @@
         ],
         jawaban: "A"
     },
-    {
+     {
         id: 3,
         soal: "3. Apa sinonim dari 'bagus'?",
         pilihan: [
@@ -277,7 +380,7 @@
             "E. Pendek"
         ],
         jawaban: "C"
-    },
+     },
     {
         id: 4,
         soal: "4. Apa antonim dari 'tinggi'?",
@@ -325,7 +428,7 @@
             "E. Terisi"
         ],
         jawaban: "B"
-    },
+     },
     {
         id: 8,
         soal: "8. Apa antonim dari 'cepat'?",
@@ -362,7 +465,7 @@
         ],
         jawaban: "A"
     },
-    {
+     {
         id: 11,
         soal: "11. Apa sinonim dari 'terkenal'?",
         pilihan: [
@@ -374,7 +477,7 @@
         ],
         jawaban: "C"
     },
-    {
+     {
         id: 12,
         soal: "12. Apa antonim dari 'dekat'?",
         pilihan: [
@@ -389,7 +492,7 @@
     {
         id: 13,
         soal: "13. Apa sinonim dari 'panas'?",
-        pilihan: [
+         pilihan: [
             "A. Hangat", 
             "B. Dingin", 
             "C. Sejuk", 
@@ -422,7 +525,7 @@
         ],
         jawaban: "B"
     },
-    {
+   {
         id: 16,
         soal: "16. Apa antonim dari 'baik'?",
         pilihan: [
@@ -433,71 +536,71 @@
             "E. Cerdas"
         ],
         jawaban: "A"
-    },
+     },
     {
-        id: 17,
+         id: 17,
         soal: "17. Apa sinonim dari 'terang'?",
-        pilihan: [
+         pilihan: [
             "A. Gelap", 
             "B. Sinar", 
             "C. Cemerlang", 
             "D. Pudar", 
             "E. Cerah"
         ],
-        jawaban: "C"
+       jawaban: "C"
     },
     {
         id: 18,
         soal: "18. Apa antonim dari 'besar'?",
         pilihan: [
-            "A. Kecil", 
-            "B. Lebar", 
+           "A. Kecil", 
+           "B. Lebar", 
             "C. Tinggi", 
             "D. Ringan", 
-            "E. Panjang"
+           "E. Panjang"
         ],
         jawaban: "A"
     },
-    {
+      {
         id: 19,
         soal: "19. Apa sinonim dari 'ringan'?",
         pilihan: [
-            "A. Berat", 
-            "B. Kecil", 
+           "A. Berat", 
+           "B. Kecil", 
             "C. Cepat", 
             "D. Mudah", 
-            "E. Berat"
-        ],
+           "E. Berat"
+       ],
         jawaban: "D"
     },
     {
-        id: 20,
+       id: 20,
         soal: "20. Apa antonim dari 'suka'?",
-        pilihan: [
+         pilihan: [
             "A. Benci", 
-            "B. Senang", 
-            "C. Gembira", 
+             "B. Senang", 
+           "C. Gembira", 
             "D. Marah", 
             "E. Tenang"
         ],
         jawaban: "A"
     },
     {
-        id: 21,
+         id: 21,
         soal: "21. Apa sinonim dari 'besar'?",
         pilihan: [
             "A. Kecil", 
             "B. Agung", 
             "C. Panjang", 
-            "D. Lebar", 
+             "D. Lebar", 
             "E. Tinggi"
         ],
         jawaban: "B"
     },
-    {
-        id: 22,
+     {
+       id: 22,
         soal: "22. Apa antonim dari 'baik'?",
-        pilihan: [
+       pilihan: [
             "A. Buruk", 
             "B. Cerdas", 
             "C. Lemah", 
@@ -506,80 +609,80 @@
         ],
         jawaban: "A"
     },
-    {
+   {
         id: 23,
         soal: "23. Apa sinonim dari 'sabar'?",
-        pilihan: [
+         pilihan: [
             "A. Marah", 
             "B. Giat", 
             "C. Tenang", 
             "D. Panik", 
-            "E. Cemas"
-        ],
-        jawaban: "C"
+             "E. Cemas"
+       ],
+       jawaban: "C"
     },
     {
-        id: 24,
+       id: 24,
         soal: "24. Apa antonim dari 'tinggi'?",
-        pilihan: [
+       pilihan: [
             "A. Pendek", 
             "B. Berat", 
             "C. Lebar", 
-            "D. Kecil", 
-            "E. Panjang"
+           "D. Kecil", 
+           "E. Panjang"
         ],
         jawaban: "A"
     },
-    {
+  {
         id: 25,
-        soal: "25. Apa sinonim dari 'ramah'?",
-        pilihan: [
+       soal: "25. Apa sinonim dari 'ramah'?",
+       pilihan: [
             "A. Kasar", 
-            "B. Sabar", 
-            "C. Baik", 
+           "B. Sabar", 
+           "C. Baik", 
             "D. Lembut", 
             "E. Tenang"
-        ],
+       ],
         jawaban: "C"
     },
     {
-        id: 26,
+       id: 26,
         soal: "26. Apa antonim dari 'tinggi'?",
-        pilihan: [
+      pilihan: [
             "A. Rendah", 
             "B. Pendek", 
             "C. Lebar", 
-            "D. Dalam", 
+           "D. Dalam", 
             "E. Berat"
-        ],
+       ],
         jawaban: "A"
     },
     {
         id: 27,
-        soal: "27. Apa sinonim dari 'baik'?",
-        pilihan: [
+       soal: "27. Apa sinonim dari 'baik'?",
+       pilihan: [
             "A. Buruk", 
-            "B. Cerdas", 
-            "C. Kuat", 
+           "B. Cerdas", 
+           "C. Kuat", 
             "D. Baik hati", 
             "E. Kecil"
         ],
-        jawaban: "D"
-    },
-    {
+       jawaban: "D"
+   },
+   {
         id: 28,
         soal: "28. Apa antonim dari 'gemuk'?",
-        pilihan: [
+       pilihan: [
             "A. Kurus", 
             "B. Pendek", 
-            "C. Ringan", 
+           "C. Ringan", 
             "D. Kecil", 
-            "E. Berat"
-        ],
+             "E. Berat"
+       ],
         jawaban: "A"
     },
-    {
-        id: 29,
+  {
+       id: 29,
         soal: "29. Apa sinonim dari 'kasar'?",
         pilihan: [
             "A. Halus", 
@@ -590,13 +693,13 @@
         ],
         jawaban: "C"
     },
-    {
-        id: 30,
-        soal: "30. Apa antonim dari 'besar'?",
-        pilihan: [
-            "A. Kecil", 
+   {
+       id: 30,
+       soal: "30. Apa antonim dari 'besar'?",
+       pilihan: [
+           "A. Kecil", 
             "B. Berat", 
-            "C. Tinggi", 
+           "C. Tinggi", 
             "D. Panjang", 
             "E. Ringan"
         ],
@@ -605,247 +708,247 @@
     {
         id: 31,
         soal: "31. Apa sinonim dari 'pintar'?",
-        pilihan: [
+       pilihan: [
             "A. Bodoh", 
             "B. Cerdas", 
             "C. Lemah", 
-            "D. Kuat", 
+           "D. Kuat", 
             "E. Cepat"
         ],
-        jawaban: "B"
+         jawaban: "B"
     },
-    {
+   {
         id: 32,
         soal: "32. Apa antonim dari 'muda'?",
-        pilihan: [
+         pilihan: [
             "A. Tua", 
-            "B. Kecil", 
-            "C. Besar", 
-            "D. Lemah", 
-            "E. Ringan"
+             "B. Kecil", 
+           "C. Besar", 
+             "D. Lemah", 
+             "E. Ringan"
         ],
         jawaban: "A"
     },
     {
         id: 33,
-        soal: "33. Apa sinonim dari 'lincah'?",
-        pilihan: [
+       soal: "33. Apa sinonim dari 'lincah'?",
+         pilihan: [
             "A. Lambat", 
             "B. Cepat", 
-            "C. Canggung", 
+           "C. Canggung", 
             "D. Berat", 
             "E. Tegang"
         ],
-        jawaban: "B"
+       jawaban: "B"
     },
     {
         id: 34,
         soal: "34. Apa antonim dari 'suka'?",
-        pilihan: [
+       pilihan: [
             "A. Benci", 
-            "B. Marah", 
-            "C. Senang", 
-            "D. Cemas", 
+           "B. Marah", 
+           "C. Senang", 
+           "D. Cemas", 
             "E. Gembira"
         ],
-        jawaban: "A"
-    },
-    {
-        id: 35,
+         jawaban: "A"
+   },
+   {
+       id: 35,
         soal: "35. Apa sinonim dari 'lambat'?",
-        pilihan: [
+       pilihan: [
             "A. Cepat", 
             "B. Berat", 
-            "C. Kecil", 
-            "D. Tertunda", 
-            "E. Panjang"
-        ],
-        jawaban: "D"
+             "C. Kecil", 
+           "D. Tertunda", 
+           "E. Panjang"
+       ],
+         jawaban: "D"
     },
     {
-        id: 36,
+      id: 36,
         soal: "36. Apa antonim dari 'keras'?",
         pilihan: [
             "A. Lembut", 
-            "B. Berat", 
+           "B. Berat", 
             "C. Kurus", 
-            "D. Sopan", 
+           "D. Sopan", 
             "E. Cepat"
         ],
         jawaban: "A"
-    },
-    {
-        id: 37,
+   },
+   {
+       id: 37,
         soal: "37. Apa sinonim dari 'tinggi'?",
-        pilihan: [
+         pilihan: [
             "A. Pendek", 
             "B. Agung", 
-            "C. Lebar", 
-            "D. Sempurna", 
-            "E. Cemerlang"
+             "C. Lebar", 
+           "D. Sempurna", 
+           "E. Cemerlang"
         ],
-        jawaban: "B"
+         jawaban: "B"
     },
     {
         id: 38,
-        soal: "38. Apa antonim dari 'senang'?",
-        pilihan: [
+         soal: "38. Apa antonim dari 'senang'?",
+       pilihan: [
             "A. Marah", 
             "B. Gembira", 
-            "C. Sedih", 
+           "C. Sedih", 
             "D. Tenang", 
-            "E. Kuat"
-        ],
-        jawaban: "C"
+             "E. Kuat"
+       ],
+      jawaban: "C"
     },
     {
-        id: 39,
-        soal: "39. Apa sinonim dari 'kurang'?",
+       id: 39,
+         soal: "39. Apa sinonim dari 'kurang'?",
         pilihan: [
-            "A. Banyak", 
+           "A. Banyak", 
             "B. Cukup", 
-            "C. Terlalu", 
-            "D. Sedikit", 
-            "E. Lebih"
-        ],
-        jawaban: "D"
-    },
-    {
-        id: 40,
-        soal: "40. Apa antonim dari 'dalam'?",
+           "C. Terlalu", 
+           "D. Sedikit", 
+           "E. Lebih"
+      ],
+         jawaban: "D"
+   },
+  {
+      id: 40,
+       soal: "40. Apa antonim dari 'dalam'?",
         pilihan: [
             "A. Luar", 
-            "B. Kecil", 
+           "B. Kecil", 
             "C. Sempit", 
-            "D. Pendek", 
+             "D. Pendek", 
             "E. Tipis"
-        ],
-        jawaban: "A"
-    },
-    {
-        id: 41,
+       ],
+       jawaban: "A"
+  },
+  {
+       id: 41,
         soal: "41. Apa sinonim dari 'sehat'?",
-        pilihan: [
+       pilihan: [
             "A. Sakit", 
             "B. Kuat", 
             "C. Lemah", 
-            "D. Gembira", 
+           "D. Gembira", 
             "E. Lelah"
         ],
         jawaban: "B"
     },
     {
-        id: 42,
+         id: 42,
         soal: "42. Apa antonim dari 'manis'?",
         pilihan: [
             "A. Pahit", 
-            "B. Asam", 
-            "C. Terang", 
+           "B. Asam", 
+             "C. Terang", 
             "D. Lembut", 
-            "E. Cerdas"
+           "E. Cerdas"
         ],
-        jawaban: "A"
+      jawaban: "A"
     },
-    {
+  {
         id: 43,
-        soal: "43. Apa sinonim dari 'lembut'?",
-        pilihan: [
+       soal: "43. Apa sinonim dari 'lembut'?",
+         pilihan: [
             "A. Kasar", 
             "B. Halus", 
-            "C. Keras", 
-            "D. Gembira", 
+           "C. Keras", 
+           "D. Gembira", 
             "E. Kecil"
         ],
-        jawaban: "B"
+         jawaban: "B"
     },
     {
-        id: 44,
-        soal: "44. Apa antonim dari 'penuh'?",
+         id: 44,
+         soal: "44. Apa antonim dari 'penuh'?",
         pilihan: [
             "A. Kosong", 
-            "B. Banyak", 
+           "B. Banyak", 
             "C. Terisi", 
-            "D. Ringan", 
+           "D. Ringan", 
             "E. Sedikit"
-        ],
-        jawaban: "A"
+       ],
+       jawaban: "A"
     },
     {
         id: 45,
         soal: "45. Apa sinonim dari 'dingin'?",
-        pilihan: [
+         pilihan: [
             "A. Hangat", 
-            "B. Sejuk", 
-            "C. Panas", 
+           "B. Sejuk", 
+             "C. Panas", 
             "D. Cerah", 
-            "E. Gembira"
-        ],
-        jawaban: "B"
+           "E. Gembira"
+      ],
+       jawaban: "B"
     },
     {
         id: 46,
-        soal: "46. Apa antonim dari 'baru'?",
-        pilihan: [
-            "A. Lama", 
-            "B. Segar", 
+         soal: "46. Apa antonim dari 'baru'?",
+         pilihan: [
+           "A. Lama", 
+           "B. Segar", 
             "C. Kecil", 
             "D. Agung", 
-            "E. Ringan"
+           "E. Ringan"
         ],
         jawaban: "A"
     },
     {
-        id: 47,
+         id: 47,
         soal: "47. Apa sinonim dari 'banyak'?",
-        pilihan: [
+       pilihan: [
             "A. Sedikit", 
-            "B. Penuh", 
-            "C. Kurang", 
-            "D. Banyak", 
-            "E. Terbatas"
-        ],
-        jawaban: "D"
-    },
-    {
+           "B. Penuh", 
+             "C. Kurang", 
+           "D. Banyak", 
+           "E. Terbatas"
+       ],
+       jawaban: "D"
+  },
+  {
         id: 48,
         soal: "48. Apa antonim dari 'terang'?",
         pilihan: [
             "A. Gelap", 
-            "B. Sejuk", 
+           "B. Sejuk", 
             "C. Sinar", 
-            "D. Cemerlang", 
-            "E. Sopan"
-        ],
-        jawaban: "A"
+             "D. Cemerlang", 
+           "E. Sopan"
+       ],
+       jawaban: "A"
     },
     {
         id: 49,
         soal: "49. Apa sinonim dari 'kecil'?",
-        pilihan: [
-            "A. Besar", 
-            "B. Ringan", 
+         pilihan: [
+           "A. Besar", 
+           "B. Ringan", 
             "C. Pendek", 
-            "D. Sempit", 
-            "E. Agung"
+             "D. Sempit", 
+           "E. Agung"
         ],
-        jawaban: "B"
+       jawaban: "B"
     },
     {
         id: 50,
-        soal: "50. Apa antonim dari 'ringan'?",
-        pilihan: [
-            "A. Berat", 
+         soal: "50. Apa antonim dari 'ringan'?",
+         pilihan: [
+           "A. Berat", 
             "B. Kecil", 
             "C. Cepat", 
             "D. Sederhana", 
-            "E. Tinggi"
+           "E. Tinggi"
         ],
         jawaban: "A"
     }
 ];
 
 
-        class Quiz {
+       class Quiz {
             constructor(questions) {
                 this.questions = questions;
                 this.currentQuestionIndex = 0;
@@ -873,7 +976,7 @@
                     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
 
-            loadQuestion() {
+             loadQuestion() {
                 const questionData = this.questions[this.currentQuestionIndex];
                 const questionText = document.getElementById('question-text');
                 const answersContainer = document.getElementById('answers-container');
@@ -883,53 +986,52 @@
                 // Reset tampilan
                 questionText.textContent = questionData.soal;
                 answersContainer.innerHTML = '';
-                feedbackDiv.innerHTML = '';
-                nextButton.style.display = 'none';
+                 feedbackDiv.innerHTML = '';
+                 nextButton.style.display = 'none';
 
                 // Buat tombol jawaban
-                questionData.pilihan.forEach((pilihan) => {
+               questionData.pilihan.forEach((pilihan) => {
                     const btn = document.createElement('button');
                     btn.textContent = pilihan;
-                    btn.classList.add('btn', 'btn-outline-primary', 'answer-btn');
+                   btn.classList.add('answer-btn');
                     btn.addEventListener('click', () => this.checkAnswer(pilihan));
                     answersContainer.appendChild(btn);
-                });
-            }
+               });
+           }
 
-            checkAnswer(selectedAnswer) {
+
+             checkAnswer(selectedAnswer) {
                 const feedbackDiv = document.getElementById('feedback');
                 const nextButton = document.getElementById('next-btn');
-                const answersContainer = document.getElementById('answers-container');
+                 const answersContainer = document.getElementById('answers-container');
                 const currentQuestion = this.questions[this.currentQuestionIndex];
 
                 // Matikan semua tombol
-                answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
+               answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
                     btn.disabled = true;
-                });
+               });
 
-                // Tandai jawaban benar dan salah
-                answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
-                    const answerText = btn.textContent;
+              // Tandai jawaban benar dan salah
+             answersContainer.querySelectorAll('.answer-btn').forEach(btn => {
+                  const answerText = btn.textContent;
                     const correctAnswer = currentQuestion.pilihan.find(p => 
                         p.startsWith(currentQuestion.jawaban + '.')
                     );
-                    
-                    if (answerText === correctAnswer) {
+                     if (answerText === correctAnswer) {
                         btn.classList.add('btn-success');
-                    }
+                     }
                     if (answerText === selectedAnswer && selectedAnswer !== correctAnswer) {
                         btn.classList.add('btn-danger');
-                    }
-                });
-
-                // Berikan feedback
-                if (selectedAnswer.startsWith(currentQuestion.jawaban + '.')) {
+                     }
+               });
+               // Berikan feedback
+               if (selectedAnswer.startsWith(currentQuestion.jawaban + '.')) {
                     feedbackDiv.innerHTML = '<div class="alert alert-success">Jawaban Benar!</div>';
-                    this.score++;
-                } else {
-                    const correctAnswer = currentQuestion.pilihan.find(p => 
-                        p.startsWith(currentQuestion.jawaban + '.')
-                    );
+                     this.score++;
+                 } else {
+                     const correctAnswer = currentQuestion.pilihan.find(p => 
+                         p.startsWith(currentQuestion.jawaban + '.')
+                     );
                     feedbackDiv.innerHTML = `<div class="alert alert-danger">Jawaban Salah. Jawaban yang benar adalah: ${correctAnswer}</div>`;
                 }
 
@@ -949,36 +1051,53 @@
 
             endQuiz() {
                 clearInterval(this.timerInterval);
-                const resultModal = new bootstrap.Modal(document.getElementById('result-modal'));
-                const scoreResult = document.getElementById('score-result');
-                const scoreDetails = document.getElementById('score-details');
+                const resultModal = document.getElementById('result-modal');
+                 const scoreResult = document.getElementById('score-result');
+                 const scoreDetails = document.getElementById('score-details');
 
-                scoreResult.textContent = `Skor Anda: ${this.score}/${this.totalQuestions}`;
+                 scoreResult.textContent = `Skor Anda: ${this.score}/${this.totalQuestions}`;
                 
-                const percentageScore = ((this.score / this.totalQuestions) * 100).toFixed(2);
-                scoreDetails.innerHTML = `
+               const percentageScore = ((this.score / this.totalQuestions) * 100).toFixed(2);
+                 scoreDetails.innerHTML = `
                     <p>Jumlah Benar: ${this.score}</p>
-                    <p>Jumlah Salah: ${this.totalQuestions - this.score}</p>
-                    <p>Persentase: ${percentageScore}%</p>
+                   <p>Jumlah Salah: ${this.totalQuestions - this.score}</p>
+                     <p>Persentase: ${percentageScore}%</p>
                 `;
 
-                resultModal.show();
+                 resultModal.classList.add('show');
+                resultModal.style.display = 'block';
+                document.body.classList.add('modal-open');
+                 document.body.style.overflow = 'hidden';
+
             }
         }
 
         function restartQuiz() {
             window.location.reload();
         }
+        
+         document.addEventListener('DOMContentLoaded', () => {
+             const quiz = new Quiz(quizData);
+             quiz.loadQuestion();
+             quiz.startTimer();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const quiz = new Quiz(quizData);
-            quiz.loadQuestion();
-            quiz.startTimer();
 
-            document.getElementById('next-btn').addEventListener('click', () => {
+              document.getElementById('next-btn').addEventListener('click', () => {
                 quiz.nextQuestion();
-            });
+              });
+
+             document.querySelector('#result-modal .btn-secondary').addEventListener('click', () => {
+              restartQuiz();
+           });
         });
+            const modalElement = document.getElementById('result-modal');
+            modalElement.addEventListener('click', (event) => {
+             if (event.target === modalElement) {
+                modalElement.style.display = "none";
+                 document.body.classList.remove('modal-open');
+                   document.body.style.overflow = 'auto';
+              }
+         });
     </script>
 </body>
 </html>

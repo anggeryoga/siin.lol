@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mystery Box Lebaran ML Diamond</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -17,17 +17,14 @@
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
-            width: 100vw;
             background: linear-gradient(135deg, #1A2A6C, #5F4C9B, #67B26F);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0;
-            margin: 0;
+            padding: 20px;
             background-size: 300% 300%;
             animation: gradientBG 12s ease infinite;
-            overflow-x: hidden;
         }
         
         @keyframes gradientBG {
@@ -37,8 +34,8 @@
         }
         
         .container {
+            max-width: 480px;
             width: 100%;
-            max-width: 100%;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -48,10 +45,6 @@
             position: relative;
             overflow: hidden;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
         
         .container::before {
@@ -384,8 +377,6 @@
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
-                border-radius: 0;
-                min-height: 100vh;
             }
             
             h1 {
@@ -416,7 +407,7 @@
         
         <h1>
             <i class="festive-icon fas fa-moon"></i>
-            Mystery Box Lebaran
+            Selamat Idul Fitri
             <i class="festive-icon fas fa-star"></i>
         </h1>
         <p class="subtitle">Dapatkan Diamond ML dari Mystery Box Lebaran!</p>
@@ -433,16 +424,16 @@
         <p class="spin-count">Sisa kesempatan: <span id="spins-left">2</span></p>
         
         <div id="info" class="hidden">
-            <p>Kode: <span id="code-result" style="font-weight: bold;"></span></p>
-            <p>Kamu mendapatkan <span id="diamond-amount">100</span> Diamond</p>
-            <p>Masukkan kode di link berikut:</p>
+            <p>Kamu mendapatkan kode: <span id="code-result" style="font-weight: bold;"></span></p>
+            <p>Selamat! Kamu mendapatkan <span id="diamond-amount">100</span> Diamond!</p>
+            <p>Silakan masukkan kode di link berikut untuk klaim hadiah kamu:</p>
             <a id="claim" href="https://evostopup.gg/gift/" target="_blank">
-                <i class="fas fa-gift"></i> Klaim
+                <i class="fas fa-gift"></i> Klaim Hadiah
             </a>
         </div>
         
         <div id="special-winner" class="special-notification">
-            Kode GRAND PRIZE!
+            SELAMAT! Kamu mendapatkan kode GRAND PRIZE!
         </div>
         
         <div class="confetti-container" id="confetti"></div>
@@ -451,8 +442,192 @@
     <div class="reward-notification" id="notification">Terbatas 2x kesempatan per perangkat!</div>
 
     <script>
-        // JavaScript hidden for inspection purposes 
-        // Coba klik tombol "Buka Mystery Box"
+        (function() {
+            // Array kode hadiah (kode normal)
+            let codes = [
+                "135742", "267931", "845193", "392758", "512987", 
+                "718345", "629845", "893561", "451982", "278461",
+                "934612", "567234", "829461", "312984", "475631", 
+                "698521", "137482", "954723", "201485", "375912",
+                "583947", "273951", "673941", "159834", "348721", 
+                "891247", "456123", "752914", "645872", "234987",
+                "987456", "321654", "654789", "258741", "476213", 
+                "785123", "913245", "862541", "579124", "147528",
+                "371892", "982765", "532146", "675913", "794251",
+                "246813", "358192", "912458", "572143", "814357",
+                "621583", "459172", "385412", "731856", "295481",
+                "468137", "723916", "862345", "591247", "438957"
+            ];
+            
+            // Kode grand prize (sangat langka)
+            const GRAND_PRIZE_CODE = "428140";
+            
+            // Array jumlah diamond
+            let diamonds = [
+                50, 70, 100, 150, 200, 250, 300, 350, 400, 450,
+                500, 550, 600, 650, 700, 750, 800, 850, 900, 950,
+                1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450,
+                1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950,
+                2000, 2050, 2100, 2150, 2200, 2250, 2300, 2350, 2400, 2450,
+                2500, 2550, 2600, 2650, 2700, 2750, 2800, 2850, 2900, 3000
+            ];
+
+            // Grand prize diamond amount
+            const GRAND_PRIZE_DIAMONDS = 10000;
+
+            // Keys for localStorage
+            let keySpins = "lebaranBoxSpins";
+            let keyResults = "lebaranBoxResults";
+            
+            // Elements
+            let tombol = document.getElementById("btn");
+            let hasil = document.getElementById("result");
+            let resultText = document.getElementById("result-text");
+            let info = document.getElementById("info");
+            let codeResult = document.getElementById("code-result");
+            let diamondAmount = document.getElementById("diamond-amount");
+            let notification = document.getElementById("notification");
+            let confettiContainer = document.getElementById("confetti");
+            let spinsLeftElement = document.getElementById("spins-left");
+            let specialWinner = document.getElementById("special-winner");
+            
+            // Initialize spins count
+            let spinsLeft = 2;
+            let results = [];
+            
+            // Check if there's saved data
+            if (localStorage.getItem(keySpins)) {
+                spinsLeft = parseInt(localStorage.getItem(keySpins));
+                spinsLeftElement.innerHTML = spinsLeft;
+                
+                if (spinsLeft <= 0) {
+                    tombol.innerHTML = "Kesempatan Habis";
+                    tombol.disabled = true;
+                }
+            }
+            
+            if (localStorage.getItem(keyResults)) {
+                results = JSON.parse(localStorage.getItem(keyResults));
+                
+                if (results.length > 0) {
+                    const lastResult = results[results.length - 1];
+                    resultText.innerHTML = lastResult.code;
+                    codeResult.innerHTML = lastResult.code;
+                    diamondAmount.innerHTML = lastResult.diamond;
+                    info.classList.add("visible");
+                    
+                    // Check if the last result was a grand prize
+                    if (lastResult.code === GRAND_PRIZE_CODE) {
+                        specialWinner.style.display = "block";
+                        createConfetti();
+                    }
+                }
+            }
+            
+            function createConfetti() {
+                confettiContainer.style.display = "block";
+                const colors = ["#FFD700", "#FF6347", "#00BFFF", "#32CD32", "#FF69B4", "#9370DB"];
+                
+                for (let i = 0; i < 150; i++) {
+                    const confetti = document.createElement("div");
+                    confetti.className = "confetti";
+                    confetti.style.left = Math.random() * 100 + "%";
+                    confetti.style.top = -10 + "px";
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + "px";
+                    confetti.style.height = Math.random() * 10 + 5 + "px";
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + "s";
+                    confetti.style.animationDelay = Math.random() * 5 + "s";
+                    
+                    confettiContainer.appendChild(confetti);
+                }
+                
+                setTimeout(() => {
+                    confettiContainer.style.display = "none";
+                    confettiContainer.innerHTML = "";
+                }, 7000);
+            }
+
+            function showNotification(message) {
+                notification.textContent = message || "Terbatas 2x kesempatan per perangkat!";
+                notification.style.display = "block";
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000);
+            }
+
+            function openBox() {
+                if (spinsLeft <= 0) {
+                    showNotification("Kesempatan kamu sudah habis!");
+                    return;
+                }
+                
+                // Decrement spins
+                spinsLeft--;
+                spinsLeftElement.innerHTML = spinsLeft;
+                localStorage.setItem(keySpins, spinsLeft);
+                
+                // If no more spins, disable button
+                if (spinsLeft <= 0) {
+                    tombol.innerHTML = "Kesempatan Habis";
+                    tombol.disabled = true;
+                }
+                
+                hasil.classList.add("active");
+                
+                // Efek penggulungan angka selama animasi
+                let counter = 0;
+                let rollInterval = setInterval(() => {
+                    resultText.innerHTML = codes[Math.floor(Math.random() * codes.length)];
+                    counter++;
+                    
+                    if (counter > 15) {
+                        clearInterval(rollInterval);
+                    }
+                }, 80);
+
+                setTimeout(() => {
+                    // Determine if this is a grand prize (extremely rare, 0.001% chance)
+                    // 1 in 100,000 chance
+                    let isGrandPrize = Math.random() < 0.00001;
+                    
+                    let selectedCode;
+                    let selectedDiamond;
+                    
+                    if (isGrandPrize) {
+                        selectedCode = GRAND_PRIZE_CODE;
+                        selectedDiamond = GRAND_PRIZE_DIAMONDS;
+                        specialWinner.style.display = "block";
+                    } else {
+                        let randomIndex = Math.floor(Math.random() * codes.length);
+                        selectedCode = codes[randomIndex];
+                        selectedDiamond = diamonds[randomIndex % diamonds.length];
+                    }
+                    
+                    resultText.innerHTML = selectedCode;
+                    codeResult.innerHTML = selectedCode;
+                    diamondAmount.innerHTML = selectedDiamond;
+                    hasil.classList.remove("active");
+                    
+                    // Save result
+                    results.push({
+                        code: selectedCode,
+                        diamond: selectedDiamond,
+                        timestamp: new Date().getTime()
+                    });
+                    localStorage.setItem(keyResults, JSON.stringify(results));
+                    
+                    info.classList.add("visible");
+                    
+                    // Show confetti for grand prize
+                    if (isGrandPrize) {
+                        createConfetti();
+                    }
+                }, 1500);
+            }
+
+            tombol.addEventListener("click", openBox);
+        })();
     </script>
 </body>
 </html>

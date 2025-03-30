@@ -425,9 +425,8 @@
         
         <div id="info" class="hidden">
             <p>Kamu mendapatkan kode: <span id="code-result" style="font-weight: bold;"></span></p>
-            
-            <p>Silakan masukkan kode di link berikut untuk klaim hadiah kamu:</p>
-            <a id="claim" href="https://evostopup.gg/gift/" target="_blank">
+            <p>Silakan klaim diamond melalui link berikut:</p>
+            <a id="claim" href="https://evostopup.gg/gift/EVS2503305691743341323745FM" target="_blank">
                 <i class="fas fa-gift"></i> Klaim Hadiah
             </a>
         </div>
@@ -485,7 +484,6 @@
             let resultText = document.getElementById("result-text");
             let info = document.getElementById("info");
             let codeResult = document.getElementById("code-result");
-            let diamondAmount = document.getElementById("diamond-amount");
             let notification = document.getElementById("notification");
             let confettiContainer = document.getElementById("confetti");
             let spinsLeftElement = document.getElementById("spins-left");
@@ -513,7 +511,6 @@
                     const lastResult = results[results.length - 1];
                     resultText.innerHTML = lastResult.code;
                     codeResult.innerHTML = lastResult.code;
-                    diamondAmount.innerHTML = lastResult.diamond;
                     info.classList.add("visible");
                     
                     // Check if the last result was a grand prize
@@ -592,27 +589,22 @@
                     let isGrandPrize = Math.random() < 0.00001;
                     
                     let selectedCode;
-                    let selectedDiamond;
                     
                     if (isGrandPrize) {
                         selectedCode = GRAND_PRIZE_CODE;
-                        selectedDiamond = GRAND_PRIZE_DIAMONDS;
                         specialWinner.style.display = "block";
                     } else {
                         let randomIndex = Math.floor(Math.random() * codes.length);
                         selectedCode = codes[randomIndex];
-                        selectedDiamond = diamonds[randomIndex % diamonds.length];
                     }
                     
                     resultText.innerHTML = selectedCode;
                     codeResult.innerHTML = selectedCode;
-                    diamondAmount.innerHTML = selectedDiamond;
                     hasil.classList.remove("active");
                     
                     // Save result
                     results.push({
                         code: selectedCode,
-                        diamond: selectedDiamond,
                         timestamp: new Date().getTime()
                     });
                     localStorage.setItem(keyResults, JSON.stringify(results));

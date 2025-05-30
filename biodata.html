@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biodata King Yoga - Kejawen Mistis</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Creepster&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Cinzel', serif;
+      background: linear-gradient(45deg, #0a0a0a, #1a0f0f, #0f1a0f);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease-in-out infinite;
+      color: #d4af37;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Mystical background elements */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(75, 0, 130, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(25, 25, 112, 0.2) 0%, transparent 50%);
+      animation: mysticalGlow 6s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .floating-symbols {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .symbol {
+      position: absolute;
+      color: rgba(212, 175, 55, 0.1);
+      font-size: 24px;
+      animation: float 12s linear infinite;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, 
+        rgba(20, 20, 20, 0.9) 0%, 
+        rgba(40, 20, 20, 0.9) 50%, 
+        rgba(20, 20, 20, 0.9) 100%);
+      border: 2px solid #d4af37;
+      border-radius: 15px;
+      box-shadow: 
+        0 0 30px rgba(212, 175, 55, 0.5),
+        inset 0 0 20px rgba(139, 0, 0, 0.3),
+        0 0 60px rgba(75, 0, 130, 0.4);
+      padding: 2rem;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      animation: cardPulse 4s ease-in-out infinite;
+      position: relative;
+      backdrop-filter: blur(10px);
+      z-index: 2;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #d4af37, #8b0000, #4b0082, #d4af37);
+      border-radius: 15px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+    
+    .photo-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #d4af37;
+      box-shadow: 
+        0 0 20px rgba(212, 175, 55, 0.6),
+        inset 0 0 10px rgba(139, 0, 0, 0.3);
+      filter: sepia(30%) contrast(1.2) brightness(0.9);
+      animation: photoGlow 3s ease-in-out infinite alternate;
+      transition: all 0.3s ease;
+    }
+    
+    .card img:hover {
+      transform: scale(1.05);
+      box-shadow: 
+        0 0 30px rgba(212, 175, 55, 0.8),
+        inset 0 0 15px rgba(139, 0, 0, 0.5);
+    }
+    
+    .title {
+      font-family: 'Creepster', cursive;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 600;
+      color: #d4af37;
+      text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(212, 175, 55, 0.5);
+      margin-bottom: 0.5rem;
+      animation: titleFlicker 4s ease-in-out infinite;
+      letter-spacing: 2px;
+    }
+    
+    .subtitle {
+      font-size: clamp(1.1rem, 3vw, 1.3rem);
+      color: #cd853f;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      animation: subtitleGlow 5s ease-in-out infinite alternate;
+    }
+    
+    .info-container {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .info {
+      margin: 0.8rem 0;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      color: #daa520;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      position: relative;
+      padding-left: 20px;
+    }
+    
+    .info::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: #d4af37;
+      animation: bulletPulse 2s ease-in-out infinite;
+    }
+    
+    .mystical-text {
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      color: #8b7355;
+      margin-top: 1.5rem;
+      font-style: italic;
+      opacity: 0.8;
+      animation: mysticalWhisper 6s ease-in-out infinite;
+    }
+    
+    .divider {
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #d4af37, transparent);
+      margin: 1rem auto;
+      animation: dividerGlow 3s ease-in-out infinite alternate;
+    }
+    
+    /* Animations */
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes mysticalGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    @keyframes cardPulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), inset 0 0 20px rgba(139, 0, 0, 0.3), 0 0 60px rgba(75, 0, 130, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.7), inset 0 0 25px rgba(139, 0, 0, 0.5), 0 0 80px rgba(75, 0, 130, 0.6); }
+    }
+    
+    @keyframes borderGlow {
+      0% { background: linear-gradient(45deg, #d4af37, #8b0000, #4b0082, #d4af37); }
+      25% { background: linear-gradient(45deg, #8b0000, #4b0082, #d4af37, #8b0000); }
+      50% { background: linear-gradient(45deg, #4b0082, #d4af37, #8b0000, #4b0082); }
+      75% { background: linear-gradient(45deg, #d4af37, #8b0000, #4b0082, #d4af37); }
+      100% { background: linear-gradient(45deg, #8b0000, #4b0082, #d4af37, #8b0000); }
+    }
+    
+    @keyframes photoGlow {
+      0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), inset 0 0 10px rgba(139, 0, 0, 0.3); }
+      100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.9), inset 0 0 15px rgba(139, 0, 0, 0.6); }
+    }
+    
+    @keyframes titleFlicker {
+      0%, 100% { opacity: 1; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 175, 55, 0.5); }
+      25% { opacity: 0.8; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.7); }
+      50% { opacity: 1; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.9); }
+      75% { opacity: 0.9; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.7); }
+    }
+    
+    @keyframes subtitleGlow {
+      0% { color: #cd853f; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); }
+      100% { color: #daa520; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7), 0 0 8px rgba(218, 165, 32, 0.5); }
+    }
+    
+    @keyframes bulletPulse {
+      0%, 100% { color: #d4af37; transform: scale(1); }
+      50% { color: #ffd700; transform: scale(1.2); }
+    }
+    
+    @keyframes mysticalWhisper {
+      0%, 100% { opacity: 0.6; transform: translateY(0); }
+      50% { opacity: 0.9; transform: translateY(-2px); }
+    }
+    
+    @keyframes dividerGlow {
+      0% { background: linear-gradient(to right, transparent, #d4af37, transparent); }
+      100% { background: linear-gradient(to right, transparent, #ffd700, transparent); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .card {
+        padding: 1.5rem;
+        max-width: 90%;
+      }
+      
+      .card img {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .info-container {
+        padding: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .card {
+        padding: 1rem;
+      }
+      
+      .card img {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .info {
+        margin: 0.6rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-symbols" id="symbols"></div>
+  
+  <div class="card">
+    <div class="photo-container">
+      <img src="assets/kingyoga.jpg" alt="Foto King Yoga" id="foto">
+    </div>
+    
+    <div class="title">Angger Aji</div>
+    <div class="subtitle">◈ Alias: King Yoga ◈</div>
+    
+    <div class="divider"></div>
+    
+    <div class="info-container">
+      <div class="info">Tanggal Lahir: 2 November</div>
+      <div class="info">Hari Kelahiran: Selasa PON</div>
+      <div class="info">Weton Jawa: Selasa Pon</div>
+      <div class="info">Neptu: 9 (Selasa) + 7 (Pon) = 16</div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="mystical-text">
+      "Sapa sing duwe weton Selasa Pon, pinter lan duwe jiwa kepemimpinan gedhe"<br>
+      ꦱꦧꦢ ꦱꦶꦁ ꦢꦸꦮꦺ ꦮꦺꦠꦺꦴꦤ꧀ ꦱꦼꦭꦱ ꦥꦺꦴꦤ꧀
+    </div>
+  </div>
+
+  <script>
+    // Create floating mystical symbols
+    const symbols = ['☽', '☾', '✦', '✧', '◆', '◇', '☪', '✱', '⚛', '☯', '🕯', '🌙'];
+    const container = document.getElementById('symbols');
+    
+    function createSymbol() {
+      const symbol = document.createElement('div');
+      symbol.className = 'symbol';
+      symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      symbol.style.left = Math.random() * 100 + '%';
+      symbol.style.animationDuration = (Math.random() * 10 + 8) + 's';
+      symbol.style.animationDelay = Math.random() * 5 + 's';
+      container.appendChild(symbol);
+      
+      // Remove symbol after animation
+      setTimeout(() => {
+        if (container.contains(symbol)) {
+          container.removeChild(symbol);
+        }
+      }, 15000);
+    }
+    
+    // Create symbols periodically
+    setInterval(createSymbol, 2000);
+    
+    // Initial symbols
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createSymbol, i * 400);
+    }
+    
+    // Interactive hover effects
+    const card = document.querySelector('.card');
+    const photo = document.getElementById('foto');
+    
+    card.addEventListener('mouseenter', () => {
+      card.style.transform = 'scale(1.02) rotateY(5deg)';
+      card.style.transition = 'transform 0.3s ease';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'scale(1) rotateY(0deg)';
+    });
+    
+    // Photo click effect
+    photo.addEventListener('click', () => {
+      photo.style.transform = 'scale(1.1) rotate(360deg)';
+      photo.style.transition = 'transform 0.8s ease';
+      setTimeout(() => {
+        photo.style.transform = 'scale(1) rotate(0deg)';
+      }, 800);
+    });
+    
+    // Dynamic background color shift based on time
+    function updateMysticalAura() {
+      const hour = new Date().getHours();
+      const body = document.body;
+      
+      if (hour >= 18 || hour <= 6) {
+        // Night time - darker, more mystical
+        body.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0f0f, #0f1a0f)';
+      } else {
+        // Day time - slightly lighter but still mystical
+        body.style.background = 'linear-gradient(45deg, #1a1a1a, #2a1f1f, #1f2a1f)';
+      }
+    }
+    
+    updateMysticalAura();
+    setInterval(updateMysticalAura, 60000); // Update every minute
+    
+    // Kamu bisa ganti gambar dari file lokal atau upload online lalu masukkan URL-nya ke sini
+    // document.getElementById("foto").src = "path/to/your/photo.jpg";
+  </script>
+</body>
+</html>
